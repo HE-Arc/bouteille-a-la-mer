@@ -10,19 +10,19 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class newTest implements ShouldBroadcast
+class NewMessage implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $msg;
+    public $message;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($message)
     {
-        $this->msg = "yo ? ";
+        $this->message = $message;
     }
 
     /**
@@ -32,7 +32,6 @@ class newTest implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        //eturn new PrivateChannel('channel-name');
-        return new Channel('testMessage');
+        return new Channel('home');
     }
 }
