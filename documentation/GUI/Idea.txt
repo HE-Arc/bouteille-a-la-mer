@@ -1,8 +1,10 @@
+NGROK- tester sur mobile
+
 z-index
 
 My conversations : 
 	Collections badges
-	Striped Table¨
+	Striped Tableï¿½
 
 Button circle :
 	circle
@@ -16,3 +18,5 @@ Sidenav
 System de notification : toast
 drop a bottle:
 	picker ou slider ?
+
+Map : mapbox
