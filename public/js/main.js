@@ -10,3 +10,12 @@ var map = new mapboxgl.Map({
 map.on('load', function () {
     map.resize();
 });
+
+let sm = new SocketMessage(onMessage);
+
+function onMessage(message)
+{
+    console.log(message);
+
+    //TODO marti fonction pour ajouter dans la vue :)
+}
