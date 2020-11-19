@@ -1,16 +1,14 @@
 @extends('layout.app')
 @section('content')
 <div id="app">
-	<nav style="margin-top: 0px;" id="status">
-		<div class="nav-wrapper">
-			<p v-if="connected" class="flow-text">
-				Connected
-			</p>
-			<p v-else class="flow-text">
-				Not connected
-			</p>
-		</div>
-	</nav>
+	<div id="status" class="center-align card-panel teal">
+		<p v-if="connected" class="flow-text">
+			Connected
+		</p>
+		<p v-else class="flow-text">
+			Not connected
+		</p>
+	</div>
 
 	<div id="map"></div>
 	

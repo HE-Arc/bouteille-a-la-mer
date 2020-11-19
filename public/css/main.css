@@ -23,6 +23,16 @@ html, body, #app{
 #status{
     z-index: 10;
     position: absolute;
+
+    padding: 0px;
+
+    width: 80%;
+
+    height: 30px;
+
+    left: 50%;
+    top: 3%;
+    transform: translate(-50%, -50%);
 }
 
 #drop-btn{
