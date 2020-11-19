@@ -11,7 +11,12 @@ use function PHPUnit\Framework\isEmpty;
 class LoginController extends Controller
 {
     function login() {
-        return view("testLogin");
+        //TODO If not connected
+        return view("login");
+    }
+    function signup() {
+        //TODO if not connected
+        return view("signup");
     }
 
     function tryLogin(Request $request) {
@@ -21,7 +26,7 @@ class LoginController extends Controller
             ->first();
             if ($user != null) {
                 if (Hash::check($request->password, $user->password)) {
-                    return ['error' => '', 'success' => '1'];
+                    return ['error' => '', 'success' => true];
                 }
                 return ['error' => 'wrongPassword'];
             }
@@ -37,9 +42,9 @@ class LoginController extends Controller
                 $user->username = $request->username;
                 $user->password = bcrypt($request->password);
                 $user->save();
-                return ['error' => '', 'success' => '1'];
+                return ['error' => '', 'success' => true];
             }
-                return ['error' => 'alreadyExist'];
+            return ['error' => 'alreadyExist'];
         }
         return ['error' => 'wrongRequest'];        
     }

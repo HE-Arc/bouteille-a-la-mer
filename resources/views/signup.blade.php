@@ -10,7 +10,7 @@
     </center>
     <h2>Sign up</h2>
     <p>Hi there! Nice to see you again.</p>
-    <form action="/trySignup" method="POST">
+    <form action="/trySignup" method="POST" onsubmit="return onSignup()" id="signupForm">
         @csrf
         <div class="input-field col s12">
             <input placeholrder="Username" name="username" id="username", type="text" class="validate">
@@ -24,7 +24,7 @@
             <input placeholrder="Password" name="password2" id="password2", type="password" class="validate">
             <label for="password2">Password</label>
         </div>
-        <div class="spacer"></div>
+        <div class="error" id="error"></div>
         <div class="spacer"></div>
         <input type="submit" class="btn waves-effect waves-light col s12" value="Continue">
     </form>
@@ -34,16 +34,32 @@
 
 </div>
 
-<style>
-    .logo {
-        display: block;
-    }
-    .spacer {
-        height: 100px;
-    }
-</style>
-
 <!-- Page js and css -->
-<script src="{{ URL::asset('/js/main.js') }}"></script>
-<link href="{{ URL::asset('/css/main.css') }}" rel='stylesheet' />
+<script>
+    function onSignup() {
+        if ($('#password').val() === $('#password2').val()) {
+            $('#btnSubmit').attr("disabled", true);
+            $.post("trySignup", $('#signupForm').serialize(), (result) => {
+                console.log(result);
+                if (result.success === true) {
+                    alert("Success");
+                } else {
+                    $('#btnSubmit').attr("disabled", false);
+                    if (result.error === "alreadyExist") {
+                        displayError("This user already exist");
+                    } else {
+                        displayError("Something went wrong");
+                    }
+                }
+            });
+        } else {
+            displayError("Warning ! the 2 passwords are not the same");
+        }
+        return false;
+    }
+
+    function displayError(error) {
+        $('#error').html(error);
+    }
+</script>
 @endsection
