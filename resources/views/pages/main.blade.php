@@ -1,16 +1,23 @@
 @extends('layout.app')
 @section('content')
+<div id='app'>
+	<nav style="margin-top: 0px;" id="status">
+		<div class="nav-wrapper">
+			<p v-if="connected" class="flow-text">
+				Connected
+			</p>
+			<p v-else class="flow-text">
+				Not connected
+			</p>
+		</div>
+	</nav>
 
-<div id='map'></div>
+	<div id='map'></div>
+	
+	<div class="container">
+			<!-- Page Content goes here -->
+	</div>
 </div>
-
-<div class="container">
-        <!-- Page Content goes here -->
-</div>
-
-<!-- Map box -->
-<script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
-<link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
 
 <!-- Page js and css -->
 <script src="{{ URL::asset('/js/main.js') }}"></script>
