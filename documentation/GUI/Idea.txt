@@ -14,7 +14,7 @@ Button circle :
 	fixed-action-btn
 
 Navbar
-Sidenav
+Sidenavgi
 System de notification : toast
 drop a bottle:
 	picker ou slider ?
