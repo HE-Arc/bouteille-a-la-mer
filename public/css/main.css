@@ -23,7 +23,6 @@ html, body, #app{
 #status{
     z-index: 10;
     position: absolute;
-<<<<<<< HEAD
 
     padding: 0px;
 
@@ -48,17 +47,4 @@ html, body, #app{
 #drop-img{
     width: 100%;
     height: auto;
-=======
-}
-
-.logo {
-    display: block;
-}
-.spacer {
-    height: 50px;
-}
-
-.error {
-    color: red;
->>>>>>> 43b4254780d2363b03de4e8dacaf4a0ec7b8887f
 }

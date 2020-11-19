@@ -6,7 +6,26 @@ var app = new Vue({
     el: "#app",
     data(){
         return {
-            connected: false 
+            connected: true,
+            pseudo: "NicoJsBad",
+            email : "nico@gmail.com",
+            conversations: [
+                { 
+                    lastmessage: "J'adore le design",
+                    key: 0,
+                    strlefttime: "12:59"
+                },
+                { 
+                    lastmessage: "NICO A LEPPFFLL XDDDDDDDDDDDDDDD",
+                    key: 1,
+                    strlefttime: "10:02"
+                },
+                { 
+                    lastmessage: "yo ?",
+                    key: 2,
+                    strlefttime: "1:19"
+                },
+              ],
         }   
     },
 })
@@ -18,13 +37,10 @@ let map = new mapboxgl.Map({
     zoom: 9 // starting zoom
 });
 
-//Get the sidebar
-let elem = $("#slide-out");
-
-//Get the instance
+//Set the side nav draggable
+let elem = $('.sidenav').sidenav();
 let instance = M.Sidenav.getInstance(elem);
-console.log('tset')
-instance.open()
+instance.isDragged = true;
 
 //Resize the map at load
 map.on('load', function () {
