@@ -18,6 +18,14 @@ let map = new mapboxgl.Map({
     zoom: 9 // starting zoom
 });
 
+//Get the sidebar
+let elem = $("#slide-out");
+
+//Get the instance
+let instance = M.Sidenav.getInstance(elem);
+console.log('tset')
+instance.open()
+
 //Resize the map at load
 map.on('load', function () {
     map.resize();
