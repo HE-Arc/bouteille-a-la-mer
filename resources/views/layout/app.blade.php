@@ -14,6 +14,13 @@
 
     <!--Fav icon-->
     <link rel="shortcut icon" type="image/png" href="{{ URL::asset('/img/logo.png') }}"/>
+    
+    <!--VueJs CDN-->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+
+    <!-- Map box -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
 </head>
 
 <body>
