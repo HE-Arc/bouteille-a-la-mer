@@ -14,6 +14,8 @@
 
     <!--Fav icon-->
     <link rel="shortcut icon" type="image/png" href="{{ URL::asset('/img/logo.png') }}"/>
+    <link href="{{ URL::asset('/css/main.css') }}" rel='stylesheet' />
+    
     
     <!--VueJs CDN-->
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
