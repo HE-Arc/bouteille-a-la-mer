@@ -1,19 +1,14 @@
 @extends('layout.app')
 @section('content')
+<div class="container">
+        <!-- Page Content goes here -->
+        
+<div id='map' style="width:100%; height:200px;"></div>
+</div>
+
+<!-- Map box -->
+
 <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
 <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
-
-<div id='map' style='width: 400px; height: 300px;'></div>
-<script>
-// TO MAKE THE MAP APPEAR YOU MUST
-// ADD YOUR ACCESS TOKEN FROM
-// https://account.mapbox.com
-mapboxgl.accessToken = 'pk.eyJ1IjoibGFtb3Vzc2VhdWxpbmkiLCJhIjoiY2tobTgxOXliMGU1bzJ3cm5xaGZ2b2d0NiJ9.B46q3gvGFh55OpLpZmhLDQ';
-var map = new mapboxgl.Map({
-container: 'map',
-style: 'mapbox://styles/mapbox/streets-v11', // stylesheet location
-center: [-74.5, 40], // starting position [lng, lat]
-zoom: 9 // starting zoom
-});
-</script>
+<script src="{{ URL::asset('/js/main.js') }}"></script>
 @endsection
