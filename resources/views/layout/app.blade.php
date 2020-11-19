@@ -14,6 +14,9 @@
 
     <!--Fav icon-->
     <link rel="shortcut icon" type="image/png" href="{{ URL::asset('/img/logo.png') }}"/>
+
+    <!-- custom css-->
+    <link href="{{ URL::asset('/css/app.css') }}" rel='stylesheet' />
 </head>
 
 <body>
@@ -21,5 +24,8 @@
 
     <!--JavaScript at end of body for optimized loading-->
     <script type="text/javascript" src="resources/js/materialize.min.js"></script>
+
+    <!-- custom js-->
+    <script src="{{ URL::asset('/js/app.js') }}"></script>
 </body>
 </html>
