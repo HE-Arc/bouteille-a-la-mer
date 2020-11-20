@@ -33,8 +33,7 @@ var app = new Vue({
 let map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v11', // stylesheet location
-    center: [-74.5, 40], // starting position [lng, lat]
-    zoom: 9 // starting zoom
+    zoom: 12 // starting zoom
 });
 
 //Set the side nav draggable
@@ -42,7 +41,30 @@ let elem = $('.sidenav').sidenav();
 let instance = M.Sidenav.getInstance(elem);
 instance.isDragged = true;
 
-//Resize the map at load
+function showPosition(position) {
+  x.innerHTML = "Latitude: " + position.coords.latitude +
+  "<br>Longitude: " + position.coords.longitude;
+}
+
+//Center the map to our current location
+if (navigator.geolocation) 
+{
+    navigator.geolocation.getCurrentPosition(
+        function(position)
+        {
+            //Set center location
+            map.setCenter([position.coords.longitude, position.coords.latitude])
+        }     
+    );
+}
+else
+{
+    alert("Geolocation is not supported by this browser.");
+}
+
+
+//At load time :
 map.on('load', function () {
+    //Resize the map
     map.resize();
 });

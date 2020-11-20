@@ -9,6 +9,7 @@
 			Not connected
 		</p>
 	</div>
+	<div id="demo"></div>
 
 	<div id="map"></div>
 	
