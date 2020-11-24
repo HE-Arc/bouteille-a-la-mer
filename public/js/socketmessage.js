@@ -10,18 +10,11 @@ class SocketMessage
         });
     }
 
-    //Type => 'image' or 'text'
-    send(type, content) {
-
-        if(type == 'image') {
-            content = this.toBase64(content);
-        }
-
-        this.ws.send(messageString)
+    send(text, image) {
+        this.ws.send(JSON.stringify({'text': text, 'image': image}))
     }
 
-    toBase64(image)
-    {
+    toBase64(image) {
         //TODO
         return null;
     }

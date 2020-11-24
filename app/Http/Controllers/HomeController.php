@@ -5,6 +5,7 @@
     {
         public function index()
         {
+            session(['key' => 'value']);
             return view('pages.main');
         }
     }
