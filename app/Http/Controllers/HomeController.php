@@ -1,11 +1,17 @@
 <?php
     namespace App\Http\Controllers;
 
-    class HomeController extends Controller
+use Illuminate\Http\Request;
+
+
+class HomeController extends Controller
     {
-        public function index()
+        public function index(Request $request)
         {
-            session(['key' => 'value']);
-            return view('pages.main');
+            return view('pages.main'); //TODO
+            if ($request->session()->has('loginID')) {
+                return view('pages.main');
+            }
+            return redirect('/login');
         }
     }
