@@ -44,7 +44,30 @@ html, body, #app{
     background-color: rgba(0, 0, 0, 0.0);
 }
 
+#confirm-drop-btn{
+    width: 160px;
+    height: 160px;
+
+    background-color: rgba(0, 0, 0, 0.0);
+}
+
 #drop-img{
     width: 100%;
     height: auto;
 }
+
+.main-page{
+    display: none;
+}
+
+/*
+#drop-page{
+    margin-top: 100px;
+    background: red;
+    transition: width 2s;
+}
+
+div:hover {
+    width: 300px;
+  }
+  */

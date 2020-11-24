@@ -68,3 +68,14 @@ map.on('load', function () {
     //Resize the map
     map.resize();
 });
+
+//Init time picker
+$(document).ready(function(){
+    let picker = $('.timepicker').timepicker(
+         {
+             defaultTime : '00:00',
+             twelveHour : false,
+         }
+    );
+    //picker.defaultTime = '00:00'
+});

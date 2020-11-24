@@ -1,7 +1,7 @@
 @extends('layout.app')
 @section('content')
 <div id="app">
-	<div id="status" class="center-align card-panel teal">
+	<div id="status" class="center-align card-panel teal main-page">
 		<p v-if="connected" class="flow-text">
 			Connected as : @{{pseudo}}
 		</p>
@@ -9,12 +9,10 @@
 			Not connected
 		</p>
 	</div>
-	<div id="demo"></div>
 
-	<div id="map"></div>
+	<div id="map" class="main-page"></div>
 	
-	<div class="container">
-		<!-- Page Content goes here -->
+	<div class="container main-page">
 		<a id="drop-btn" class="btn-floating btn-large waves-effect waves-light">
 			<img id="drop-img" src="{{ URL::asset('/img/drop_bottle.png') }}">
 		</a>
@@ -51,6 +49,42 @@
 				</div>
 			</div>
 		</ul>
+	</div>
+
+	<div id="drop-page">
+		<nav>
+			<div class="nav-wrapper">
+				<a href="#" class="center">Drop a bottle !</a>
+				<ul id="nav-mobile" class="left">
+					<li>
+						<a>
+							<i class="material-icons">arrow_back</i>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+		<div class="container">
+			<div class="row">
+				<div class="col s12">
+					<div class="input-field col s12">
+						<i class="material-icons prefix">access_time</i>
+						<input id="life-time-input" type="text" class="timepicker">
+						<label for="life-time-input">Life time</label>
+					</div>
+					<div class="input-field col s12">
+						<i class="material-icons prefix">mode_edit</i>
+						<textarea id="first-message-input" class="materialize-textarea"></textarea>
+						<label for="first-message-input">First message</label>
+					</div>
+					<div class="input-field col s12 center-align">
+						<a id="confirm-drop-btn" class="btn-floating btn-large waves-effect waves-light">
+							<img id="drop-img" src="{{ URL::asset('/img/drop_bottle.png') }}">
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 
