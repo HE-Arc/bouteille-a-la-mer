@@ -41,6 +41,8 @@ class WebSocketServer extends Command
      */
     public function handle()
     {
+        date_default_timezone_set('Europe/Zurich');
+
         $server = IoServer::factory(
             new HttpServer(
                 new WsServer(

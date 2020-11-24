@@ -53,8 +53,6 @@ instance.isDragged = true;
 navigator.geolocation.watchPosition(
     function(position)
     {
-        alert('position changed')
-
         let myLocation = [position.coords.longitude, position.coords.latitude]
 
         
@@ -115,3 +113,56 @@ function test()
 
 $('#return-to-map-btn').click(test);
 $('#drop-btn').click(test);
+
+
+
+var connection = new WebSocket('ws://localhost:8080');
+connection.onopen = function(e) {
+    console.log("Connection established!");
+};
+
+function postConversation() {
+    /*$.post("postConversation", $('#conversationForm').serialize(), (result) => {
+
+        console.log(result);
+        if (result.success === true) {
+            window.location.replace("/");
+        } else {
+            if (result.error === "wrongPassword") {
+                displayError("Wrong password. Try again.");
+            } else if (result.error === "wrongUsername") {
+                displayError("This username doesn't exist. Try again or <a href='signup'>sign up</a>");
+            } else {
+                displayError("Something went wrong");
+            }
+        }
+    });
+    return false;*/
+
+    var data = JSON.stringify( getFormData($('#conversationForm')));
+    console.log(data);
+
+    return false;
+
+    //conn.send(data);
+}
+
+function getFormData($form){
+    var unindexed_array = $form.serializeArray();
+    var indexed_array = {};
+
+    $.map(unindexed_array, function(n, i){
+        indexed_array[n['name']] = n['value'];
+    });
+
+    return indexed_array;
+}
+
+let sm = new SocketMessage(onMessage);
+
+function onMessage(message)
+{
+    console.log(message);
+
+    //TODO marti fonction pour ajouter dans la vue :)
+}

@@ -68,6 +68,11 @@ html, body, #app{
     z-index: 40;
 }
 
+.body {
+    touch-action: none;
+}
+
+
 #drop-page{
     position: relative;
     transition: top 1.6s;

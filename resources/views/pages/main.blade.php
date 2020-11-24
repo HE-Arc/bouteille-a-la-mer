@@ -73,28 +73,32 @@ $data = [
 		</nav>
 		<div class="container">
 			<div class="row">
-				<div class="col s12">
-					<div class="input-field col s12">
-						<i class="material-icons prefix">access_time</i>
-						<input id="life-time-input" type="text" class="timepicker">
-						<label for="life-time-input">Life time</label>
+				<form id="conversationForm" onsubmit="event.preventDefault(); postConversation()">
+					@csrf
+					<div class="col s12">
+						<div class="input-field col s12">
+							<i class="material-icons prefix">access_time</i>
+							<input id="life-time-input" type="text" class="timepicker" name="lifetime">
+							<label for="life-time-input">Life time</label>
+						</div>
+						<div class="input-field col s12">
+							<i class="material-icons prefix">mode_edit</i>
+							<textarea id="first-message-input" class="materialize-textarea" name="message"></textarea>
+							<label for="first-message-input">First message</label>
+						</div>
+						<div class="input-field col s12 center-align">
+							<a id="confirm-drop-btn" class="btn-floating btn-large waves-effect waves-light z-depth-4">
+								<input type="image" id="drop-img" src="{{ URL::asset('/img/drop_bottle.png') }}">
+							</a>
+						</div>
 					</div>
-					<div class="input-field col s12">
-						<i class="material-icons prefix">mode_edit</i>
-						<textarea id="first-message-input" class="materialize-textarea"></textarea>
-						<label for="first-message-input">First message</label>
-					</div>
-					<div class="input-field col s12 center-align">
-						<a id="confirm-drop-btn" class="btn-floating btn-large waves-effect waves-light z-depth-4">
-							<img id="drop-img" src="{{ URL::asset('/img/drop_bottle.png') }}">
-						</a>
-					</div>
-				</div>
+				</form>
 			</div>
 		</div>
 	</div>
 </div>
 
+<script src="{{ URL::asset('/js/socketmessage.js') }}"></script>
 <!-- Page js and css -->
 <script src="{{ URL::asset('/js/main.js') }}"></script>
 <link href="{{ URL::asset('/css/main.css') }}" rel='stylesheet' />
