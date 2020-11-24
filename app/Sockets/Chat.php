@@ -3,6 +3,7 @@ namespace App\Sockets;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Illuminate\Support\Facades\DB;
+use App\Models\Message;
 
 class Chat implements MessageComponentInterface {
     protected $clients;
@@ -14,24 +15,21 @@ class Chat implements MessageComponentInterface {
     public function onOpen(ConnectionInterface $conn) {
         // Store the new connection to send messages to later
         $this->clients->attach($conn);
-
-        $users = DB::select('select * from users');
-        var_dump(json_encode($users));
-        $conn->send(json_encode($users));
-
         echo "New connection! ({$conn->resourceId})\n";
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
-        $numRecv = count($this->clients) - 1;
-        echo sprintf('Connection %d sending message "%s" to %d other connection%s' . "\n"
-            , $from->resourceId, $msg, $numRecv, $numRecv == 1 ? '' : 's');
+        $msg = json_decode($msg);
+        $date = date("Y-m-d H:i:s");
+
+        $msg = ['content' => $msg->text, 'imageURL' => '', 'posted' => $date, 'parent' => -1, 'author' => -1];
+        Message::insert($msg);
+
+        // Convert to string
+        $msg = json_encode((object)$msg);
 
         foreach ($this->clients as $client) {
-            if ($from !== $client) {
-                // The sender is not the receiver, send to each client connected
-                $client->send($msg);
-            }
+            $client->send($msg);
         }
     }
 

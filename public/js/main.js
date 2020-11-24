@@ -139,3 +139,12 @@ function getFormData($form){
 
     return indexed_array;
 }
+
+let sm = new SocketMessage(onMessage);
+
+function onMessage(message)
+{
+    console.log(message);
+
+    //TODO marti fonction pour ajouter dans la vue :)
+}
