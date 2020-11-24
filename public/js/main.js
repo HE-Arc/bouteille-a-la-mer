@@ -2,7 +2,7 @@
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibGFtb3Vzc2VhdWxpbmkiLCJhIjoiY2tobTgxOXliMGU1bzJ3cm5xaGZ2b2d0NiJ9.B46q3gvGFh55OpLpZmhLDQ';
 
-var app = new Vue({
+let app = new Vue({
     el: "#app",
     data() {
         return {
@@ -43,17 +43,38 @@ let map = new mapboxgl.Map({
     zoom: 12 // starting zoom
 });
 
+
 //Set the side nav draggable
 let elem = $('.sidenav').sidenav();
 let instance = M.Sidenav.getInstance(elem);
 instance.isDragged = true;
 
-function showPosition(position) {
-  x.innerHTML = "Latitude: " + position.coords.latitude +
-  "<br>Longitude: " + position.coords.longitude;
-}
+//Listen to change in location
+navigator.geolocation.watchPosition(
+    function(position)
+    {
+        alert('position changed')
 
-//Center the map to our current location
+        let myLocation = [position.coords.longitude, position.coords.latitude]
+
+        
+
+        // create a HTML element for each feature
+        var el = document.createElement('div');
+        el.className = 'marker';
+
+        // make a marker for each feature and add to the map
+        new mapboxgl.Marker(el)
+            .setLngLat(myLocation)
+            .addTo(map);
+
+        //Center the map to our current location
+        map.setCenter([position.coords.longitude, position.coords.latitude])
+
+
+    });
+
+
 if (navigator.geolocation) 
 {
     navigator.geolocation.getCurrentPosition(
@@ -61,7 +82,7 @@ if (navigator.geolocation)
         {
             //Set center location
             map.setCenter([position.coords.longitude, position.coords.latitude])
-        }     
+        },
     );
 }
 else
@@ -84,7 +105,6 @@ $(document).ready(function(){
              twelveHour : false,
          }
     );
-    //picker.defaultTime = '00:00'
 });
 
 function test()
