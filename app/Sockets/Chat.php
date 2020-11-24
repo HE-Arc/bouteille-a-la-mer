@@ -4,6 +4,7 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Illuminate\Support\Facades\DB;
 use App\Models\Message;
+use App\Models\Conversation;
 
 class Chat implements MessageComponentInterface {
     protected $clients;
@@ -20,10 +21,22 @@ class Chat implements MessageComponentInterface {
 
     public function onMessage(ConnectionInterface $from, $msg) {
         $msg = json_decode($msg);
-        $date = date("Y-m-d H:i:s");
 
+        $radius = 30000;
+
+        switch($msg->type)
+        {
+            case 'conversation':
+                //Conversation::insert();
+            case 'message':
+            break;
+        }
+
+        $date = date("Y-m-d H:i:s");
         $msg = ['content' => $msg->text, 'imageURL' => '', 'posted' => $date, 'parent' => -1, 'author' => -1];
         Message::insert($msg);
+
+        
 
         // Convert to string
         $msg = json_encode((object)$msg);

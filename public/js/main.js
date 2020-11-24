@@ -13,9 +13,32 @@ map.on('load', function () {
 
 let sm = new SocketMessage(onMessage);
 
-function onMessage(message)
-{
-    console.log(message);
+function onMessage(event) {
+    switch (event.type) {
+        default:
+            console.log(event.data);
+            break;
+    }
+
 
     //TODO marti fonction pour ajouter dans la vue :)
+}
+
+function postConversation() {
+    var data = getFormData($('#conversationForm'));
+
+    sm.send("conversation", data);
+
+    return false;
+}
+
+function getFormData($form) {
+    var unindexed_array = $form.serializeArray();
+    var indexed_array = {};
+
+    $.map(unindexed_array, function (n, i) {
+        indexed_array[n['name']] = n['value'];
+    });
+
+    return indexed_array;
 }

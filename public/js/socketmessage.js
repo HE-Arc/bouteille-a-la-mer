@@ -10,12 +10,7 @@ class SocketMessage
         });
     }
 
-    send(text, image) {
-        this.ws.send(JSON.stringify({'text': text, 'image': image}))
-    }
-
-    toBase64(image) {
-        //TODO
-        return null;
+    send(type, data) {
+        this.ws.send(JSON.stringify({'type': type, 'data': data}));
     }
 }
