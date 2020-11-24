@@ -9,7 +9,7 @@ $data = [
 
 ?>
 <div id="app" :mdata="{{ json_encode($data) }}">
-	<div id="status" class="center-align card-panel teal main-page">
+	<div id="status" class="center-align card-panel teal main-page z-depth-3">
 		<p v-if="connected" class="flow-text">
 			Connected as : @{{username}}
 		</p>
@@ -58,14 +58,13 @@ $data = [
 			</div>
 		</ul>
 	</div>
-
-	<div id="drop-page">
-		<nav>
+	<div id="drop-page" class="hide-drop-page z-depth-3">
+		<nav id="drop-bottle-title" class="z-depth-4">
 			<div class="nav-wrapper">
 				<a href="#" class="center">Drop a bottle !</a>
 				<ul id="nav-mobile" class="left">
 					<li>
-						<a>
+						<a id="return-to-map-btn">
 							<i class="material-icons">arrow_back</i>
 						</a>
 					</li>
@@ -86,7 +85,7 @@ $data = [
 						<label for="first-message-input">First message</label>
 					</div>
 					<div class="input-field col s12 center-align">
-						<a id="confirm-drop-btn" class="btn-floating btn-large waves-effect waves-light">
+						<a id="confirm-drop-btn" class="btn-floating btn-large waves-effect waves-light z-depth-4">
 							<img id="drop-img" src="{{ URL::asset('/img/drop_bottle.png') }}">
 						</a>
 					</div>
