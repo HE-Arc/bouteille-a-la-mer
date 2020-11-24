@@ -1,7 +1,5 @@
 "use strict";
 
-const { isNull } = require("lodash");
-
 mapboxgl.accessToken = 'pk.eyJ1IjoibGFtb3Vzc2VhdWxpbmkiLCJhIjoiY2tobTgxOXliMGU1bzJ3cm5xaGZ2b2d0NiJ9.B46q3gvGFh55OpLpZmhLDQ';
 
 //List of object representing a conversation
@@ -44,10 +42,10 @@ let app = new Vue({
         return {
             connected: true,
             username: "",
-            email : "nico@gmail.com",
+            email: "nico@gmail.com",
             conversations: conversations,
             updating: 0,
-        }   
+        }
     },
     mounted() {
         setTimeout(() => {
@@ -60,9 +58,8 @@ let app = new Vue({
             this.updating++;
         }, 6e4);
     },
-    methods : {
-        getTimeLeftStr(timeOfDeath)
-        {
+    methods: {
+        getTimeLeftStr(timeOfDeath) {
             this.updating
             let timeLeft = new Date(timeOfDeath - new Date());
             return timeLeft.getHours() + ':' + timeLeft.getMinutes();
@@ -86,12 +83,11 @@ instance.isDragged = true;
 let currentLocation = [];
 //Listen to change in location
 navigator.geolocation.watchPosition(
-    function(position)
-    {
+    function (position) {
         let myLocation = [position.coords.longitude, position.coords.latitude]
         currentLocation = myLocation;
 
-        
+
 
         // create a HTML element for each feature
         var el = document.createElement('div');
@@ -109,18 +105,15 @@ navigator.geolocation.watchPosition(
     });
 
 
-if (navigator.geolocation) 
-{
+if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-        function(position)
-        {
+        function (position) {
             //Set center location
             map.setCenter([position.coords.longitude, position.coords.latitude])
         },
     );
 }
-else
-{
+else {
     alert("Geolocation is not supported by this browser.");
 }
 
@@ -132,17 +125,16 @@ map.on('load', function () {
 });
 
 //Init time picker
-$(document).ready(function(){
+$(document).ready(function () {
     let picker = $('.timepicker').timepicker(
-         {
-             defaultTime : '00:30',
-             twelveHour : false,
-         }
+        {
+            defaultTime: '00:30',
+            twelveHour: false,
+        }
     );
 });
 
-function test()
-{
+function test() {
     $("#drop-page").toggleClass("hide-drop-page");
     $("#drop-page").toggleClass("display-drop-page");
 }
@@ -153,15 +145,13 @@ $('#drop-btn').click(test);
 
 
 var connection = new WebSocket('ws://localhost:8080');
-connection.onopen = function(e) {
+connection.onopen = function (e) {
     console.log("Connection established!");
 };
 
 function postConversation() {
     var data = getFormData($('#conversationForm'));
 
-    data.long = currentLocation[0];
-    data.lat = currentLocation[1];
     let body = {
         conversation: {
             long: currentLocation[0],
@@ -174,17 +164,17 @@ function postConversation() {
             parent: null
         }
     }
-    
-    sm.send("newConversation", data);
+    console.log(body)
+    sm.send('conversation', body);
 
     return false;
 }
 
-function getFormData($form){
+function getFormData($form) {
     var unindexed_array = $form.serializeArray();
     var indexed_array = {};
 
-    $.map(unindexed_array, function(n, i){
+    $.map(unindexed_array, function (n, i) {
         indexed_array[n['name']] = n['value'];
     });
 
@@ -193,31 +183,33 @@ function getFormData($form){
 
 let sm = new SocketMessage(onMessage);
 
-function onMessage(message)
-{
-    //Test if the msg is a conversation or a message
-    if(message.type == 'conversation')
-    {
-        //If the conversation does no exist
-        if(!(message.id in conversations))
-        {
-            // create a HTML element for each feature
-            var el = document.createElement('div');
-            el.className = 'marker';
+function onMessage(event) {
+    console.log(event);
 
-            conversations[message.id] = []
+    switch (event.type) {
+        case 'conversation':
+            //If the conversation does no exist
+            if (!(event.id in conversations)) {
+                // create a HTML element for each feature
+                var el = document.createElement('div');
+                el.className = 'marker';
 
-            // make a marker for each feature and add to the map
-            new mapboxgl.Marker(el)
-                .setLngLat([message.position.longitude, message.position.latitude])
-                .addTo(map);
-        }
+                conversations[event.id] = []
 
-        //Then in all case, add the message to the convesrations
-        conversations[message.id].push(message.message)
+                // make a marker for each feature and add to the map
+                new mapboxgl.Marker(el)
+                    .setLngLat([event.position.longitude, event.position.latitude])
+                    .addTo(map);
+            }
+
+            //Then in all case, add the message to the convesrations
+            conversations[event.id].push(event.message)
+            break;
+        case 'message':
+            
+        default:
+            
+            break;
     }
-    else if(message.type == 'message')
-    {
 
-    }
 }
