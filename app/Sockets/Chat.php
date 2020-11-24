@@ -19,37 +19,18 @@ class Chat implements MessageComponentInterface {
         echo "New connection! ({$conn->resourceId})\n";
     }
 
-    public function onMessage(ConnectionInterface $from, $msg) {
-        $msg = json_decode($msg);
-<<<<<<< HEAD
-=======
-        /*$date = date("Y-m-d H:i:s");
->>>>>>> gui
+    public function onMessage(ConnectionInterface $from, $event) {
+        $event = json_decode($event);
 
-        $radius = 30000;
-
-        switch($msg->type)
-        {
+        switch($event->type) {
             case 'conversation':
-                //Conversation::insert();
+                $this->onConversation($event->data->conversation);
+
             case 'message':
+                $this->onMessageSent($event->data->message);
+                
+                default:
             break;
-        }
-
-        $date = date("Y-m-d H:i:s");
-        $msg = ['content' => $msg->text, 'imageURL' => '', 'posted' => $date, 'parent' => -1, 'author' => -1];
-        Message::insert($msg);
-
-        
-
-        // Convert to string
-        $msg = json_encode((object)$msg);
-
-        foreach ($this->clients as $client) {
-            $client->send($msg);
-        }*/
-        if ($msg->to === "newConversation") {
-            $this->onNewConversation($msg->data);
         }
     }
 
@@ -67,9 +48,50 @@ class Chat implements MessageComponentInterface {
         $conn->close();
     }
 
-    public function onNewConversation($data) {
-        echo "yoooo";
+    public function onConversation($event) {
+        $radius = 30000;
+        $lifetime = "+30 minutes";
+        if(is_string($event->lifetime) && preg_match('/^\d{2}:\d{2}$/', $event->lifetime)) {
+            $time = explode(':', $event->lifetime);
+            $lifetime = '+ ' . $time[0] . " hours " . $time[1] . " minutes";
+        }
+        
+        $timeOfDeath = date('Y-m-d H:i:s', strtotime($lifetime));
+        $lat = $event->lat;
+        $long = $event->long;
+
+        if ((is_numeric($lat) && $lat >= -90 && $lat <= 90
+            && is_numeric($long)&& $long>= -180&& $long<= 180)) {
+                Conversation::insert([
+                    'radius' => $radius,
+                    'timeOfDeath' => $timeOfDeath,
+                    'lat' => $lat,
+                    'long' => $long,
+                    'author' => session('loginID')]);
+
+            $event = json_encode((object)$event);
+            foreach ($this->clients as $client) {
+                $client->send($event);
+            }
+        }
     }
 
+    public function onMessageSent($event) {
+        $now = date('Y-m-d H:i:s');
+        $event = ['content' => $event->text, 
+        'image' => $event->image, 
+        'posted' => $now, 
+        'parent' => $event->parent, 
+        'author' => session('loginID')];
 
+        Message::insert($event);
+
+
+        // Convert to string
+        $event = json_encode((object)$event);
+
+        foreach ($this->clients as $client) {
+            $client->send($event);
+        }
+    }
 }

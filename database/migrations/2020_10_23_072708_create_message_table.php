@@ -16,7 +16,7 @@ class CreateMessageTable extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->text("content");
-            $table->string("imageURL");
+            $table->binary("image");
             $table->dateTime("posted");
             $table->integer("parent");
             $table->integer("author");
