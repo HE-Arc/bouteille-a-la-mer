@@ -1,9 +1,16 @@
 @extends('layout.app')
 @section('content')
-<div id="app">
+<?php
+$data = [
+	"username" => session("loginUsername")
+
+];
+
+?>
+<div id="app" :mdata="{{ json_encode($data) }}">
 	<div id="status" class="center-align card-panel teal">
 		<p v-if="connected" class="flow-text">
-			Connected as : @{{pseudo}}
+			Connected as : @{{username}}
 		</p>
 		<p v-else class="flow-text">
 			Not connected
@@ -26,7 +33,7 @@
 						<img src="{{ URL::asset('/img/nico.png') }}" style="width: 100%; height: 100%;">
 					</div>
 					<a href="#user"><img class="circle" src="{{ URL::asset('/img/logo.png') }}"></a>
-					<a href="#name"><span class="white-text name">@{{pseudo}}</span></a>
+					<a href="#name"><span class="white-text name">@{{username}}</span></a>
 					<a href="#email"><span class="white-text email">@{{email}}</span></a>
 				</div>
 			</li>

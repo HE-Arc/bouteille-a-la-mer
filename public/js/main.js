@@ -4,10 +4,10 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibGFtb3Vzc2VhdWxpbmkiLCJhIjoiY2tobTgxOXliMGU1b
 
 var app = new Vue({
     el: "#app",
-    data(){
+    data() {
         return {
             connected: true,
-            pseudo: "NicoJsBad",
+            username: "",
             email : "nico@gmail.com",
             conversations: [
                 { 
@@ -28,6 +28,13 @@ var app = new Vue({
               ],
         }   
     },
+    mounted() {
+        setTimeout(() => {
+            let data = this._vnode.data.attrs.mdata;
+            console.log(data);
+            this.username = data.username;
+        });
+    }
 })
 
 let map = new mapboxgl.Map({
