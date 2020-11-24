@@ -38,7 +38,7 @@
         $.post("tryLogin", $('#loginForm').serialize(), (result) => {
             console.log(result);
             if (result.success === true) {
-                alert("Success");
+                window.location.replace("/");
             } else {
                 $('#btnSubmit').attr("disabled", false);
                 if (result.error === "wrongPassword") {
