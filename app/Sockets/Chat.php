@@ -20,7 +20,7 @@ class Chat implements MessageComponentInterface {
 
     public function onMessage(ConnectionInterface $from, $msg) {
         $msg = json_decode($msg);
-        $date = date("Y-m-d H:i:s");
+        /*$date = date("Y-m-d H:i:s");
 
         $msg = ['content' => $msg->text, 'imageURL' => '', 'posted' => $date, 'parent' => -1, 'author' => -1];
         Message::insert($msg);
@@ -30,6 +30,9 @@ class Chat implements MessageComponentInterface {
 
         foreach ($this->clients as $client) {
             $client->send($msg);
+        }*/
+        if ($msg->to === "newConversation") {
+            $this->onNewConversation($msg->data);
         }
     }
 
@@ -46,4 +49,10 @@ class Chat implements MessageComponentInterface {
 
         $conn->close();
     }
+
+    public function onNewConversation($data) {
+        echo "yoooo";
+    }
+
+
 }

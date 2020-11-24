@@ -78,13 +78,12 @@ map.on('load', function () {
 
 //Init time picker
 $(document).ready(function(){
-    /*let picker = $('.timepicker').timepicker(
+    let picker = $('.timepicker').timepicker(
          {
-             defaultTime : '00:00',
+             defaultTime : '00:30',
              twelveHour : false,
          }
-    );*/
-    let picker = $('.timepicker').timepicker();
+    );
 });
 
 function test()
@@ -121,8 +120,9 @@ function postConversation() {
     });
     return false;*/
 
-    var data = JSON.stringify( getFormData($('#conversationForm')));
-    console.log(data);
+    var data = getFormData($('#conversationForm'));
+    
+    sm.send("newConversation", data);
 
     return false;
 
