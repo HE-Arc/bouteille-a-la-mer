@@ -44,14 +44,14 @@ $data = [
 			</li>
 			<div class="container">
 				<div class="row">
-					<div v-for="conversation in conversations" :key="conversation.key">
+					<div v-for="conversation in conversations" :key="conversation.id">
 						<div class="col s10">
 							<li>
-								<a class="waves-effect truncate" href="#!">@{{conversation.lastmessage}}</a>
+								<a class="waves-effect truncate" href="#!">@{{conversation.messages[0].text}}</a>
 							</li>
 						</div>
 						<div class="col s2 valign-wrapper">
-							<p class="flow-text">@{{conversation.strlefttime}}</p>
+							<p class="flow-text">@{{getTimeLeftStr(conversation.timeOfDeath)}}</p>
 						</div>
 					</div>
 				</div>

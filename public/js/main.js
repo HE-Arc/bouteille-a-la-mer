@@ -2,30 +2,49 @@
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibGFtb3Vzc2VhdWxpbmkiLCJhIjoiY2tobTgxOXliMGU1bzJ3cm5xaGZ2b2d0NiJ9.B46q3gvGFh55OpLpZmhLDQ';
 
-var app = new Vue({
+//List of object representing a conversation
+let conversations = [
+    {
+        id: 0,
+        timeOfDeath: new Date("11.25.2020"),
+        position: 69,
+        messages: [
+            {
+                text: "yo ?",
+                date: 69
+            },
+            {
+                text: "bite ?",
+                date: 69
+            },
+            {
+                text: "69",
+                date: 69
+            }
+        ]
+    },
+    {
+        id: 1,
+        timeOfDeath: new Date("11.25.2020"),
+        position: 69,
+        messages: [
+            {
+                text: "yo ?",
+                date: 69
+            },
+        ]
+    }
+];
+
+let app = new Vue({
     el: "#app",
     data() {
         return {
             connected: true,
             username: "",
             email : "nico@gmail.com",
-            conversations: [
-                { 
-                    lastmessage: "J'adore le design",
-                    key: 0,
-                    strlefttime: "12:59"
-                },
-                { 
-                    lastmessage: "NICO A LEPPFFLL XDDDDDDDDDDDDDDD",
-                    key: 1,
-                    strlefttime: "10:02"
-                },
-                { 
-                    lastmessage: "yo ?",
-                    key: 2,
-                    strlefttime: "1:19"
-                },
-              ],
+            conversations: conversations,
+            updating: 0,
         }   
     },
     mounted() {
@@ -34,6 +53,18 @@ var app = new Vue({
             console.log(data);
             this.username = data.username;
         });
+
+        setInterval(() => {
+            this.updating++;
+        }, 6e4);
+    },
+    methods : {
+        getTimeLeftStr(timeOfDeath)
+        {
+            this.updating
+            let timeLeft = new Date(timeOfDeath - new Date());
+            return timeLeft.getHours() + ':' + timeLeft.getMinutes();
+        }
     }
 })
 
@@ -43,17 +74,36 @@ let map = new mapboxgl.Map({
     zoom: 12 // starting zoom
 });
 
+
 //Set the side nav draggable
 let elem = $('.sidenav').sidenav();
 let instance = M.Sidenav.getInstance(elem);
 instance.isDragged = true;
 
-function showPosition(position) {
-  x.innerHTML = "Latitude: " + position.coords.latitude +
-  "<br>Longitude: " + position.coords.longitude;
-}
+//Listen to change in location
+navigator.geolocation.watchPosition(
+    function(position)
+    {
+        let myLocation = [position.coords.longitude, position.coords.latitude]
 
-//Center the map to our current location
+        
+
+        // create a HTML element for each feature
+        var el = document.createElement('div');
+        el.className = 'marker';
+
+        // make a marker for each feature and add to the map
+        new mapboxgl.Marker(el)
+            .setLngLat(myLocation)
+            .addTo(map);
+
+        //Center the map to our current location
+        map.setCenter([position.coords.longitude, position.coords.latitude])
+
+
+    });
+
+
 if (navigator.geolocation) 
 {
     navigator.geolocation.getCurrentPosition(
@@ -61,7 +111,7 @@ if (navigator.geolocation)
         {
             //Set center location
             map.setCenter([position.coords.longitude, position.coords.latitude])
-        }     
+        },
     );
 }
 else
@@ -144,7 +194,29 @@ let sm = new SocketMessage(onMessage);
 
 function onMessage(message)
 {
-    console.log(message);
+    //Test if the msg is a conversation or a message
+    if(message.type == 'conversation')
+    {
+        //If the conversation does no exist
+        if(!(message.id in conversations))
+        {
+            // create a HTML element for each feature
+            var el = document.createElement('div');
+            el.className = 'marker';
 
-    //TODO marti fonction pour ajouter dans la vue :)
+            conversations[message.id] = []
+
+            // make a marker for each feature and add to the map
+            new mapboxgl.Marker(el)
+                .setLngLat([message.position.longitude, message.position.latitude])
+                .addTo(map);
+        }
+
+        //Then in all case, add the message to the convesrations
+        conversations[message.id].push(message.message)
+    }
+    else if(message.type == 'message')
+    {
+
+    }
 }
