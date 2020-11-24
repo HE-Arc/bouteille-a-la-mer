@@ -87,6 +87,16 @@ $(document).ready(function(){
     let picker = $('.timepicker').timepicker();
 });
 
+function test()
+{
+    $("#drop-page").toggleClass("hide-drop-page");
+    $("#drop-page").toggleClass("display-drop-page");
+}
+
+$('#return-to-map-btn').click(test);
+$('#drop-btn').click(test);
+
+
 
 var connection = new WebSocket('ws://localhost:8080');
 connection.onopen = function(e) {
