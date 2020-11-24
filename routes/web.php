@@ -25,6 +25,7 @@ Route::get('/socket', function () {
 
 
 
+
 Route::get('/login', [LoginController::class, 'login']);
 Route::get('/signup', [LoginController::class, 'signup']);
 Route::get('/logout', [LoginController::class, 'logout']);
