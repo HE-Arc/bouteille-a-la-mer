@@ -1,5 +1,7 @@
 "use strict";
 
+const { isNull } = require("lodash");
+
 mapboxgl.accessToken = 'pk.eyJ1IjoibGFtb3Vzc2VhdWxpbmkiLCJhIjoiY2tobTgxOXliMGU1bzJ3cm5xaGZ2b2d0NiJ9.B46q3gvGFh55OpLpZmhLDQ';
 
 //List of object representing a conversation
@@ -80,11 +82,14 @@ let elem = $('.sidenav').sidenav();
 let instance = M.Sidenav.getInstance(elem);
 instance.isDragged = true;
 
+
+let currentLocation = [];
 //Listen to change in location
 navigator.geolocation.watchPosition(
     function(position)
     {
         let myLocation = [position.coords.longitude, position.coords.latitude]
+        currentLocation = myLocation;
 
         
 
@@ -153,30 +158,26 @@ connection.onopen = function(e) {
 };
 
 function postConversation() {
-    /*$.post("postConversation", $('#conversationForm').serialize(), (result) => {
-
-        console.log(result);
-        if (result.success === true) {
-            window.location.replace("/");
-        } else {
-            if (result.error === "wrongPassword") {
-                displayError("Wrong password. Try again.");
-            } else if (result.error === "wrongUsername") {
-                displayError("This username doesn't exist. Try again or <a href='signup'>sign up</a>");
-            } else {
-                displayError("Something went wrong");
-            }
-        }
-    });
-    return false;*/
-
     var data = getFormData($('#conversationForm'));
+
+    data.long = currentLocation[0];
+    data.lat = currentLocation[1];
+    let body = {
+        conversation: {
+            long: currentLocation[0],
+            lat: currentLocation[1],
+            lifetime: data.lifetime
+        },
+        message: {
+            message: data.message,
+            image: null,
+            parent: null
+        }
+    }
     
     sm.send("newConversation", data);
 
     return false;
-
-    //conn.send(data);
 }
 
 function getFormData($form){
