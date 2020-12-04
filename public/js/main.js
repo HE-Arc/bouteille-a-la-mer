@@ -144,10 +144,7 @@ $('#drop-btn').click(test);
 
 
 
-var connection = new WebSocket('ws://localhost:8080');
-connection.onopen = function (e) {
-    console.log("Connection established!");
-};
+
 
 function postConversation() {
     var data = getFormData($('#conversationForm'));
