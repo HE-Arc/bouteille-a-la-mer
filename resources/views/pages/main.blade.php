@@ -99,6 +99,7 @@ $data = [
 </div>
 
 <script src="{{ URL::asset('/js/socketmessage.js') }}"></script>
+
 <!-- Page js and css -->
 <script src="{{ URL::asset('/js/main.js') }}"></script>
 <link href="{{ URL::asset('/css/main.css') }}" rel='stylesheet' />
