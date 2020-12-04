@@ -7,7 +7,7 @@ class SocketMessage
         if(window.location.protocol == 'https:')
             ws += 's'
 
-        let url = ws + '://wss.' + window.location.hostname;
+        let url = ws + '://' + window.location.hostname + '/wss';
         this.ws = new WebSocket(url);
         console.log("connecting...");
         this.ws.addEventListener('message', event => {
