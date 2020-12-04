@@ -15,14 +15,15 @@ class LoginController extends Controller
         if ($request->session()->has('loginID')) {
             return redirect('/');
         }
-        return view("login");
+        return view("pages.login");
     }
+    
     function signup(Request $request) {
         //TODO if not connected
         if ($request->session()->has('loginID')) {
             return redirect('/');
         }
-        return view("signup");
+        return view("pages.signup");
     }
 
     function logout(Request $request) {
