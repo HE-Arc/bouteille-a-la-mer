@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\HomeController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +19,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/socket', function () {
+    return view('testSocket');
+});
+
+
+
+
+Route::get('/login', [LoginController::class, 'login']);
+Route::get('/signup', [LoginController::class, 'signup']);
+Route::get('/logout', [LoginController::class, 'logout']);
+Route::post('/tryLogin', [LoginController::class, 'tryLogin']);
+Route::post('/trySignup', [LoginController::class, 'trySignup']);
+Route::get('/', [HomeController::class, 'index']);

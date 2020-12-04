@@ -1,0 +1,24 @@
+NGROK- tester sur mobile
+
+z-index
+
+My conversations : 
+	Collections badges
+	Striped Table�
+
+Button circle :
+	circle
+	waves-effect 
+	waves-light
+	pulse ?
+	fixed-action-btn
+
+Navbar
+Sidenavgi
+System de notification : toast
+drop a bottle:
+	picker ou slider ?
+
+Map : mapbox
+
+https://www.mapbox.com/gallery/#frank

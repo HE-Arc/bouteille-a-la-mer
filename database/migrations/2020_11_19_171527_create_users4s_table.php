@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateConversationsTable extends Migration
+class CreateUsers4sTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,9 @@ class CreateConversationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('conversations', function (Blueprint $table) {
+        Schema::create('users4s', function (Blueprint $table) {
             $table->id();
-            $table->integer('radius');
-            $table->dateTime('timeOfDeath');
-            $table->double('lat');
-            $table->double('long');
-            $table->integer('author')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -30,6 +26,6 @@ class CreateConversationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('conversations');
+        Schema::dropIfExists('users4s');
     }
 }
