@@ -53,12 +53,6 @@ const app = new Vue({
                 
                 if (res.status === 204) {
                     this.errors = [];
-
-                    if (res.error === "alreadyExist") {
-                        this.errors.push("This user already exist");
-                    }
-
-                    this.errors.push("Something went wrong")
                 } else if (res.status === 400) {
                     this.errors = [];
 
@@ -66,7 +60,22 @@ const app = new Vue({
                     this.errors.push(errorResponse.error);
                 }
                 else if (res.status === 200) {
-                    window.location.replace("/");
+
+                    res.json().then(async res => {
+                        this.errors = [];
+
+                        if(res.success) {
+                            window.location.replace("/");
+                        }
+                        else {
+                            if (res.error === "alreadyExist") {
+                                this.errors.push("This user already exist");
+                            }
+                            else {
+                                this.errors.push("Something went wrong");
+                            }
+                        }
+                    });
                 }
             });
         }
