@@ -69,7 +69,8 @@ let app = new Vue({
 
 let map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v11', // stylesheet location
+    //style: 'mapbox://styles/mapbox/streets-v11', // stylesheet location
+    style: 'mapbox://styles/lamousseaulini/ckia2cpii1njr1aoign6vi31p',
     zoom: 12 // starting zoom
 });
 
