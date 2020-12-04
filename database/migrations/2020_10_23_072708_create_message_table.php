@@ -15,11 +15,11 @@ class CreateMessageTable extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->text("content");
-            $table->string("imageURL");
+            $table->text("content")->nullable();
+            $table->binary("image")->nullable();
             $table->dateTime("posted");
             $table->integer("parent");
-            $table->integer("author");
+            $table->integer("author")->nullable();
         });
     }
 
