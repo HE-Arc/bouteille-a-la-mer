@@ -67,7 +67,7 @@ const app = new Vue({
                         }
                         else {
                             if (res.error === "wrongUsername") {
-                                this.errors.push("Wrong username.");
+                                this.errors.push("Wrong username or password.");
                             }
                             else if(res.error === "wrongPassword") {
                                 this.errors.push("Wrong password.")
