@@ -16,7 +16,7 @@ class CreateConversationsTable extends Migration
         Schema::create('conversations', function (Blueprint $table) {
             $table->id();
             $table->integer('radius');
-            $table->dateTime('timeOfDeath');
+            $table->dateTime('time_of_death');
             $table->double('lat');
             $table->double('long');
             $table->integer('author')->nullable();
