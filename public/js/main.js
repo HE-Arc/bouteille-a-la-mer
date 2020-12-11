@@ -75,6 +75,9 @@ let app = new Vue({
     }
 })
 
+let currentLocation = [];
+
+
 function onReady(){
 
     let map = new mapboxgl.Map({
@@ -91,7 +94,6 @@ function onReady(){
     instance.isDragged = true;
     
     
-    let currentLocation = [];
     //Listen to change in location
     navigator.geolocation.watchPosition(
         function (position) {
@@ -139,75 +141,65 @@ function onReady(){
     {
         defaultTime: '00:30',
         twelveHour: false,
-    });
-   
-    var connection = new WebSocket('ws://localhost:8080');
-    connection.onopen = function (e) {
-        console.log("Connection established!");
-    };
-    
-    function postConversation() {
-        var data = getFormData(app.$refs.conversationForm)
+    }); 
+}
 
-        let body = {
-            conversation: {
-                long: currentLocation[0],
-                lat: currentLocation[1],
-                lifetime: data.lifetime
-            },
-            message: {
-                message: data.message,
-                image: null,
-                parent: null
+
+function postConversation() {
+    //var data = getFormData(app.$refs.conversationForm)
+    let data = {
+        "lifetime": document.getElementById('life-time-input').value,
+        "message": document.getElementById('first-message-input').value
+    };
+
+    let body = {
+        conversation: {
+            long: currentLocation[0],
+            lat: currentLocation[1],
+            lifetime: data.lifetime
+        },
+        message: {
+            message: data.message,
+            image: null,
+            parent: null
+        }
+    }
+    console.log(body)
+    sm.send('conversation', body);
+
+    return false;
+}
+
+
+let sm = new SocketMessage(onMessage);
+
+function onMessage(event) {
+    console.log(event);
+
+    switch (event.type) {
+        case 'conversation':
+            //If the conversation does no exist
+            if (!(event.id in conversations)) {
+                // create a HTML element for each feature
+                var el = document.createElement('div');
+                el.className = 'marker';
+
+                conversations[event.id] = []
+
+                // make a marker for each feature and add to the map
+                new mapboxgl.Marker(el)
+                    .setLngLat([event.position.longitude, event.position.latitude])
+                    .addTo(map);
             }
-        }
-        console.log(body)
-        sm.send('conversation', body);
-    
-        return false;
+
+            //Then in all case, add the message to the convesrations
+            conversations[event.id].push(event.message)
+            break;
+        case 'message':
+            
+        default:
+            
+            break;
     }
-    
-    function getFormData($form) {
-        var unindexed_array = $form.serializeArray();
-        var indexed_array = {};
-    
-        $.map(unindexed_array, function (n, i) {
-            indexed_array[n['name']] = n['value'];
-        });
-    
-        return indexed_array;
-    }
-    
-    let sm = new SocketMessage(onMessage);
-    
-    function onMessage(event) {
-        console.log(event);
-    
-        switch (event.type) {
-            case 'conversation':
-                //If the conversation does no exist
-                if (!(event.id in conversations)) {
-                    // create a HTML element for each feature
-                    var el = document.createElement('div');
-                    el.className = 'marker';
-    
-                    conversations[event.id] = []
-    
-                    // make a marker for each feature and add to the map
-                    new mapboxgl.Marker(el)
-                        .setLngLat([event.position.longitude, event.position.latitude])
-                        .addTo(map);
-                }
-    
-                //Then in all case, add the message to the convesrations
-                conversations[event.id].push(event.message)
-                break;
-            case 'message':
-                
-            default:
-                
-                break;
-        }
-    
-    }
+
 }

@@ -67,7 +67,7 @@ class Chat implements MessageComponentInterface {
             && is_numeric($long)&& $long>= -180&& $long<= 180)) {
                 $id = Conversation::insertGetId([
                     'radius' => $radius,
-                    'timeOfDeath' => $timeOfDeath,
+                    'time_of_death' => $timeOfDeath,
                     'lat' => $lat,
                     'long' => $long,
                     'author' => 1]);

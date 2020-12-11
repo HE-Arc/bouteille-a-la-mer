@@ -4,10 +4,13 @@ class SocketMessage
 {
     constructor(onMessage) {
         let ws = 'ws';
-        if(window.location.protocol == 'https:')
+        let path = ':8080';
+        if(window.location.protocol == 'https:') {
             ws += 's'
+            path = '/wss';
+        }
 
-        let url = ws + '://' + window.location.hostname + '/wss';
+        let url = ws + '://' + window.location.hostname + path;
         this.ws = new WebSocket(url);
         console.log("connecting...");
         this.ws.addEventListener('message', event => {
