@@ -1,7 +1,5 @@
 "use strict";
 
-mapboxgl.accessToken = 'pk.eyJ1IjoibGFtb3Vzc2VhdWxpbmkiLCJhIjoiY2tobTgxOXliMGU1bzJ3cm5xaGZ2b2d0NiJ9.B46q3gvGFh55OpLpZmhLDQ';
-
 //List of object representing a conversation
 let conversations = [
     {
@@ -54,6 +52,12 @@ let app = new Vue({
             this.username = data.username;
         });
 
+        this.$nextTick(function () {
+            // Code that will run only after the
+            // entire view has been rendered
+            onReady();
+        });
+
         setInterval(() => {
             this.updating++;
         }, 6e4);
@@ -63,150 +67,147 @@ let app = new Vue({
             this.updating
             let timeLeft = new Date(timeOfDeath - new Date());
             return timeLeft.getHours() + ':' + timeLeft.getMinutes();
-        }
+        },
+        toggle() {
+            this.$refs.drop_page.classList.toggle("hide-drop-page");
+            this.$refs.drop_page.classList.toggle("display-drop-page");
+        },
     }
 })
 
-let map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v11', // stylesheet location
-    zoom: 12 // starting zoom
-});
+function onReady(){
 
-
-//Set the side nav draggable
-let elem = $('.sidenav').sidenav();
-let instance = M.Sidenav.getInstance(elem);
-instance.isDragged = true;
-
-
-let currentLocation = [];
-//Listen to change in location
-navigator.geolocation.watchPosition(
-    function (position) {
-        let myLocation = [position.coords.longitude, position.coords.latitude]
-        currentLocation = myLocation;
-
-
-
-        // create a HTML element for each feature
-        var el = document.createElement('div');
-        el.className = 'marker';
-
-        // make a marker for each feature and add to the map
-        new mapboxgl.Marker(el)
-            .setLngLat(myLocation)
-            .addTo(map);
-
-        //Center the map to our current location
-        map.setCenter([position.coords.longitude, position.coords.latitude])
-
-
+    let map = new mapboxgl.Map({
+        container: 'map',
+        //style: 'mapbox://styles/mapbox/streets-v11', // stylesheet location
+        style: 'mapbox://styles/lamousseaulini/ckia2cpii1njr1aoign6vi31p',
+        zoom: 12 // starting zoom
     });
-
-
-if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
+    
+    
+    //Set the side nav draggable
+    let elem = app.$refs.sidenav
+    let instance = M.Sidenav.init(elem);
+    instance.isDragged = true;
+    
+    
+    let currentLocation = [];
+    //Listen to change in location
+    navigator.geolocation.watchPosition(
         function (position) {
-            //Set center location
+            let myLocation = [position.coords.longitude, position.coords.latitude]
+            currentLocation = myLocation;
+    
+    
+    
+            // create a HTML element for each feature
+            var el = document.createElement('div');
+            el.className = 'marker';
+    
+            // make a marker for each feature and add to the map
+            new mapboxgl.Marker(el)
+                .setLngLat(myLocation)
+                .addTo(map);
+    
+            //Center the map to our current location
             map.setCenter([position.coords.longitude, position.coords.latitude])
-        },
-    );
-}
-else {
-    alert("Geolocation is not supported by this browser.");
-}
-
-
-//At load time :
-map.on('load', function () {
-    //Resize the map
-    map.resize();
-});
-
-//Init time picker
-$(document).ready(function () {
-    let picker = $('.timepicker').timepicker(
-        {
-            defaultTime: '00:30',
-            twelveHour: false,
-        }
-    );
-});
-
-function test() {
-    $("#drop-page").toggleClass("hide-drop-page");
-    $("#drop-page").toggleClass("display-drop-page");
-}
-
-$('#return-to-map-btn').click(test);
-$('#drop-btn').click(test);
-
-
-
-
-
-function postConversation() {
-    var data = getFormData($('#conversationForm'));
-
-    let body = {
-        conversation: {
-            long: currentLocation[0],
-            lat: currentLocation[1],
-            lifetime: data.lifetime
-        },
-        message: {
-            message: data.message,
-            image: null,
-            parent: null
-        }
+    
+    
+        });
+    
+    
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function (position) {
+                //Set center location
+                map.setCenter([position.coords.longitude, position.coords.latitude])
+            },
+        );
     }
-    console.log(body)
-    sm.send('conversation', body);
-
-    return false;
-}
-
-function getFormData($form) {
-    var unindexed_array = $form.serializeArray();
-    var indexed_array = {};
-
-    $.map(unindexed_array, function (n, i) {
-        indexed_array[n['name']] = n['value'];
+    else {
+        alert("Geolocation is not supported by this browser.");
+    }
+    
+    
+    //At load time :
+    map.on('load', function () {
+        //Resize the map
+        map.resize();
     });
 
-    return indexed_array;
-}
+   let picker = M.Timepicker.init(app.$refs.timepicker,
+    {
+        defaultTime: '00:30',
+        twelveHour: false,
+    });
+   
+    var connection = new WebSocket('ws://localhost:8080');
+    connection.onopen = function (e) {
+        console.log("Connection established!");
+    };
+    
+    function postConversation() {
+        var data = getFormData(app.$refs.conversationForm)
 
-let sm = new SocketMessage(onMessage);
-
-function onMessage(event) {
-    console.log(event);
-
-    switch (event.type) {
-        case 'conversation':
-            //If the conversation does no exist
-            if (!(event.id in conversations)) {
-                // create a HTML element for each feature
-                var el = document.createElement('div');
-                el.className = 'marker';
-
-                conversations[event.id] = []
-
-                // make a marker for each feature and add to the map
-                new mapboxgl.Marker(el)
-                    .setLngLat([event.position.longitude, event.position.latitude])
-                    .addTo(map);
+        let body = {
+            conversation: {
+                long: currentLocation[0],
+                lat: currentLocation[1],
+                lifetime: data.lifetime
+            },
+            message: {
+                message: data.message,
+                image: null,
+                parent: null
             }
-
-            //Then in all case, add the message to the convesrations
-            conversations[event.id].push(event.message)
-            break;
-        case 'message':
-            
-        default:
-            
-            break;
+        }
+        console.log(body)
+        sm.send('conversation', body);
+    
+        return false;
     }
-
+    
+    function getFormData($form) {
+        var unindexed_array = $form.serializeArray();
+        var indexed_array = {};
+    
+        $.map(unindexed_array, function (n, i) {
+            indexed_array[n['name']] = n['value'];
+        });
+    
+        return indexed_array;
+    }
+    
+    let sm = new SocketMessage(onMessage);
+    
+    function onMessage(event) {
+        console.log(event);
+    
+        switch (event.type) {
+            case 'conversation':
+                //If the conversation does no exist
+                if (!(event.id in conversations)) {
+                    // create a HTML element for each feature
+                    var el = document.createElement('div');
+                    el.className = 'marker';
+    
+                    conversations[event.id] = []
+    
+                    // make a marker for each feature and add to the map
+                    new mapboxgl.Marker(el)
+                        .setLngLat([event.position.longitude, event.position.latitude])
+                        .addTo(map);
+                }
+    
+                //Then in all case, add the message to the convesrations
+                conversations[event.id].push(event.message)
+                break;
+            case 'message':
+                
+            default:
+                
+                break;
+        }
+    
+    }
 }

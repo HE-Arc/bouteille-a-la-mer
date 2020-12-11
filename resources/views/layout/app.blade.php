@@ -16,17 +16,12 @@
     <link rel="shortcut icon" type="image/png" href="{{ URL::asset('/img/logo.png') }}"/>
     <link href="{{ URL::asset('/css/main.css') }}" rel='stylesheet' />
     
-    
     <!--VueJs CDN-->
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 
     <!--Map box-->
     <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
-
-    <!--Jquery CDN-->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-
     
     <!--Materilize js-->
     <script type="text/javascript" src="{{ URL::asset('materialize/js/materialize.min.js') }}"></script>

@@ -3,11 +3,14 @@
 
 <?php
 $data = [
-	"username" => session("loginUsername")
-
+	'username' => Illuminate\Support\Facades\Auth::user()->username ?? ""
 ];
-
 ?>
+<script>
+	//Set the map box
+	mapboxgl.accessToken = "{{ env('MAPBOX_KEY') }}";
+</script>
+
 <div id="app" :mdata="{{ json_encode($data) }}">
 	<div id="status" class="center-align card-panel teal main-page z-depth-3">
 		<p v-if="connected" class="flow-text">
@@ -21,11 +24,11 @@ $data = [
 	<div id="map" class="main-page"></div>
 	
 	<div class="container main-page">
-		<a id="drop-btn" class="btn-floating btn-large waves-effect waves-light">
+		<a id="drop-btn" ref="drop_btn" class="btn-floating btn-large waves-effect waves-light"  @click="toggle">
 			<img id="drop-img" src="{{ URL::asset('/img/drop_bottle.png') }}">
 		</a>
 
-		<ul id="slide-out" class="sidenav">
+		<ul id="slide-out" class="sidenav" ref="sidenav">
 			<li>
 				<div class="user-view">
 					<div class="background">
@@ -58,13 +61,13 @@ $data = [
 			</div>
 		</ul>
 	</div>
-	<div id="drop-page" class="hide-drop-page z-depth-3">
+	<div id="drop-page" ref="drop_page" class="hide-drop-page z-depth-3">
 		<nav id="drop-bottle-title" class="z-depth-4">
 			<div class="nav-wrapper">
 				<a href="#" class="center">Drop a bottle !</a>
 				<ul id="nav-mobile" class="left">
 					<li>
-						<a id="return-to-map-btn">
+						<a id="return-to-map-btn" ref="return_to_map_btn" @click="toggle">
 							<i class="material-icons">arrow_back</i>
 						</a>
 					</li>
@@ -73,12 +76,12 @@ $data = [
 		</nav>
 		<div class="container">
 			<div class="row">
-				<form id="conversationForm" onsubmit="event.preventDefault(); postConversation()">
+				<form id="conversationForm" ref="conversationForm" onsubmit="event.preventDefault(); postConversation()">
 					@csrf
 					<div class="col s12">
 						<div class="input-field col s12">
 							<i class="material-icons prefix">access_time</i>
-							<input id="life-time-input" type="text" class="timepicker" name="lifetime">
+							<input id="life-time-input" type="text" class="timepicker" ref="timepicker" name="lifetime">
 							<label for="life-time-input">Life time</label>
 						</div>
 						<div class="input-field col s12">
@@ -99,6 +102,7 @@ $data = [
 </div>
 
 <script src="{{ URL::asset('/js/socketmessage.js') }}"></script>
+
 <!-- Page js and css -->
 <script src="{{ URL::asset('/js/main.js') }}"></script>
 <link href="{{ URL::asset('/css/main.css') }}" rel='stylesheet' />
