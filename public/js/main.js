@@ -8,16 +8,22 @@ let conversations = [
         position: 69,
         messages: [
             {
+                id: 0,
+                from: "Mathias",
                 text: "yo ?",
-                date: 69
+                date: new Date("11.25.2020:10:02"),
             },
             {
-                text: "bite ?",
-                date: 69
+                id: 1,
+                from: "Nico",
+                text: "Je suis maaauuvvvaiiiisssssssssssssssssssssssssssssss",
+                date: new Date("11.25.2020:10:04"),
             },
             {
+                id: 2,
+                from: "Valentin",
                 text: "69",
-                date: 69
+                date: new Date("11.25.2020:10:10"),
             }
         ]
     },
@@ -68,9 +74,13 @@ let app = new Vue({
             let timeLeft = new Date(timeOfDeath - new Date());
             return timeLeft.getHours() + ':' + timeLeft.getMinutes();
         },
-        toggle() {
+        toggleDropPage() {
             this.$refs.drop_page.classList.toggle("hide-drop-page");
             this.$refs.drop_page.classList.toggle("display-drop-page");
+        },
+        toggleMessagePage() {
+            this.$refs.message_page.classList.toggle("hide-message-page");
+            this.$refs.message_page.classList.toggle("display-message-page");
         },
     }
 })

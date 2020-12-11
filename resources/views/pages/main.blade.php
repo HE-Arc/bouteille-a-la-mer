@@ -24,7 +24,7 @@ $data = [
 	<div id="map" class="main-page"></div>
 	
 	<div class="container main-page">
-		<a id="drop-btn" ref="drop_btn" class="btn-floating btn-large waves-effect waves-light"  @click="toggle">
+		<a id="drop-btn" ref="drop_btn" class="btn-floating btn-large waves-effect waves-light"  @click="toggleDropPage">
 			<img id="drop-img" src="{{ URL::asset('/img/drop_bottle.png') }}">
 		</a>
 
@@ -67,7 +67,7 @@ $data = [
 				<a href="#" class="center">Drop a bottle !</a>
 				<ul id="nav-mobile" class="left">
 					<li>
-						<a id="return-to-map-btn" ref="return_to_map_btn" @click="toggle">
+						<a id="return-to-map-btn" ref="return_to_map_btn" @click="toggleDropPage">
 							<i class="material-icons">arrow_back</i>
 						</a>
 					</li>
@@ -97,6 +97,38 @@ $data = [
 					</div>
 				</form>
 			</div>
+		</div>
+	</div>
+	<div id="message-page" ref="message_page" class="white hide-message-page">
+		<nav id="message-title">
+				<div class="nav-wrapper">
+					<a href="#" class="center">Chat !</a>
+					<ul id="nav-mobile" class="left">
+						<li>
+							<a id="return-to-map-btn" ref="return_to_map_btn" @click="toggleMessagePage">
+								<i class="material-icons">arrow_back</i>
+							</a>
+						</li>
+					</ul>
+				</div>
+		</nav>
+
+		<ul class="collection">
+			<li class="collection-item" v-for="message in conversations[0].messages" :key="message.id">
+				<span class="title"><b>@{{message.from}}</b></span>
+				<a href="#!" class="secondary-content"><p>10:01</p></i></a>
+				<p class="truncate">
+					@{{message.text}}
+				</p>
+			</li>
+		</ul>
+
+		<div class="row valign-wrapper">
+			<div class="input-field col s10">
+				<textarea id="textarea1" class="materialize-textarea"></textarea>
+				<label for="textarea1">Write a message</label>
+			</div>
+			<i class="material-icons col s2">send</i>
 		</div>
 	</div>
 </div>
