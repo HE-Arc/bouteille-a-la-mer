@@ -24,7 +24,7 @@ $data = [
 	<div id="map" class="main-page"></div>
 	
 	<div class="container main-page">
-		<a id="drop-btn" ref="drop_btn" class="btn-floating btn-large waves-effect waves-light">
+		<a id="drop-btn" ref="drop_btn" class="btn-floating btn-large waves-effect waves-light"  @click="toggle">
 			<img id="drop-img" src="{{ URL::asset('/img/drop_bottle.png') }}">
 		</a>
 
@@ -61,13 +61,13 @@ $data = [
 			</div>
 		</ul>
 	</div>
-	<div id="drop-page" ref="drop-page" class="hide-drop-page z-depth-3">
+	<div id="drop-page" ref="drop_page" class="hide-drop-page z-depth-3">
 		<nav id="drop-bottle-title" class="z-depth-4">
 			<div class="nav-wrapper">
 				<a href="#" class="center">Drop a bottle !</a>
 				<ul id="nav-mobile" class="left">
 					<li>
-						<a id="return-to-map-btn" ref="return_to_map_btn">
+						<a id="return-to-map-btn" ref="return_to_map_btn" @click="toggle">
 							<i class="material-icons">arrow_back</i>
 						</a>
 					</li>

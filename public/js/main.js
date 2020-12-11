@@ -56,7 +56,7 @@ let app = new Vue({
             // Code that will run only after the
             // entire view has been rendered
             onReady();
-          })
+        });
 
         setInterval(() => {
             this.updating++;
@@ -67,7 +67,11 @@ let app = new Vue({
             this.updating
             let timeLeft = new Date(timeOfDeath - new Date());
             return timeLeft.getHours() + ':' + timeLeft.getMinutes();
-        }
+        },
+        toggle() {
+            this.$refs.drop_page.classList.toggle("hide-drop-page");
+            this.$refs.drop_page.classList.toggle("display-drop-page");
+        },
     }
 })
 
@@ -136,17 +140,7 @@ function onReady(){
         defaultTime: '00:30',
         twelveHour: false,
     });
-    
-   function toggle() {
-        app.$refs.drop-page.toggleClass("hide-drop-page");
-        app.$refs.drop-page.toggleClass("display-drop-page");
-    }
-
-    app.$refs.return_to_map_btn.click(toggle);
-    app.$refs.drop_btn.click(toggle);
-
-    
-    
+   
     var connection = new WebSocket('ws://localhost:8080');
     connection.onopen = function (e) {
         console.log("Connection established!");
