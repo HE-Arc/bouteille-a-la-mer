@@ -4,10 +4,13 @@
 <?php
 $data = [
 	"username" => session("loginUsername")
-
 ];
-
 ?>
+<script>
+	//Set the map box
+	mapboxgl.accessToken = "{{ env('MAPBOX_KEY') }}";
+</script>
+
 <div id="app" :mdata="{{ json_encode($data) }}">
 	<div id="status" class="center-align card-panel teal main-page z-depth-3">
 		<p v-if="connected" class="flow-text">

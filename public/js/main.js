@@ -1,7 +1,5 @@
 "use strict";
 
-mapboxgl.accessToken = 'pk.eyJ1IjoibGFtb3Vzc2VhdWxpbmkiLCJhIjoiY2tobTgxOXliMGU1bzJ3cm5xaGZ2b2d0NiJ9.B46q3gvGFh55OpLpZmhLDQ';
-
 //List of object representing a conversation
 let conversations = [
     {
