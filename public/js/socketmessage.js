@@ -3,7 +3,11 @@
 class SocketMessage
 {
     constructor(onMessage) {
-        let url = 'ws://' + window.location.hostname + ':8080';
+        let ws = 'ws';
+        if(window.location.protocol == 'https:')
+            ws += 's'
+
+        let url = ws + '://' + window.location.hostname;
         this.ws = new WebSocket(url);
         console.log("connecting...");
         this.ws.addEventListener('message', event => {

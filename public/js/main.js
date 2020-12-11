@@ -111,6 +111,7 @@ function onReady(){
     
             //Center the map to our current location
             map.setCenter([position.coords.longitude, position.coords.latitude])
+<<<<<<< HEAD
     
     
         });
@@ -123,6 +124,58 @@ function onReady(){
                 map.setCenter([position.coords.longitude, position.coords.latitude])
             },
         );
+=======
+        },
+    );
+}
+else {
+    alert("Geolocation is not supported by this browser.");
+}
+
+
+//At load time :
+map.on('load', function () {
+    //Resize the map
+    map.resize();
+});
+
+//Init time picker
+$(document).ready(function () {
+    let picker = $('.timepicker').timepicker(
+        {
+            defaultTime: '00:30',
+            twelveHour: false,
+        }
+    );
+});
+
+function test() {
+    $("#drop-page").toggleClass("hide-drop-page");
+    $("#drop-page").toggleClass("display-drop-page");
+}
+
+$('#return-to-map-btn').click(test);
+$('#drop-btn').click(test);
+
+
+
+
+
+function postConversation() {
+    var data = getFormData($('#conversationForm'));
+
+    let body = {
+        conversation: {
+            long: currentLocation[0],
+            lat: currentLocation[1],
+            lifetime: data.lifetime
+        },
+        message: {
+            message: data.message,
+            image: null,
+            parent: null
+        }
+>>>>>>> dev
     }
     else {
         alert("Geolocation is not supported by this browser.");
