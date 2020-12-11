@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\HomeController;
+use App\Http\Middleware\needNoConnexion;
 
 
 /*
@@ -27,9 +28,9 @@ Route::get('/socket', function () {
 
 
 
-Route::get('/login', [LoginController::class, 'login']);
-Route::get('/signup', [LoginController::class, 'signup']);
+Route::get('/login', [LoginController::class, 'login'])->middleware(needNoConnexion::class);
+Route::get('/signup', [LoginController::class, 'signup'])->middleware(needNoConnexion::class);
 Route::get('/logout', [LoginController::class, 'logout']);
-Route::post('/tryLogin', [LoginController::class, 'tryLogin']);
-Route::post('/trySignup', [LoginController::class, 'trySignup']);
+Route::post('/tryLogin', [LoginController::class, 'tryLogin'])->middleware(needNoConnexion::class);
+Route::post('/trySignup', [LoginController::class, 'trySignup'])->middleware(needNoConnexion::class);
 Route::get('/', [HomeController::class, 'index']);

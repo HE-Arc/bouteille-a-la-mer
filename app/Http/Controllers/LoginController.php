@@ -12,17 +12,17 @@ class LoginController extends Controller
 {
     function login(Request $request) {
         //TODO If not connected
-        if ($request->session()->has('loginID')) {
+        /*if ($request->session()->has('loginID')) {
             return redirect('/');
-        }
+        }*/
         return view("pages.login");
     }
     
     function signup(Request $request) {
         //TODO if not connected
-        if ($request->session()->has('loginID')) {
+        /*if ($request->session()->has('loginID')) {
             return redirect('/');
-        }
+        }*/
         return view("pages.signup");
     }
 
