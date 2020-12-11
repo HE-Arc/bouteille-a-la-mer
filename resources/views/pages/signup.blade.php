@@ -14,15 +14,15 @@
         <form @submit="checkForm" id="signupForm" ref="signupForm">
             @csrf
             <div class="input-field col s12">
-                <input placeholrder="Username" v-model="username" name="username" id="username" type="text" class="validate">
+                <input placeholder="Username" v-model="username" name="username" id="username" type="text" class="validate">
                 <label for="username">Username</label>
             </div>
             <div class="input-field col s12">
-                <input placeholrder="Password" v-model="password" name="password" id="password" type="password" class="validate">
+                <input placeholder="Password" v-model="password" name="password" id="password" type="password" class="validate">
                 <label for="password">Password</label>
             </div>
             <div class="input-field col s12">
-                <input placeholrder="Password" v-model="password2" name="password2" id="password2" type="password" class="validate">
+                <input placeholder="Password" v-model="password2" name="password2" id="password2" type="password" class="validate">
                 <label for="password2">Password</label>
             </div>
             <div class="error" id="error" ref="error"></div>
@@ -33,7 +33,7 @@
                     </ul>
                 </p>
             <div class="spacer"></div>
-            <input type="submit" class="btn waves-effect waves-light col s12" value="Continue">
+            <input type="submit" class="btn waves-effect waves-light col s12" value="Continue" id="btnSubmit">
         </form>
         <div class="spacer"></div>
         <p>Have an account ? <a href="login">Sign in</a></p>
