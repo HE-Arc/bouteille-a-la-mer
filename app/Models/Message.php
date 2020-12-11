@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\DB;
 
 class Message extends Model
 {
-    public function getMyConversations($myid) {
+    /*public function getMyConversations($myid) {
         $conv = DB::table('conversations')
             ->where('author', '=', $myid)
             ->join('messages', 'conversations.id', '=', 'messages.id')
             ->get();
 
-    }
+    }*/
     public $timestamps = false;
     protected $table = "messages";
 }

@@ -3,7 +3,7 @@
 
 <?php
 $data = [
-	"username" => session("loginUsername")
+	'username' => Illuminate\Support\Facades\Auth::user()->username ?? ""
 ];
 ?>
 <script>

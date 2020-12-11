@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\HomeController;
+use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\RedirectIfAuthenticated;
 
 
 /*
@@ -16,20 +18,15 @@ use App\Http\Controllers\HomeController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/socket', function () {
-    return view('testSocket');
-});
 
 
+Route::group(['middleware' => [RedirectIfAuthenticated::class]],
+    function() {
+        Route::get('/login', [LoginController::class, 'login']);
+        Route::get('/signup', [LoginController::class, 'signup']);
+        Route::post('/tryLogin', [LoginController::class, 'tryLogin']);
+        Route::post('/trySignup', [LoginController::class, 'trySignup']);
+    });
 
-
-Route::get('/login', [LoginController::class, 'login']);
-Route::get('/signup', [LoginController::class, 'signup']);
 Route::get('/logout', [LoginController::class, 'logout']);
-Route::post('/tryLogin', [LoginController::class, 'tryLogin']);
-Route::post('/trySignup', [LoginController::class, 'trySignup']);
 Route::get('/', [HomeController::class, 'index']);
