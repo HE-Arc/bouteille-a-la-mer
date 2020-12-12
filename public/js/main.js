@@ -93,8 +93,6 @@ let app = new Vue({
             {
                 //Remove text in text area
                 this.$refs.textareamessage.value = "";
-
-                console.log(text);
             }
         }
     },
