@@ -50,11 +50,11 @@ $data = [
 					<div v-for="conversation in conversations" :key="conversation.id">
 						<div class="col s10">
 							<li>
-								<a class="waves-effect truncate" href="#!">@{{conversation.messages[0].text}}</a>
+								<a class="waves-effect truncate" href="#!" @click="toggleMessagePage(conversation.id)">@{{conversation.messages[0].content}}</a>
 							</li>
 						</div>
 						<div class="col s2 valign-wrapper">
-							<p class="flow-text">@{{getTimeLeftStr(conversation.timeOfDeath)}}</p>
+							<p class="flow-text">@{{getTimeLeftStr(conversation.time_of_death)}}</p>
 						</div>
 					</div>
 				</div>
@@ -65,9 +65,9 @@ $data = [
 		<nav id="drop-bottle-title" class="z-depth-4">
 			<div class="nav-wrapper">
 				<a href="#" class="center">Drop a bottle !</a>
-				<ul id="nav-mobile" class="left">
+				<ul id="nav-mobile" class="left ">
 					<li>
-						<a id="return-to-map-btn" ref="return_to_map_btn" @click="toggleDropPage">
+						<a ref="return_to_map_btn" @click="toggleDropPage">
 							<i class="material-icons">arrow_back</i>
 						</a>
 					</li>
@@ -103,9 +103,9 @@ $data = [
 		<nav id="message-title">
 				<div class="nav-wrapper">
 					<a href="#" class="center">Chat !</a>
-					<ul id="nav-mobile" class="left">
+					<ul id="nav-mobile" class="left waves-effect waves-light">
 						<li>
-							<a id="return-to-map-btn" ref="return_to_map_btn" @click="toggleMessagePage">
+							<a ref="return_to_map_btn" @click="toggleMessagePage(-1)">
 								<i class="material-icons">arrow_back</i>
 							</a>
 						</li>
@@ -114,21 +114,23 @@ $data = [
 		</nav>
 
 		<ul class="collection">
-			<li class="collection-item" v-for="message in conversations[0].messages" :key="message.id">
-				<span class="title"><b>@{{message.from}}</b></span>
-				<a href="#!" class="secondary-content"><p>10:01</p></i></a>
+			<li class="collection-item" v-for="message in currentConversation.messages" :key="message.id">
+				<span class="title"><b>@{{message.author}}</b></span>
+				<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
 				<p class="truncate">
-					@{{message.text}}
+					@{{message.content}}
 				</p>
 			</li>
 		</ul>
 
 		<div class="row valign-wrapper">
 			<div class="input-field col s10">
-				<textarea id="textarea1" class="materialize-textarea"></textarea>
-				<label for="textarea1">Write a message</label>
+				<textarea ref="textareamessage" id="textareamessage" class="materialize-textarea" v-on:keydown.13.prevent="sendMessage"></textarea>
+				<label for="textareamessage">Write a message</label>
 			</div>
-			<i class="material-icons col s2">send</i>
+			<a class="btn-flat btn-large waves-effect waves-light" @click="sendMessage">
+				<i class="material-icons col s2">send</i>
+			</a>
 		</div>
 	</div>
 </div>

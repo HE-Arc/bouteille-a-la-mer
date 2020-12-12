@@ -7,40 +7,30 @@ let sm = new SocketMessage(onMessage);
 let conversations = [
     {
         id: 0,
-        timeOfDeath: new Date("11.25.2020"),
-        position: 69,
+        time_of_death: new Date("11.25.2020"),
+        long: 47.05896542008401,
+        lat: 6.905909718143659,
         messages: [
             {
                 id: 0,
-                from: "Mathias",
-                text: "yo ?",
-                date: new Date("11.25.2020:10:02"),
+                author: "Mathias",
+                content: "yo ?",
+                posted: new Date("11.25.2020:10:02"),
             },
             {
                 id: 1,
-                from: "Nico",
-                text: "Je suis maaauuvvvaiiiisssssssssssssssssssssssssssssss",
-                date: new Date("11.25.2020:10:04"),
+                author: "Nico",
+                content: "Je suis maaauuvvvaiiiisssssssssssssssssssssssssssssss",
+                posted: new Date("11.25.2020:10:04"),
             },
             {
                 id: 2,
-                from: "Valentin",
-                text: "69",
-                date: new Date("11.25.2020:10:10"),
+                author: "Valentin",
+                content: "69",
+                posted: new Date("11.25.2020:10:10"),
             }
         ]
     },
-    {
-        id: 1,
-        timeOfDeath: new Date("11.25.2020"),
-        position: 69,
-        messages: [
-            {
-                text: "yo ?",
-                date: 69
-            },
-        ]
-    }
 ];
 
 let app = new Vue({
@@ -52,6 +42,8 @@ let app = new Vue({
             email: "nico@gmail.com",
             conversations: conversations,
             updating: 0,
+            map: null,
+            currentConversation: {messages : []}
         }
     },
     mounted() {
@@ -74,33 +66,82 @@ let app = new Vue({
     methods: {
         getTimeLeftStr(timeOfDeath) {
             this.updating
-            let timeLeft = new Date(timeOfDeath - new Date());
-            return timeLeft.getHours() + ':' + timeLeft.getMinutes();
+            let timeLeft = new Date(timeOfDeath) - new Date();
+
+            return this.timeToStr(timeLeft);
+        },
+        timeToStr(time) {
+            
+            time = new Date(time);
+
+            //Format
+            return time.toLocaleTimeString('ch-FR', { hour: '2-digit', minute: '2-digit' });
         },
         toggleDropPage() {
             this.$refs.drop_page.classList.toggle("hide-drop-page");
             this.$refs.drop_page.classList.toggle("display-drop-page");
         },
-        toggleMessagePage() {
+        toggleMessagePage(conversationId) {
+            //If conversastionID is set, change current conversation
+            if(conversationId >= 0)
+            {
+                //Set the new current conversation
+                this.currentConversation = this.conversations.find(conv => conv.id == conversationId);
+            }
+
             this.$refs.message_page.classList.toggle("hide-message-page");
             this.$refs.message_page.classList.toggle("display-message-page");
         },
+        sendMessage() {
+            //Get text
+            let text = this.$refs.textareamessage.value;
+
+            //If the message is not empty
+            if(text != "")
+            {
+                //Remove text in text area
+                this.$refs.textareamessage.value = "";
+            }
+        }
+    },
+    watch: {
+        //When the conversations is updated
+        conversations: function (newConversations) {
+
+            console.log(newConversations)
+            
+            //Foreach conversations
+            newConversations.forEach((conversation) => {
+                let location = [conversation.long, conversation.lat];
+        
+                // create a HTML element for each feature
+                let el = document.createElement('div');
+                el.className = 'marker_message';
+
+                //Add an event when we click on the marker
+                el.onclick = () => {this.toggleMessagePage(conversation.id)};
+
+                //Add the bottle to the map
+                new mapboxgl.Marker(el)
+                    .setLngLat(location)
+                    .addTo(this.map);
+            });
+        }
     }
 })
 
 
 
 
-function onReady(){
-
-    let map = new mapboxgl.Map({
+function onReady(){    
+    
+    //Init the map
+    app.map = new mapboxgl.Map({
         container: 'map',
-        //style: 'mapbox://styles/mapbox/streets-v11', // stylesheet location
-        style: 'mapbox://styles/lamousseaulini/ckia2cpii1njr1aoign6vi31p',
+        style: 'mapbox://styles/lamousseaulini/ckia2cpii1njr1aoign6vi31p', //Style cheet
         zoom: 12 // starting zoom
-    });
-    
-    
+    })
+
     //Set the side nav draggable
     let elem = app.$refs.sidenav
     let instance = M.Sidenav.init(elem);
@@ -113,19 +154,22 @@ function onReady(){
             let myLocation = [position.coords.longitude, position.coords.latitude]
             currentLocation = myLocation;
     
-    
-    
             // create a HTML element for each feature
             var el = document.createElement('div');
             el.className = 'marker';
     
+            //Little popup
+            let popup = new mapboxgl.Popup({offset: 25})
+            .setText('Your position ;)');
+
             // make a marker for each feature and add to the map
             new mapboxgl.Marker(el)
                 .setLngLat(myLocation)
-                .addTo(map);
+                .setPopup(popup)
+                .addTo(app.map);
     
             //Center the map to our current location
-            map.setCenter([position.coords.longitude, position.coords.latitude])
+            app.map.setCenter([position.coords.longitude, position.coords.latitude])
     
             sm.send('newpos', {'long': myLocation[0], 'lat': myLocation[1]});
     
@@ -136,7 +180,7 @@ function onReady(){
         navigator.geolocation.getCurrentPosition(
             function (position) {
                 //Set center location
-                map.setCenter([position.coords.longitude, position.coords.latitude])
+                app.map.setCenter([position.coords.longitude, position.coords.latitude])
             },
         );
     }
@@ -146,9 +190,9 @@ function onReady(){
     
     
     //At load time :
-    map.on('load', function () {
+    app.map.on('load', function () {
         //Resize the map
-        map.resize();
+        app.map.resize();
     });
 
    let picker = M.Timepicker.init(app.$refs.timepicker,
@@ -186,10 +230,10 @@ function postConversation() {
 
 
 function onMessage(type, data) {
-    console.log({'type': type, 'data': data});
-
     switch (type) {
         case 'conversation':
+            
+        /*
             //If the conversation does no exist
             if (!(data.id in conversations)) {
                 // create a HTML element for each feature
@@ -201,17 +245,18 @@ function onMessage(type, data) {
                 // make a marker for each feature and add to the map
                 new mapboxgl.Marker(el)
                     .setLngLat([data.position.longitude, data.position.latitude])
-                    .addTo(map);
+                    .addTo(app.map);
             }
 
             //Then in all case, add the message to the convesrations
             conversations[data.id].push(data.message)
             break;
+            */
         case 'message':
             break;
 
         case 'conversations':
-
+            app.conversations = data;
             break;
         default:
             

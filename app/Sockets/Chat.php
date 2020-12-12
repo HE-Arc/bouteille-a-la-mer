@@ -9,13 +9,17 @@ use App\Models\Conversation;
 class Chat implements MessageComponentInterface {
     protected $clients;
 
+    protected $clientsConnexion = [];
+
     public function __construct() {
         $this->clients = new \SplObjectStorage;
     }
 
+
     public function onOpen(ConnectionInterface $conn) {
         // Store the new connection to send messages to later
         $this->clients->attach($conn);
+        $this->clientsConnexion[$conn->resourceId] = ["lat" => 0, "lon" => 0, "id" => 0];
         echo "New connection! ({$conn->resourceId})\n";
     }
 
@@ -32,6 +36,9 @@ class Chat implements MessageComponentInterface {
                 break;
 
             case 'newpos':
+                $this->clientsConnexion[$from->ressourceId]['lat'] = $event->data->lat;
+                $this->clientsConnexion[$from->ressourceId]['lon'] = $event->data->lon;
+                $this->clientsConnexion[$from->ressourceId]['id'] = $event->data->id;
                 $this->sendReachableConversations($event->data, $from);
 
             default:
@@ -42,6 +49,7 @@ class Chat implements MessageComponentInterface {
     public function onClose(ConnectionInterface $conn) {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
+        unset($this->clientsConnexion[$conn->resourceId]);
 
         echo "Connection {$conn->resourceId} has disconnected\n";
     }
@@ -76,8 +84,8 @@ class Chat implements MessageComponentInterface {
                     'author' => 1]);
 
             // TODO send to reachable clients only (store lat and long as variable instead of session)
-            $dataJson = json_encode((object)$data);
             foreach ($this->clients as $client) {
+                $dataJson = json_encode((object)$data);
                 $client->send($dataJson);
             }
 
@@ -113,7 +121,7 @@ class Chat implements MessageComponentInterface {
         $lat = $event->lat;
         $long = $event->long;
 
-        session(['lat' => $lat, 'long' => $long]);
+        //session(['lat' => $lat, 'long' => $long]);
 
         $conversations = Conversation::all()->toArray();
 
@@ -123,7 +131,7 @@ class Chat implements MessageComponentInterface {
 
         foreach($conversations as &$conv) {
             $conv = (object)$conv;
-            $conv->{'messages'} = Message::where(['parent' => $conv->id])->get()->toArray();
+            $conv->{'messages'} = Message::where(['parent' => $conv->id])->join('users', 'users.id', 'author')->get()->toArray();
         }
 
         var_dump($conversations);

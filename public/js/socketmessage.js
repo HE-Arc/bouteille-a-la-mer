@@ -20,6 +20,7 @@ class SocketMessage
     }
 
     send(type, data) {
-        this.ws.send(JSON.stringify({'type': type, 'data': data}));
+        if(this.ws.readyState == this.ws.OPEN)
+            this.ws.send(JSON.stringify({'type': type, 'data': data}));
     }
 }
