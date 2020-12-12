@@ -6,10 +6,10 @@
         <center>
             <div>
                 <img class="logo" src="{{ URL::asset('img/logo.png') }}" alt="logo" width="100px" action="trySignup" method="post">
-                Bouteille à la mere
+                <h6>Bouteille à la mere</h6>
             </div>
         </center>
-        <h2>Sign up</h2>
+        <h6>Sign up</h6>
         <p>Hi there! Nice to see you again.</p>
         <form @submit="checkForm" id="signupForm" ref="signupForm">
             @csrf
@@ -33,7 +33,8 @@
                     </ul>
                 </p>
             <div class="spacer"></div>
-            <input type="submit" class="btn waves-effect waves-light col s12" value="Continue" id="btnSubmit">
+            <button class="btn waves-effect waves-light" type="submit" name="action" value="signup" id="btnSubmit">Submit</button>
+        
         </form>
         <div class="spacer"></div>
         <p>Have an account ? <a href="login">Sign in</a></p>

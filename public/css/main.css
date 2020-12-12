@@ -120,3 +120,7 @@ html, body, #app{
     border-radius: 50%;
     cursor: pointer;
   }
+
+#btnSubmit {
+    width: 100%;
+}
