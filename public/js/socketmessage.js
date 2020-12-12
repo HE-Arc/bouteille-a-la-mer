@@ -14,7 +14,8 @@ class SocketMessage
         this.ws = new WebSocket(url);
         console.log("connecting...");
         this.ws.addEventListener('message', event => {
-            onMessage(JSON.parse(event.data));
+            let msg = JSON.parse(event.data);
+            onMessage(msg.type, msg.data);
         });
     }
 

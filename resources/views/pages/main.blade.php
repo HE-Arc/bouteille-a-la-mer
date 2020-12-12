@@ -50,11 +50,11 @@ $data = [
 					<div v-for="conversation in conversations" :key="conversation.id">
 						<div class="col s10">
 							<li>
-								<a class="waves-effect truncate" href="#!" @click="toggleMessagePage(conversation.id)">@{{conversation.messages[0].text}}</a>
+								<a class="waves-effect truncate" href="#!" @click="toggleMessagePage(conversation.id)">@{{conversation.messages[0].content}}</a>
 							</li>
 						</div>
 						<div class="col s2 valign-wrapper">
-							<p class="flow-text">@{{getTimeLeftStr(conversation.timeOfDeath)}}</p>
+							<p class="flow-text">@{{getTimeLeftStr(conversation.time_of_death)}}</p>
 						</div>
 					</div>
 				</div>
@@ -115,10 +115,10 @@ $data = [
 
 		<ul class="collection">
 			<li class="collection-item" v-for="message in currentConversation.messages" :key="message.id">
-				<span class="title"><b>@{{message.from}}</b></span>
-				<a href="#!" class="secondary-content"><p>10:01</p></i></a>
+				<span class="title"><b>@{{message.author}}</b></span>
+				<a href="#!" class="secondary-content"><p>@{{getTimeLeftStr(message.posted)}}</p></i></a>
 				<p class="truncate">
-					@{{message.text}}
+					@{{message.content}}
 				</p>
 			</li>
 		</ul>

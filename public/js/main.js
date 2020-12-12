@@ -1,51 +1,36 @@
 "use strict";
 
+let currentLocation = [];
+let sm = new SocketMessage(onMessage);
+
 //List of object representing a conversation
 let conversations = [
     {
         id: 0,
-        timeOfDeath: new Date("11.25.2020"),
-        position: {
-            longitude: 47.05896542008401,
-            latitude: 6.905909718143659
-        },
+        time_of_death: new Date("11.25.2020"),
+        long: 47.05896542008401,
+        lat: 6.905909718143659,
         messages: [
             {
                 id: 0,
-                from: "Mathias",
-                text: "yo ?",
-                date: new Date("11.25.2020:10:02"),
+                author: "Mathias",
+                content: "yo ?",
+                posted: new Date("11.25.2020:10:02"),
             },
             {
                 id: 1,
-                from: "Nico",
-                text: "Je suis maaauuvvvaiiiisssssssssssssssssssssssssssssss",
-                date: new Date("11.25.2020:10:04"),
+                author: "Nico",
+                content: "Je suis maaauuvvvaiiiisssssssssssssssssssssssssssssss",
+                posted: new Date("11.25.2020:10:04"),
             },
             {
                 id: 2,
-                from: "Valentin",
-                text: "69",
-                date: new Date("11.25.2020:10:10"),
+                author: "Valentin",
+                content: "69",
+                posted: new Date("11.25.2020:10:10"),
             }
         ]
     },
-    {
-        id: 1,
-        timeOfDeath: new Date("11.25.2020"),
-        position: {
-            longitude: 47.059923018139436,
-            latitude: 6.946781662949565
-        },
-        messages: [
-            {
-                id: 1,
-                from: "Manu",
-                text: "ALLOO YAA QNN :( ?",
-                date: new Date("11.26.2020:19:10"),
-            },
-        ]
-    }
 ];
 
 let app = new Vue({
@@ -105,7 +90,7 @@ let app = new Vue({
         conversations: function (newConversations) {
             //Foreach conversations
             newConversations.forEach((conversation) => {
-                let location = [conversation.position.latitude, conversation.position.longitude];
+                let location = [conversation.lat, conversation.long];
         
                 // create a HTML element for each feature
                 let el = document.createElement('div');
@@ -123,7 +108,7 @@ let app = new Vue({
     }
 })
 
-let currentLocation = [];
+
 
 
 function onReady(){    
@@ -162,7 +147,10 @@ function onReady(){
                 .addTo(app.map);
     
             //Center the map to our current location
-            app.map.setCenter([position.coords.longitude, position.coords.latitude]) 
+            app.map.setCenter([position.coords.longitude, position.coords.latitude])
+    
+            sm.send('newpos', {'long': myLocation[0], 'lat': myLocation[1]});
+    
         });
     
     
@@ -219,32 +207,35 @@ function postConversation() {
 }
 
 
-let sm = new SocketMessage(onMessage);
-
-function onMessage(event) {
-    console.log(event);
-
-    switch (event.type) {
+function onMessage(type, data) {
+    switch (type) {
         case 'conversation':
+            
+        /*
             //If the conversation does no exist
-            if (!(event.id in conversations)) {
+            if (!(data.id in conversations)) {
                 // create a HTML element for each feature
                 var el = document.createElement('div');
                 el.className = 'marker';
 
-                conversations[event.id] = []
+                conversations[data.id] = []
 
                 // make a marker for each feature and add to the map
                 new mapboxgl.Marker(el)
-                    .setLngLat([event.position.longitude, event.position.latitude])
+                    .setLngLat([data.position.longitude, data.position.latitude])
                     .addTo(app.map);
             }
 
             //Then in all case, add the message to the convesrations
-            conversations[event.id].push(event.message)
+            conversations[data.id].push(data.message)
             break;
+            */
         case 'message':
-            
+            break;
+
+        case 'conversations':
+            app.conversations = data;
+            break;
         default:
             
             break;
