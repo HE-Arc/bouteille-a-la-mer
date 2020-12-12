@@ -71,7 +71,6 @@ let app = new Vue({
             return this.timeToStr(timeLeft);
         },
         timeToStr(time) {
-            
             time = new Date(time);
 
             //Format
@@ -101,6 +100,13 @@ let app = new Vue({
             {
                 //Remove text in text area
                 this.$refs.textareamessage.value = "";
+
+                //Send to the server
+                sm.send("message", 
+                { 
+                    content: text,
+                    parent: this.currentConversation.id
+                });
             }
         }
     },
