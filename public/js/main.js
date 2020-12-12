@@ -238,26 +238,7 @@ function postConversation() {
 function onMessage(type, data) {
     switch (type) {
         case 'conversation':
-            
-        /*
-            //If the conversation does no exist
-            if (!(data.id in conversations)) {
-                // create a HTML element for each feature
-                var el = document.createElement('div');
-                el.className = 'marker';
-
-                conversations[data.id] = []
-
-                // make a marker for each feature and add to the map
-                new mapboxgl.Marker(el)
-                    .setLngLat([data.position.longitude, data.position.latitude])
-                    .addTo(app.map);
-            }
-
-            //Then in all case, add the message to the convesrations
-            conversations[data.id].push(data.message)
-            break;
-            */
+           
         case 'message':
             break;
 
