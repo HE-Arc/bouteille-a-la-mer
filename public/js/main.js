@@ -5,7 +5,10 @@ let conversations = [
     {
         id: 0,
         timeOfDeath: new Date("11.25.2020"),
-        position: 69,
+        position: {
+            longitude: 47.05896542008401,
+            latitude: 6.905909718143659
+        },
         messages: [
             {
                 id: 0,
@@ -30,7 +33,10 @@ let conversations = [
     {
         id: 1,
         timeOfDeath: new Date("11.25.2020"),
-        position: 69,
+        position: {
+            longitude: 47.059923018139436,
+            latitude: 6.946781662949565
+        },
         messages: [
             {
                 text: "yo ?",
@@ -49,6 +55,7 @@ let app = new Vue({
             email: "nico@gmail.com",
             conversations: conversations,
             updating: 0,
+            map: null,
         }
     },
     mounted() {
@@ -82,22 +89,39 @@ let app = new Vue({
             this.$refs.message_page.classList.toggle("hide-message-page");
             this.$refs.message_page.classList.toggle("display-message-page");
         },
+    },
+    watch: {
+        //When the conversations is updated
+        conversations: function (newConversations) {
+            //Foreach conversations
+            newConversations.forEach((conversation) => {
+                let location = [conversation.position.latitude, conversation.position.longitude];
+        
+                // create a HTML element for each feature
+                let el = document.createElement('div');
+                el.className = 'marker_message';
+
+                //Add the bottle to the map
+                new mapboxgl.Marker(el)
+                    .setLngLat(location)
+                    .addTo(this.map);
+            });
+        }
     }
 })
 
 let currentLocation = [];
 
 
-function onReady(){
-
-    let map = new mapboxgl.Map({
+function onReady(){    
+    
+    //Init the map
+    app.map = new mapboxgl.Map({
         container: 'map',
-        //style: 'mapbox://styles/mapbox/streets-v11', // stylesheet location
-        style: 'mapbox://styles/lamousseaulini/ckia2cpii1njr1aoign6vi31p',
+        style: 'mapbox://styles/lamousseaulini/ckia2cpii1njr1aoign6vi31p', //Style cheet
         zoom: 12 // starting zoom
-    });
-    
-    
+    })
+
     //Set the side nav draggable
     let elem = app.$refs.sidenav
     let instance = M.Sidenav.init(elem);
@@ -110,8 +134,6 @@ function onReady(){
             let myLocation = [position.coords.longitude, position.coords.latitude]
             currentLocation = myLocation;
     
-    
-    
             // create a HTML element for each feature
             var el = document.createElement('div');
             el.className = 'marker';
@@ -119,12 +141,10 @@ function onReady(){
             // make a marker for each feature and add to the map
             new mapboxgl.Marker(el)
                 .setLngLat(myLocation)
-                .addTo(map);
+                .addTo(app.map);
     
             //Center the map to our current location
-            map.setCenter([position.coords.longitude, position.coords.latitude])
-    
-    
+            app.map.setCenter([position.coords.longitude, position.coords.latitude]) 
         });
     
     
@@ -132,7 +152,7 @@ function onReady(){
         navigator.geolocation.getCurrentPosition(
             function (position) {
                 //Set center location
-                map.setCenter([position.coords.longitude, position.coords.latitude])
+                app.map.setCenter([position.coords.longitude, position.coords.latitude])
             },
         );
     }
@@ -142,9 +162,9 @@ function onReady(){
     
     
     //At load time :
-    map.on('load', function () {
+    app.map.on('load', function () {
         //Resize the map
-        map.resize();
+        app.map.resize();
     });
 
    let picker = M.Timepicker.init(app.$refs.timepicker,
@@ -199,7 +219,7 @@ function onMessage(event) {
                 // make a marker for each feature and add to the map
                 new mapboxgl.Marker(el)
                     .setLngLat([event.position.longitude, event.position.latitude])
-                    .addTo(map);
+                    .addTo(app.map);
             }
 
             //Then in all case, add the message to the convesrations
