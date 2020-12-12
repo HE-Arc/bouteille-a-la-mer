@@ -22,16 +22,19 @@ class Chat implements MessageComponentInterface {
     public function onMessage(ConnectionInterface $from, $event) {
         $event = json_decode($event);
 
-        var_dump($event);
-
         switch($event->type) {
             case 'conversation':
                 $this->onConversation($event->data);
             break;
 
             case 'message':
-                $this->onMessageSent($event->data->message);
-                default:
+                $this->onMessageSent($event->data);
+                break;
+
+            case 'newpos':
+                $this->sendReachableConversations($event->data, $from);
+
+            default:
             break;
         }
     }
@@ -72,6 +75,7 @@ class Chat implements MessageComponentInterface {
                     'long' => $long,
                     'author' => 1]);
 
+            // TODO send to reachable clients only (store lat and long as variable instead of session)
             $dataJson = json_encode((object)$data);
             foreach ($this->clients as $client) {
                 $client->send($dataJson);
@@ -95,12 +99,49 @@ class Chat implements MessageComponentInterface {
             
             Message::insert($msg);
 
+
             // Convert to string
-            $msg = json_encode((object)$msg);
+            $msg = json_encode((object)['type' => 'message', 'data' => $msg]);
     
             foreach ($this->clients as $client) {
                 $client->send($msg);
             }
+        }
+    }
+
+    public function sendReachableConversations($event, $sender) {
+        $lat = $event->lat;
+        $long = $event->long;
+
+        session(['lat' => $lat, 'long' => $long]);
+
+        $conversations = Conversation::all()->toArray();
+
+        $conversations = array_filter($conversations, function($conv) use ($lat, $long) {
+            return $this->distance($lat, $long, $conv['lat'], $conv['long']) <= $conv['radius'];
+        });
+
+        foreach($conversations as &$conv) {
+            $conv = (object)$conv;
+            $conv->{'messages'} = Message::where(['parent' => $conv->id])->get()->toArray();
+        }
+
+        var_dump($conversations);
+
+        $msg = json_encode((object)['type' => 'conversations', 'data' => $conversations]);
+        $sender->send($msg);
+    }
+
+    private function distance($lat1, $lon1, $lat2, $lon2)
+    {
+        if (($lat1 == $lat2) && ($lon1 == $lon2)) {
+            return 0;
+        } else {
+            $theta = $lon1 - $lon2;
+            $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+            $dist = acos($dist);
+            $dist = rad2deg($dist);
+            return $dist * 60 * 1.1515 * 1.609344 * 1000;
         }
     }
 }

@@ -1,5 +1,8 @@
 "use strict";
 
+let currentLocation = [];
+let sm = new SocketMessage(onMessage);
+
 //List of object representing a conversation
 let conversations = [
     {
@@ -85,7 +88,7 @@ let app = new Vue({
     }
 })
 
-let currentLocation = [];
+
 
 
 function onReady(){
@@ -124,6 +127,7 @@ function onReady(){
             //Center the map to our current location
             map.setCenter([position.coords.longitude, position.coords.latitude])
     
+            sm.send('newpos', {'long': myLocation[0], 'lat': myLocation[1]});
     
         });
     
@@ -181,32 +185,34 @@ function postConversation() {
 }
 
 
-let sm = new SocketMessage(onMessage);
+function onMessage(type, data) {
+    console.log({'type': type, 'data': data});
 
-function onMessage(event) {
-    console.log(event);
-
-    switch (event.type) {
+    switch (type) {
         case 'conversation':
             //If the conversation does no exist
-            if (!(event.id in conversations)) {
+            if (!(data.id in conversations)) {
                 // create a HTML element for each feature
                 var el = document.createElement('div');
                 el.className = 'marker';
 
-                conversations[event.id] = []
+                conversations[data.id] = []
 
                 // make a marker for each feature and add to the map
                 new mapboxgl.Marker(el)
-                    .setLngLat([event.position.longitude, event.position.latitude])
+                    .setLngLat([data.position.longitude, data.position.latitude])
                     .addTo(map);
             }
 
             //Then in all case, add the message to the convesrations
-            conversations[event.id].push(event.message)
+            conversations[data.id].push(data.message)
             break;
         case 'message':
-            
+            break;
+
+        case 'conversations':
+
+            break;
         default:
             
             break;
