@@ -39,8 +39,10 @@ let conversations = [
         },
         messages: [
             {
-                text: "yo ?",
-                date: 69
+                id: 1,
+                from: "Manu",
+                text: "ALLOO YAA QNN :( ?",
+                date: new Date("11.26.2020:19:10"),
             },
         ]
     }
@@ -56,6 +58,7 @@ let app = new Vue({
             conversations: conversations,
             updating: 0,
             map: null,
+            currentConversation: {messages : []}
         }
     },
     mounted() {
@@ -85,7 +88,14 @@ let app = new Vue({
             this.$refs.drop_page.classList.toggle("hide-drop-page");
             this.$refs.drop_page.classList.toggle("display-drop-page");
         },
-        toggleMessagePage() {
+        toggleMessagePage(conversationId) {
+            //If conversastionID is set, change current conversation
+            if(conversationId >= 0)
+            {
+                //Set the new current conversation
+                this.currentConversation = this.conversations.find(conv => conv.id == conversationId);
+            }
+
             this.$refs.message_page.classList.toggle("hide-message-page");
             this.$refs.message_page.classList.toggle("display-message-page");
         },
@@ -100,6 +110,9 @@ let app = new Vue({
                 // create a HTML element for each feature
                 let el = document.createElement('div');
                 el.className = 'marker_message';
+
+                //Add an event when we click on the marker
+                el.onclick = () => {this.toggleMessagePage(conversation.id)};
 
                 //Add the bottle to the map
                 new mapboxgl.Marker(el)
@@ -138,9 +151,14 @@ function onReady(){
             var el = document.createElement('div');
             el.className = 'marker';
     
+            //Little popup
+            let popup = new mapboxgl.Popup({offset: 25})
+            .setText('Your position ;)');
+
             // make a marker for each feature and add to the map
             new mapboxgl.Marker(el)
                 .setLngLat(myLocation)
+                .setPopup(popup)
                 .addTo(app.map);
     
             //Center the map to our current location

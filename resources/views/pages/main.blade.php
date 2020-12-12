@@ -50,7 +50,7 @@ $data = [
 					<div v-for="conversation in conversations" :key="conversation.id">
 						<div class="col s10">
 							<li>
-								<a class="waves-effect truncate" href="#!">@{{conversation.messages[0].text}}</a>
+								<a class="waves-effect truncate" href="#!" @click="toggleMessagePage(conversation.id)">@{{conversation.messages[0].text}}</a>
 							</li>
 						</div>
 						<div class="col s2 valign-wrapper">
@@ -67,7 +67,7 @@ $data = [
 				<a href="#" class="center">Drop a bottle !</a>
 				<ul id="nav-mobile" class="left">
 					<li>
-						<a id="return-to-map-btn" ref="return_to_map_btn" @click="toggleDropPage">
+						<a ref="return_to_map_btn" @click="toggleDropPage">
 							<i class="material-icons">arrow_back</i>
 						</a>
 					</li>
@@ -105,7 +105,7 @@ $data = [
 					<a href="#" class="center">Chat !</a>
 					<ul id="nav-mobile" class="left">
 						<li>
-							<a id="return-to-map-btn" ref="return_to_map_btn" @click="toggleMessagePage">
+							<a ref="return_to_map_btn" @click="toggleMessagePage(-1)">
 								<i class="material-icons">arrow_back</i>
 							</a>
 						</li>
@@ -114,7 +114,7 @@ $data = [
 		</nav>
 
 		<ul class="collection">
-			<li class="collection-item" v-for="message in conversations[0].messages" :key="message.id">
+			<li class="collection-item" v-for="message in currentConversation.messages" :key="message.id">
 				<span class="title"><b>@{{message.from}}</b></span>
 				<a href="#!" class="secondary-content"><p>10:01</p></i></a>
 				<p class="truncate">
