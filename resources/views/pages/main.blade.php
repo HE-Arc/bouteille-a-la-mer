@@ -65,7 +65,7 @@ $data = [
 		<nav id="drop-bottle-title" class="z-depth-4">
 			<div class="nav-wrapper">
 				<a href="#" class="center">Drop a bottle !</a>
-				<ul id="nav-mobile" class="left">
+				<ul id="nav-mobile" class="left ">
 					<li>
 						<a ref="return_to_map_btn" @click="toggleDropPage">
 							<i class="material-icons">arrow_back</i>
@@ -103,7 +103,7 @@ $data = [
 		<nav id="message-title">
 				<div class="nav-wrapper">
 					<a href="#" class="center">Chat !</a>
-					<ul id="nav-mobile" class="left">
+					<ul id="nav-mobile" class="left waves-effect waves-light">
 						<li>
 							<a ref="return_to_map_btn" @click="toggleMessagePage(-1)">
 								<i class="material-icons">arrow_back</i>
