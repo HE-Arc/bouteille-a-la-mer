@@ -116,7 +116,7 @@ $data = [
 		<ul class="collection">
 			<li class="collection-item" v-for="message in currentConversation.messages" :key="message.id">
 				<span class="title"><b>@{{message.author}}</b></span>
-				<a href="#!" class="secondary-content"><p>@{{getTimeLeftStr(message.posted)}}</p></i></a>
+				<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
 				<p class="truncate">
 					@{{message.content}}
 				</p>

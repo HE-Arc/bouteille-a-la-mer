@@ -66,8 +66,16 @@ let app = new Vue({
     methods: {
         getTimeLeftStr(timeOfDeath) {
             this.updating
-            let timeLeft = new Date(timeOfDeath - new Date());
-            return timeLeft.getHours() + ':' + timeLeft.getMinutes();
+            let timeLeft = new Date(timeOfDeath) - new Date();
+
+            return this.timeToStr(timeLeft);
+        },
+        timeToStr(time) {
+            
+            time = new Date(time);
+
+            //Format
+            return time.toLocaleTimeString('ch-FR', { hour: '2-digit', minute: '2-digit' });
         },
         toggleDropPage() {
             this.$refs.drop_page.classList.toggle("hide-drop-page");
