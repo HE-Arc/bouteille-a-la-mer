@@ -238,7 +238,7 @@ function postConversation() {
 function onMessage(type, data) {
     switch (type) {
         case 'conversation':
-           
+           app.conversations.push(data);
         case 'message':
             break;
 
