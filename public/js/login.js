@@ -1,30 +1,4 @@
 "use strict";
-/*
-function onLogin() {
-    $('#btnSubmit').attr("disabled", true);
-    $.post("tryLogin", $('#loginForm').serialize(), (result) => {
-        console.log(result);
-        if (result.success === true) {
-            window.location.replace("/");
-        } else {
-            $('#btnSubmit').attr("disabled", false);
-            if (result.error === "wrongPassword") {
-                displayError("Wrong password. Try again.");
-            } else if (result.error === "wrongUsername") {
-                displayError("This username doesn't exist. Try again or <a href='signup'>sign up</a>");
-            } else {
-                displayError("Something went wrong");
-            }
-        }
-    });
-    return false;
-}
-
-function displayError(error) {
-    console.log(error);
-    $('#error').html(error);
-}
-*/
 
 const app = new Vue({
     el: '#app',

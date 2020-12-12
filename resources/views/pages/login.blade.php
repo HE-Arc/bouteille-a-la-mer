@@ -6,10 +6,10 @@
         <center>
             <div>
                 <img class="logo" src="{{ URL::asset('img/logo.png') }}" alt="logo" width="100px">
-                Bouteille à la mer
+                <h6>Bouteille à la mer</h6>
             </div>
         </center>
-        <h2>Sign in</h2>
+        <h6>Sign in</h6>
         <p>Hi there! Nice to see you again.</p>
         <form @submit="checkForm" id="loginForm"  ref="loginForm">
             @csrf
@@ -23,7 +23,7 @@
             </div>
             <div class="error" id="error"></div>
             <div class="spacer"></div>
-            <input type="submit" class="btn waves-effect waves-light col s12" value="login" id="btnSubmit">
+            <button class="btn waves-effect waves-light" type="submit" name="action" value="login" id="btnSubmit">Submit</button>
         </form>
         <p v-if="errors.length > 0">
             <b>Please correct the following error(s):</b>
