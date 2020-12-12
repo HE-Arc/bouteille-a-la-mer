@@ -84,6 +84,19 @@ let app = new Vue({
             this.$refs.message_page.classList.toggle("hide-message-page");
             this.$refs.message_page.classList.toggle("display-message-page");
         },
+        sendMessage() {
+            //Get text
+            let text = this.$refs.textareamessage.value;
+
+            //If the message is not empty
+            if(text != "")
+            {
+                //Remove text in text area
+                this.$refs.textareamessage.value = "";
+
+                console.log(text);
+            }
+        }
     },
     watch: {
         //When the conversations is updated

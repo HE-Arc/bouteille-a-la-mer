@@ -125,10 +125,12 @@ $data = [
 
 		<div class="row valign-wrapper">
 			<div class="input-field col s10">
-				<textarea id="textarea1" class="materialize-textarea"></textarea>
-				<label for="textarea1">Write a message</label>
+				<textarea ref="textareamessage" id="textareamessage" class="materialize-textarea" v-on:keydown.13.prevent="sendMessage"></textarea>
+				<label for="textareamessage">Write a message</label>
 			</div>
-			<i class="material-icons col s2">send</i>
+			<a class="btn-flat btn-large waves-effect waves-light" @click="sendMessage">
+				<i class="material-icons col s2">send</i>
+			</a>
 		</div>
 	</div>
 </div>
