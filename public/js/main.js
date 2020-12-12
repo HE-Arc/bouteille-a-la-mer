@@ -88,9 +88,14 @@ let app = new Vue({
     watch: {
         //When the conversations is updated
         conversations: function (newConversations) {
+
+            console.log(newConversations)
+            
             //Foreach conversations
             newConversations.forEach((conversation) => {
-                let location = [conversation.lat, conversation.long];
+                let location = [conversation.long, conversation.lat];
+
+                console.log(location)
         
                 // create a HTML element for each feature
                 let el = document.createElement('div');
