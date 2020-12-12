@@ -94,8 +94,6 @@ let app = new Vue({
             //Foreach conversations
             newConversations.forEach((conversation) => {
                 let location = [conversation.long, conversation.lat];
-
-                console.log(location)
         
                 // create a HTML element for each feature
                 let el = document.createElement('div');
