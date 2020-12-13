@@ -108,8 +108,6 @@ let app = new Vue({
         //When the conversations is updated
         conversations: function (newConversations) {
 
-            console.log(newConversations)
-            
             //Foreach conversations
             newConversations.forEach((conversation) => {
                 let location = [conversation.long, conversation.lat];
@@ -222,7 +220,7 @@ function postConversation() {
             parent: null
         }
     }
-    console.log(body)
+
     sm.send('conversation', body);
 
     return false;
@@ -230,6 +228,8 @@ function postConversation() {
 
 
 function onMessage(type, data) {
+    console.log({type, data});
+
     switch (type) {
         case 'conversation':
             

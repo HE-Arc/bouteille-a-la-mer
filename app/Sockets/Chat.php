@@ -19,7 +19,7 @@ class Chat implements MessageComponentInterface {
     public function onOpen(ConnectionInterface $conn) {
         // Store the new connection to send messages to later
         $this->clients->attach($conn);
-        $this->clientsConnexion[$conn->resourceId] = ["lat" => 0, "lon" => 0, "id" => 0];
+        $this->clientsConnexion[$conn->resourceId] = ["ref" => $conn, "lat" => 0, "long" => 0, "id" => 0];
         echo "New connection! ({$conn->resourceId})\n";
     }
 
@@ -36,9 +36,9 @@ class Chat implements MessageComponentInterface {
                 break;
 
             case 'newpos':
-                $this->clientsConnexion[$from->ressourceId]['lat'] = $event->data->lat;
-                $this->clientsConnexion[$from->ressourceId]['lon'] = $event->data->lon;
-                $this->clientsConnexion[$from->ressourceId]['id'] = $event->data->id;
+                //var_dump($this->clientsConnexion[$from->resourceId]->lat);
+                $this->clientsConnexion[$from->resourceId]['lat'] = $event->data->lat;
+                $this->clientsConnexion[$from->resourceId]['long'] = $event->data->long;
                 $this->sendReachableConversations($event->data, $from);
 
             default:
@@ -76,21 +76,23 @@ class Chat implements MessageComponentInterface {
 
         if ((is_numeric($lat) && $lat >= -90 && $lat <= 90
             && is_numeric($long)&& $long>= -180&& $long<= 180)) {
-                $id = Conversation::insertGetId([
+                $conv = Conversation::create([
                     'radius' => $radius,
                     'time_of_death' => $timeOfDeath,
                     'lat' => $lat,
                     'long' => $long,
                     'author' => 1]);
 
-            // TODO send to reachable clients only (store lat and long as variable instead of session)
-            foreach ($this->clients as $client) {
-                $dataJson = json_encode((object)$data);
-                $client->send($dataJson);
+            $clientInRange = array_filter($this->clientsConnexion, function($client) use ($conv, $lat, $long) {
+                return $this->distance($lat, $long, $conv['lat'], $conv['long']) <= $conv['radius'];
+            });
+
+            foreach ($clientInRange as $clientId => $clientData) {
+                $dataJson = json_encode((object)['type' => 'conversation', 'data' => (object)$data]);
+                $this->clientsConnexion[$clientId]['ref']->send($dataJson);
             }
 
-
-            $this->onMessageSent($event->message, $id);
+            $this->onMessageSent($event->message, $conv['id']);
         }
     }
 
@@ -131,10 +133,9 @@ class Chat implements MessageComponentInterface {
 
         foreach($conversations as &$conv) {
             $conv = (object)$conv;
+            // TODO TODO remove password etc...
             $conv->{'messages'} = Message::where(['parent' => $conv->id])->join('users', 'users.id', 'author')->get()->toArray();
         }
-
-        var_dump($conversations);
 
         $msg = json_encode((object)['type' => 'conversations', 'data' => $conversations]);
         $sender->send($msg);

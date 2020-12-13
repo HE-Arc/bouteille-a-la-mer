@@ -9,4 +9,12 @@ class Conversation extends Model
 {
     public $timestamps = false;
     protected $table = "conversations";
+
+    protected $fillable = [
+        'radius', 
+        'time_of_death', 
+        'lat' ,
+        'long',
+        'author'
+    ];
 }
