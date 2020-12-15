@@ -5,6 +5,13 @@ use Ratchet\ConnectionInterface;
 use Illuminate\Support\Facades\DB;
 use App\Models\Message;
 use App\Models\Conversation;
+use Illuminate\Session\SessionManager;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+
 
 class Chat implements MessageComponentInterface {
     protected $clients;
@@ -19,20 +26,57 @@ class Chat implements MessageComponentInterface {
     public function onOpen(ConnectionInterface $conn) {
         // Store the new connection to send messages to later
         $this->clients->attach($conn);
-        $this->clientsConnexion[$conn->resourceId] = ["ref" => $conn, "lat" => 0, "long" => 0, "id" => 0];
+        // Create a new session handler for this client
+        $session = (new SessionManager(App::getInstance()))->driver();
+        // Get the cookies
+        $cookiesHeader = $conn->httpRequest->getHeader('Cookie');
+        $cookies = \GuzzleHttp\Psr7\Header::parse($cookiesHeader)[0];
+        var_dump($cookies);
+
+        // Get the laravel's one
+        $laravelCookie = urldecode($cookies[Config::get('session.cookie')]);
+        // get the user session id from it
+        $idSession = Crypt::decrypt($laravelCookie, false);
+        //$idSession = $laravelCookie;
+        echo "idSession: ";
+        echo $idSession;
+        $idSession = explode("|", $idSession)[1];
+        echo "\nidSession2: ";
+        echo $idSession;
+        // Set the session id to the session handler
+        $session->setId($idSession);
+        echo "session après: ";
+        var_dump($session);
+
+        // Bind the session handler to the client connection
+        $conn->session = $session;
         echo "New connection! ({$conn->resourceId})\n";
+
+        
+        $session->start();
+
+        $idUser = $session->get(Auth::getName());
+
+        if (!isset($idUser)) {
+            $idUser = -1;
+        }
+
+        $this->clientsConnexion[$conn->resourceId] = ["ref" => $conn, "lat" => 0, "long" => 0, "id" => $idUser];
+
     }
 
     public function onMessage(ConnectionInterface $from, $event) {
         $event = json_decode($event);
 
+        $con = $this->clientsConnexion[$from->resourceId];
+
         switch($event->type) {
             case 'conversation':
-                $this->onConversation($event->data);
+                $this->onConversation($event->data, $con);
             break;
 
             case 'message':
-                $this->onMessageSent($event->data);
+                $this->onMessageSent($event->data, $con);
                 break;
 
             case 'newpos':
@@ -61,7 +105,7 @@ class Chat implements MessageComponentInterface {
         $conn->close();
     }
 
-    public function onConversation($event) {
+    public function onConversation($event, $from) {
         $data = $event->conversation;
         $radius = 30000;
         $lifetime = "+30 minutes";
@@ -81,7 +125,7 @@ class Chat implements MessageComponentInterface {
                     'time_of_death' => $timeOfDeath,
                     'lat' => $lat,
                     'long' => $long,
-                    'author' => 1]);
+                    'author' => $from["id"]]);
 
             $clientInRange = array_filter($this->clientsConnexion, function($client) use ($conv, $lat, $long) {
                 return $this->distance($lat, $long, $conv['lat'], $conv['long']) <= $conv['radius'];
@@ -96,7 +140,7 @@ class Chat implements MessageComponentInterface {
         }
     }
 
-    public function onMessageSent($event, $convID = NULL) {
+    public function onMessageSent($event, $from, $convID = NULL) {
         $convID == $event->parent ?? $convID;
         
         if($convID != NULL) {
@@ -105,7 +149,7 @@ class Chat implements MessageComponentInterface {
             'image' => $event->image, 
             'posted' => $now, 
             'parent' => $convID, 
-            'author' => 1]; // TODO session('loginID')
+            'author' => $from["id"]];
             
             Message::insert($msg);
 
