@@ -12,10 +12,14 @@ class SocketMessage
 
         let url = ws + '://' + window.location.hostname + path;
         this.ws = new WebSocket(url);
-        console.log("connecting...");
+        console.log("connecting to web socket " + url + "...");
         this.ws.addEventListener('message', event => {
             let msg = JSON.parse(event.data);
             onMessage(msg.type, msg.data);
+        });
+        this.ws.addEventListener('error', event => {
+            alert("Error connecting to the web socket " + url);
+            location.reload();
         });
     }
 

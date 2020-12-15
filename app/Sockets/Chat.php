@@ -31,22 +31,17 @@ class Chat implements MessageComponentInterface {
         // Get the cookies
         $cookiesHeader = $conn->httpRequest->getHeader('Cookie');
         $cookies = \GuzzleHttp\Psr7\Header::parse($cookiesHeader)[0];
-        var_dump($cookies);
 
         // Get the laravel's one
         $laravelCookie = urldecode($cookies[Config::get('session.cookie')]);
         // get the user session id from it
         $idSession = Crypt::decrypt($laravelCookie, false);
         //$idSession = $laravelCookie;
-        echo "idSession: ";
-        echo $idSession;
+        
         $idSession = explode("|", $idSession)[1];
-        echo "\nidSession2: ";
-        echo $idSession;
+
         // Set the session id to the session handler
         $session->setId($idSession);
-        echo "session après: ";
-        var_dump($session);
 
         // Bind the session handler to the client connection
         $conn->session = $session;
@@ -128,15 +123,15 @@ class Chat implements MessageComponentInterface {
                     'author' => $from["id"]]);
 
             $clientInRange = array_filter($this->clientsConnexion, function($client) use ($conv, $lat, $long) {
-                return $this->distance($lat, $long, $conv['lat'], $conv['long']) <= $conv['radius'];
+                return $this->distance($lat, $long, $client['lat'], $client['long']) <= $conv['radius'];
             });
 
+            $dataJson = json_encode((object)['type' => 'conversation', 'data' => (object)$data]);
             foreach ($clientInRange as $clientId => $clientData) {
-                $dataJson = json_encode((object)['type' => 'conversation', 'data' => (object)$data]);
                 $this->clientsConnexion[$clientId]['ref']->send($dataJson);
             }
 
-            $this->onMessageSent($event->message, $conv['id']);
+            $this->onMessageSent($event->message, $from, $conv['id']);
         }
     }
 
@@ -154,11 +149,21 @@ class Chat implements MessageComponentInterface {
             Message::insert($msg);
 
 
+            
+            /*foreach ($this->clients as $client) {
+                $client->send($msg);
+            }*/
+            $parentConv = Conversation::find($convID);
+            $clientInRange = array_filter($this->clientsConnexion, function($client) use ($parentConv) {
+                return $this->distance($parentConv['lat'], $parentConv['long'], $client['lat'], $client['long']) <= $parentConv['radius'];
+            });
+
+
             // Convert to string
             $msg = json_encode((object)['type' => 'message', 'data' => $msg]);
-    
-            foreach ($this->clients as $client) {
-                $client->send($msg);
+            foreach ($clientInRange as $clientId => $clientData) {
+                $dataJson = $msg;
+                $this->clientsConnexion[$clientId]['ref']->send($dataJson);
             }
         }
     }
