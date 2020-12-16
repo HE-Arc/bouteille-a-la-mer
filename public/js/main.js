@@ -101,6 +101,8 @@ let app = new Vue({
             {
                 //Remove text in text area
                 this.$refs.textareamessage.value = "";
+                sm.send('message', {'content': message, 'parent': this.currentConversation.id});
+
             }
         }
     },
@@ -228,7 +230,7 @@ function postConversation() {
 
 
 function onMessage(type, data) {
-    console.log({type, data});
+    console.log("onMessage", {type, data});
 
     switch (type) {
         case 'conversation':
