@@ -108,25 +108,28 @@ let app = new Vue({
         }
     },
     watch: {
-        //When the conversations is updated
-        conversations: function (newConversations) {
+        conversations: {
+            //When the conversations is updated
+            handler: function (newConversations) {
+                console.log("conversation Changed");
 
-            //Foreach conversations
-            newConversations.forEach((conversation) => {
-                let location = [conversation.long, conversation.lat];
-        
-                // create a HTML element for each feature
-                let el = document.createElement('div');
-                el.className = 'marker_message';
+                //Foreach conversations
+                newConversations.forEach((conversation) => {
+                    let location = [conversation.long, conversation.lat];
+            
+                    // create a HTML element for each feature
+                    let el = document.createElement('div');
+                    el.className = 'marker_message';
 
-                //Add an event when we click on the marker
-                el.onclick = () => {this.toggleMessagePage(conversation.id)};
+                    //Add an event when we click on the marker
+                    el.onclick = () => {this.toggleMessagePage(conversation.id)};
 
-                //Add the bottle to the map
-                new mapboxgl.Marker(el)
-                    .setLngLat(location)
-                    .addTo(this.map);
-            });
+                    //Add the bottle to the map
+                    new mapboxgl.Marker(el)
+                        .setLngLat(location)
+                        .addTo(this.map);
+                });
+            }, deep: true
         }
     }
 })
@@ -256,6 +259,16 @@ function onMessage(type, data) {
             break;
             */
         case 'message':
+            console.log(app.conversations);
+            
+            for (let [i, c] of app.conversations.entries()) {
+                console.log(c, i);
+                if (c.id === data.parent) {
+                    c.messages.push(data);
+                    //app.conversation.splice(i, 1, JSON.parse(JSON.stringify(c)));
+                    Vue.set(app.conversations, i, c);
+                }
+            }
             break;
 
         case 'conversations':

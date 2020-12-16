@@ -162,7 +162,8 @@ class Chat implements MessageComponentInterface {
             $msg = json_encode((object)['type' => 'message', 'data' => $msg]);
             foreach ($clientInRange as $clientId => $clientData) {
                 $dataJson = $msg;
-                //$this->clientsConnexion[$clientId]['ref']->send($dataJson);
+                $this->clientsConnexion[$clientId]['ref']->send($dataJson);
+                var_dump("send message");
             }
         }
     }
@@ -181,10 +182,11 @@ class Chat implements MessageComponentInterface {
 
         foreach($conversations as &$conv) {
             $conv = (object)$conv;
-            $conv->{'messages'} = (object)Message::select('content', 'image', 'posted', 'username')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
+            $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
         }
 
         $msg = json_encode((object)['type' => 'conversations', 'data' => $conversations]);
+        dump($conversations);
         $sender->send($msg);
     }
 
