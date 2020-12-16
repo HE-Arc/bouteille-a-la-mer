@@ -180,10 +180,7 @@ class Chat implements MessageComponentInterface {
 
         foreach($conversations as &$conv) {
             $conv = (object)$conv;
-            // TODO TODO remove password etc...
-            $conv->{'messages'} = Message::select()->where(['parent' => $conv->id])->join('users', 'users.id', 'author')->get()->toArray();
-            var_dump($conv->messages);
-        
+            $conv->{'messages'} = (object)Message::select('content', 'image', 'posted', 'username')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
         }
 
         $msg = json_encode((object)['type' => 'conversations', 'data' => $conversations]);
