@@ -116,7 +116,7 @@ $data = [
 		<div class="page-content">
 
 			<ul class="collection">
-				<li class="collection-item" v-for="message in currentConversation.messages" :key="message.id">
+				<li class="collection-item" v-if="updateMessage" v-for="message in currentConversation.messages" :key="message.id">
 					<span class="sender"><b>@{{message.username ?? 'Anonymous'}}</b></span>
 					<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
 					<div v-if='message.content != ""'>

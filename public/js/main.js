@@ -42,6 +42,7 @@ let app = new Vue({
             email: "nico@gmail.com",
             conversations: conversations,
             updating: 0,
+            updateMessage: true,
             map: null,
             currentConversation: {messages : []}
         }
@@ -261,6 +262,10 @@ function onMessage(type, data) {
                     //app.conversation.splice(i, 1, JSON.parse(JSON.stringify(c)));
                     Vue.set(app.conversations[i].messages, c.messages.length, data);
                     Vue.set(app.conversations, i, c);
+                    app.updateMessage = false;
+                    setTimeout(() => {
+                        app.updateMessage = true;
+                    }, 0);
                 }
             }
             break;
