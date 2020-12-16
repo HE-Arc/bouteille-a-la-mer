@@ -244,8 +244,9 @@ function onMessage(type, data) {
             for (let [i, c] of app.conversations.entries()) {
                 console.log(c, i);
                 if (c.id === data.parent) {
-                    c.messages.push(data);
+                    //c.messages.push(data);
                     //app.conversation.splice(i, 1, JSON.parse(JSON.stringify(c)));
+                    Vue.set(app.conversations[i].messages, c.messages.length, data);
                     Vue.set(app.conversations, i, c);
                 }
             }
