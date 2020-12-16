@@ -134,6 +134,7 @@ class Chat implements MessageComponentInterface {
     }
 
     public function onMessageSent($event, $from, $convID = NULL) {
+        $isNewConv = ($convID != NULL);
         var_dump("new message");
         $convID = $event->parent ?? $convID;
         var_dump($event);
@@ -153,7 +154,7 @@ class Chat implements MessageComponentInterface {
                 return $this->distance($parentConv['lat'], $parentConv['long'], $client['lat'], $client['long']) <= $parentConv['radius'];
             });
 
-            if ($convID == NULL) {
+            if (!$isNewConv) {
                 // Convert to string
                 $msg = json_encode((object)['type' => 'message', 'data' => $msg]);
                 foreach ($clientInRange as $clientId => $clientData) {

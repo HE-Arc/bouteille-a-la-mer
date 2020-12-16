@@ -240,7 +240,7 @@ function onMessage(type, data) {
 
     switch (type) {
         case 'conversation':
-            data.messages = [];
+            //data.messages = [];
             app.conversations.push(data);
 
             //If this is a new conversation conversation and we are the author, display it
