@@ -5,6 +5,13 @@ use Ratchet\ConnectionInterface;
 use Illuminate\Support\Facades\DB;
 use App\Models\Message;
 use App\Models\Conversation;
+use Illuminate\Session\SessionManager;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+
 
 class Chat implements MessageComponentInterface {
     protected $clients;
@@ -19,26 +26,44 @@ class Chat implements MessageComponentInterface {
     public function onOpen(ConnectionInterface $conn) {
         // Store the new connection to send messages to later
         $this->clients->attach($conn);
-        $this->clientsConnexion[$conn->resourceId] = ["lat" => 0, "lon" => 0, "id" => 0];
+
+        $session = $this->getSession($conn);
+
+        // Bind the session handler to the client connection
+        $conn->session = $session;
         echo "New connection! ({$conn->resourceId})\n";
+
+        
+        $session->start();
+
+        $idUser = $session->get(Auth::getName());
+
+        if (!isset($idUser)) {
+            $idUser = -1;
+        }
+
+        $this->clientsConnexion[$conn->resourceId] = ["ref" => $conn, "lat" => 0, "long" => 0, "id" => $idUser];
+
     }
 
     public function onMessage(ConnectionInterface $from, $event) {
         $event = json_decode($event);
 
+        $con = $this->clientsConnexion[$from->resourceId];
+
         switch($event->type) {
             case 'conversation':
-                $this->onConversation($event->data);
+                $this->onConversation($event->data, $con);
             break;
 
             case 'message':
-                $this->onMessageSent($event->data);
+                $this->onMessageSent($event->data, $con);
                 break;
 
             case 'newpos':
-                $this->clientsConnexion[$from->ressourceId]['lat'] = $event->data->lat;
-                $this->clientsConnexion[$from->ressourceId]['lon'] = $event->data->lon;
-                $this->clientsConnexion[$from->ressourceId]['id'] = $event->data->id;
+                //var_dump($this->clientsConnexion[$from->resourceId]->lat);
+                $this->clientsConnexion[$from->resourceId]['lat'] = $event->data->lat;
+                $this->clientsConnexion[$from->resourceId]['long'] = $event->data->long;
                 $this->sendReachableConversations($event->data, $from);
 
             default:
@@ -61,8 +86,21 @@ class Chat implements MessageComponentInterface {
         $conn->close();
     }
 
-    public function onConversation($event) {
+    public function onConversation($event, $from) {
+        if(!isset($event->conversation) || !isset($event->message))
+            return;
+
+        $message = $event->message;
+        
+        $message->image = isset($message->image) ? $message->image : NULL;
+        if (!isset($message->message))
+            return;
+
         $data = $event->conversation;
+        if (!isset($data->lat) || !isset($data->long) || !isset($data->lifetime))
+            return;
+
+        
         $radius = 30000;
         $lifetime = "+30 minutes";
         if(is_string($data->lifetime) && preg_match('/^\d{2}:\d{2}$/', $data->lifetime)) {
@@ -71,31 +109,39 @@ class Chat implements MessageComponentInterface {
         }
         
         $timeOfDeath = date('Y-m-d H:i:s', strtotime($lifetime));
+
+        
         $lat = $data->lat;
         $long = $data->long;
 
         if ((is_numeric($lat) && $lat >= -90 && $lat <= 90
             && is_numeric($long)&& $long>= -180&& $long<= 180)) {
-                $id = Conversation::insertGetId([
+                $conv = Conversation::create([
                     'radius' => $radius,
                     'time_of_death' => $timeOfDeath,
                     'lat' => $lat,
                     'long' => $long,
-                    'author' => 1]);
+                    'author' => $from["id"]]);
 
-            // TODO send to reachable clients only (store lat and long as variable instead of session)
-            foreach ($this->clients as $client) {
-                $dataJson = json_encode((object)$data);
-                $client->send($dataJson);
+                $message->parent = $conv['id'];
+
+            $clientInRange = array_filter($this->clientsConnexion, function($client) use ($conv, $lat, $long) {
+                return $this->distance($lat, $long, $client['lat'], $client['long']) <= $conv['radius'];
+            });
+
+            $dataJson = json_encode((object)['type' => 'conversation', 'data' => (object)$data]);
+            foreach ($clientInRange as $clientId => $clientData) {
+                $this->clientsConnexion[$clientId]['ref']->send($dataJson);
             }
 
-
-            $this->onMessageSent($event->message, $id);
+            $this->onMessageSent($message, $from, $conv['id']);
         }
     }
 
-    public function onMessageSent($event, $convID = NULL) {
-        $convID == $event->parent ?? $convID;
+    public function onMessageSent($event, $from, $convID = NULL) {
+        var_dump("new message");
+        $convID = $event->parent ?? $convID;
+        var_dump($event);
         
         if($convID != NULL) {
             $now = date('Y-m-d H:i:s');
@@ -103,16 +149,21 @@ class Chat implements MessageComponentInterface {
             'image' => $event->image, 
             'posted' => $now, 
             'parent' => $convID, 
-            'author' => 1]; // TODO session('loginID')
+            'author' => $from["id"]];
             
             Message::insert($msg);
 
+            $parentConv = Conversation::find($convID);
+            $clientInRange = array_filter($this->clientsConnexion, function($client) use ($parentConv) {
+                return $this->distance($parentConv['lat'], $parentConv['long'], $client['lat'], $client['long']) <= $parentConv['radius'];
+            });
 
             // Convert to string
             $msg = json_encode((object)['type' => 'message', 'data' => $msg]);
-    
-            foreach ($this->clients as $client) {
-                $client->send($msg);
+            foreach ($clientInRange as $clientId => $clientData) {
+                $dataJson = $msg;
+                $this->clientsConnexion[$clientId]['ref']->send($dataJson);
+                var_dump("send message");
             }
         }
     }
@@ -131,17 +182,15 @@ class Chat implements MessageComponentInterface {
 
         foreach($conversations as &$conv) {
             $conv = (object)$conv;
-            $conv->{'messages'} = Message::where(['parent' => $conv->id])->join('users', 'users.id', 'author')->get()->toArray();
+            $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
         }
 
-        var_dump($conversations);
-
         $msg = json_encode((object)['type' => 'conversations', 'data' => $conversations]);
+        dump($conversations);
         $sender->send($msg);
     }
 
-    private function distance($lat1, $lon1, $lat2, $lon2)
-    {
+    private function distance($lat1, $lon1, $lat2, $lon2) {
         if (($lat1 == $lat2) && ($lon1 == $lon2)) {
             return 0;
         } else {
@@ -151,5 +200,26 @@ class Chat implements MessageComponentInterface {
             $dist = rad2deg($dist);
             return $dist * 60 * 1.1515 * 1.609344 * 1000;
         }
+    }
+
+    private function getSession($conn) {
+        // Create a new session handler for this client
+        $session = (new SessionManager(App::getInstance()))->driver();
+        // Get the cookies
+        $cookiesHeader = $conn->httpRequest->getHeader('Cookie');
+        $cookies = \GuzzleHttp\Psr7\Header::parse($cookiesHeader)[0];
+
+        // Get the laravel's one
+        $laravelCookie = urldecode($cookies[Config::get('session.cookie')]);
+        // get the user session id from it
+        $idSession = Crypt::decrypt($laravelCookie, false);
+        //$idSession = $laravelCookie;
+        
+        $idSession = explode("|", $idSession)[1];
+
+        // Set the session id to the session handler
+        $session->setId($idSession);
+
+        return $session;
     }
 }

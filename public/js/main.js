@@ -101,37 +101,34 @@ let app = new Vue({
                 //Remove text in text area
                 this.$refs.textareamessage.value = "";
 
-                //Send to the server
-                sm.send("message", 
-                { 
-                    content: text,
-                    parent: this.currentConversation.id
-                });
+                sm.send('message', {'message': text, 'parent': this.currentConversation.id, 'image': null});
+
             }
         }
     },
     watch: {
-        //When the conversations is updated
-        conversations: function (newConversations) {
+        conversations: {
+            //When the conversations is updated
+            handler: function (newConversations) {
+                console.log("conversation Changed");
 
-            console.log(newConversations)
+                //Foreach conversations
+                newConversations.forEach((conversation) => {
+                    let location = [conversation.long, conversation.lat];
             
-            //Foreach conversations
-            newConversations.forEach((conversation) => {
-                let location = [conversation.long, conversation.lat];
-        
-                // create a HTML element for each feature
-                let el = document.createElement('div');
-                el.className = 'marker_message';
+                    // create a HTML element for each feature
+                    let el = document.createElement('div');
+                    el.className = 'marker_message';
 
-                //Add an event when we click on the marker
-                el.onclick = () => {this.toggleMessagePage(conversation.id)};
+                    //Add an event when we click on the marker
+                    el.onclick = () => {this.toggleMessagePage(conversation.id)};
 
-                //Add the bottle to the map
-                new mapboxgl.Marker(el)
-                    .setLngLat(location)
-                    .addTo(this.map);
-            });
+                    //Add the bottle to the map
+                    new mapboxgl.Marker(el)
+                        .setLngLat(location)
+                        .addTo(this.map);
+                });
+            }, deep: true
         }
     }
 })
@@ -228,7 +225,7 @@ function postConversation() {
             parent: null
         }
     }
-    console.log(body)
+
     sm.send('conversation', body);
 
     return false;
@@ -236,10 +233,22 @@ function postConversation() {
 
 
 function onMessage(type, data) {
+    console.log("onMessage", {type, data});
+
     switch (type) {
         case 'conversation':
            app.conversations.push(data);
         case 'message':
+            console.log(app.conversations);
+            
+            for (let [i, c] of app.conversations.entries()) {
+                console.log(c, i);
+                if (c.id === data.parent) {
+                    c.messages.push(data);
+                    //app.conversation.splice(i, 1, JSON.parse(JSON.stringify(c)));
+                    Vue.set(app.conversations, i, c);
+                }
+            }
             break;
 
         case 'conversations':

@@ -50,7 +50,7 @@ $data = [
 					<div v-for="conversation in conversations" :key="conversation.id">
 						<div class="col s10">
 							<li>
-								<a class="waves-effect truncate" href="#!" @click="toggleMessagePage(conversation.id)">@{{conversation.messages[0].content}}</a>
+								<a class="waves-effect truncate" href="#!" @click="toggleMessagePage(conversation.id)">@{{ conversation.messages[0].content }}</a>
 							</li>
 						</div>
 						<div class="col s2 valign-wrapper">
@@ -115,7 +115,7 @@ $data = [
 
 		<ul class="collection">
 			<li class="collection-item" v-for="message in currentConversation.messages" :key="message.id">
-				<span class="sender"><b>@{{message.author}}</b></span>
+				<span class="sender"><b>@{{message.username ?? 'Anonymous'}}</b></span>
 				<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
 				<p class="truncate">
 					@{{message.content}}
