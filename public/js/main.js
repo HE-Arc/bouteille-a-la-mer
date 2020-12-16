@@ -228,6 +228,9 @@ function postConversation() {
 
     sm.send('conversation', body);
 
+    //Hide the create conversation window
+    app.toggleDropPage();
+
     return false;
 }
 
@@ -239,17 +242,22 @@ function onMessage(type, data) {
         case 'conversation':
             data.messages = [];
             app.conversations.push(data);
+
+            //If this is a new conversation conversation and we are the author, display it
+            if(data.author == app.id) {
+                app.toggleMessagePage(data.id);
+            }
+
         case 'message':
             //console.log(app.conversations);
             
             for (let [i, c] of app.conversations.entries()) {
                 //console.log(c, i);
                 if (c.id === data.parent) {
-                    // if(c.messages === undefined)
-                    //     c.messages = [];
                     //c.messages.push(data);
                     //app.conversation.splice(i, 1, JSON.parse(JSON.stringify(c)));
                     Vue.set(app.conversations[i].messages, c.messages.length, data);
+                    Vue.set(app.conversations, i, c);
                 }
             }
             break;

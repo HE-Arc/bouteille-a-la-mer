@@ -2,7 +2,6 @@
 namespace App\Sockets;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
-use Illuminate\Support\Facades\DB;
 use App\Models\Message;
 use App\Models\Conversation;
 use Illuminate\Session\SessionManager;
@@ -10,7 +9,6 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 
 
 class Chat implements MessageComponentInterface {
@@ -129,12 +127,11 @@ class Chat implements MessageComponentInterface {
                 return $this->distance($lat, $long, $client['lat'], $client['long']) <= $conv['radius'];
             });
 
-            $dataJson = json_encode((object)['type' => 'conversation', 'data' => (object)$data]);
-            foreach ($clientInRange as $clientId => $clientData) {
-                $this->clientsConnexion[$clientId]['ref']->send($dataJson);
-            }
+            
 
             $this->onMessageSent($message, $from, $conv['id']);
+
+ 
         }
     }
 
@@ -158,12 +155,30 @@ class Chat implements MessageComponentInterface {
                 return $this->distance($parentConv['lat'], $parentConv['long'], $client['lat'], $client['long']) <= $parentConv['radius'];
             });
 
-            // Convert to string
-            $msg = json_encode((object)['type' => 'message', 'data' => $msg]);
-            foreach ($clientInRange as $clientId => $clientData) {
-                $dataJson = $msg;
-                $this->clientsConnexion[$clientId]['ref']->send($dataJson);
-                var_dump("send message");
+            if ($convID == NULL) {
+                // Convert to string
+                $msg = json_encode((object)['type' => 'message', 'data' => $msg]);
+                foreach ($clientInRange as $clientId => $clientData) {
+                    $dataJson = $msg;
+                    $this->clientsConnexion[$clientId]['ref']->send($dataJson);
+                    var_dump("send message");
+                }
+            } else {
+                /*$dataJson = json_encode((object)['type' => 'conversation', 'data' => (object)$data]);
+                foreach ($clientInRange as $clientId => $clientData) {
+                    $this->clientsConnexion[$clientId]['ref']->send($dataJson);
+                }*/
+
+                $conv = Conversation::all()->last();
+                $conv = (object)$conv;
+                $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
+                $msg = json_encode((object)['type' => 'conversation', 'data' => $conv]);
+                dump($conv);
+                foreach ($clientInRange as $clientId => $clientData) {
+                    $this->clientsConnexion[$clientId]['ref']->send($msg);
+                }
+
+                
             }
         }
     }
@@ -186,7 +201,6 @@ class Chat implements MessageComponentInterface {
         }
 
         $msg = json_encode((object)['type' => 'conversations', 'data' => $conversations]);
-        dump($conversations);
         $sender->send($msg);
     }
 
@@ -219,6 +233,7 @@ class Chat implements MessageComponentInterface {
 
         // Set the session id to the session handler
         $session->setId($idSession);
+        var_dump($session);
 
         return $session;
     }
