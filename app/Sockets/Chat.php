@@ -130,8 +130,6 @@ class Chat implements MessageComponentInterface {
             
 
             $this->onMessageSent($message, $from, $conv['id']);
-
- 
         }
     }
 

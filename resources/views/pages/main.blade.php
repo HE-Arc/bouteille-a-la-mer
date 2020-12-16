@@ -4,7 +4,7 @@
 <?php
 $data = [
 	'username' => Illuminate\Support\Facades\Auth::user()->username ?? "",
-	'id' => Illuminate\Support\Facades\Auth::user()->id ?? session('id');
+	'id' => Illuminate\Support\Facades\Auth::user()->id ?? session('id')
 ];
 ?>
 <script>
