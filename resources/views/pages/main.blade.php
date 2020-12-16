@@ -12,9 +12,9 @@ $data = [
 </script>
 
 <div id="app" :mdata="{{ json_encode($data) }}">
-	<div id="status" class="center-align card-panel teal main-page z-depth-3">
+	<div id="status" class="center-align main-page z-depth-3">
 		<p v-if="connected" class="flow-text">
-			Connected as : @{{username}}
+			Connected as : <b>@{{username}}</b>
 		</p>
 		<p v-else class="flow-text">
 			Not connected
@@ -115,7 +115,7 @@ $data = [
 
 		<ul class="collection">
 			<li class="collection-item" v-for="message in currentConversation.messages" :key="message.id">
-				<span class="title"><b>@{{message.author}}</b></span>
+				<span class="sender"><b>@{{message.author}}</b></span>
 				<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
 				<p class="truncate">
 					@{{message.content}}

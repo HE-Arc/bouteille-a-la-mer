@@ -39,3 +39,34 @@
 @import "components/pulse";
 @import "components/datepicker";
 @import "components/timepicker";
+
+#status{
+    background-color: $primary-color;
+    color: white;
+
+    z-index: 10;
+    position: absolute;
+
+    padding: 0px;
+
+    width: 80%;
+
+    height: 30px;
+
+    left: 50%;
+    top: 6%;
+    transform: translate(-50%, -50%);
+
+    border-radius: 10px;
+}
+
+.sender{
+    font-weight: bold;
+
+    color: $third-color;
+}
+
+.sidenav{
+    @extend .sidenav;
+    background-color: $secondary-color-light;
+}

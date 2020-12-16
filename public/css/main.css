@@ -25,23 +25,6 @@ html, body, #app{
     position: absolute;
 }
 
-#status{
-    z-index: 10;
-    position: absolute;
-
-    padding: 0px;
-
-    width: 80%;
-
-    height: 30px;
-
-    left: 50%;
-    top: 3%;
-    transform: translate(-50%, -50%);
-
-    border-radius: 10px;
-}
-
 #drop-btn{
     position: absolute;
     z-index: 10;
