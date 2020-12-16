@@ -3,7 +3,8 @@
 
 <?php
 $data = [
-	'username' => Illuminate\Support\Facades\Auth::user()->username ?? ""
+	'username' => Illuminate\Support\Facades\Auth::user()->username ?? "",
+	'id' => Illuminate\Support\Facades\Auth::user()->id ?? ""
 ];
 ?>
 <script>

@@ -228,6 +228,9 @@ function postConversation() {
 
     sm.send('conversation', body);
 
+    //Hide the create conversation window
+    app.toggleDropPage();
+
     return false;
 }
 
@@ -238,6 +241,12 @@ function onMessage(type, data) {
     switch (type) {
         case 'conversation':
            app.conversations.push(data);
+
+           //If this is a new conversation conversation and we are the author, display it
+           if(data[0].author == app.id) {
+               app.toggleMessagePage(data.id);
+           }
+
         case 'message':
             console.log(app.conversations);
             
