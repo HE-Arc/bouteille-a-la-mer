@@ -26,22 +26,8 @@ class Chat implements MessageComponentInterface {
     public function onOpen(ConnectionInterface $conn) {
         // Store the new connection to send messages to later
         $this->clients->attach($conn);
-        // Create a new session handler for this client
-        $session = (new SessionManager(App::getInstance()))->driver();
-        // Get the cookies
-        $cookiesHeader = $conn->httpRequest->getHeader('Cookie');
-        $cookies = \GuzzleHttp\Psr7\Header::parse($cookiesHeader)[0];
 
-        // Get the laravel's one
-        $laravelCookie = urldecode($cookies[Config::get('session.cookie')]);
-        // get the user session id from it
-        $idSession = Crypt::decrypt($laravelCookie, false);
-        //$idSession = $laravelCookie;
-        
-        $idSession = explode("|", $idSession)[1];
-
-        // Set the session id to the session handler
-        $session->setId($idSession);
+        $session = $this->getSession($conn);
 
         // Bind the session handler to the client connection
         $conn->session = $session;
@@ -190,8 +176,7 @@ class Chat implements MessageComponentInterface {
         $sender->send($msg);
     }
 
-    private function distance($lat1, $lon1, $lat2, $lon2)
-    {
+    private function distance($lat1, $lon1, $lat2, $lon2) {
         if (($lat1 == $lat2) && ($lon1 == $lon2)) {
             return 0;
         } else {
@@ -201,5 +186,26 @@ class Chat implements MessageComponentInterface {
             $dist = rad2deg($dist);
             return $dist * 60 * 1.1515 * 1.609344 * 1000;
         }
+    }
+
+    private function getSession($conn) {
+        // Create a new session handler for this client
+        $session = (new SessionManager(App::getInstance()))->driver();
+        // Get the cookies
+        $cookiesHeader = $conn->httpRequest->getHeader('Cookie');
+        $cookies = \GuzzleHttp\Psr7\Header::parse($cookiesHeader)[0];
+
+        // Get the laravel's one
+        $laravelCookie = urldecode($cookies[Config::get('session.cookie')]);
+        // get the user session id from it
+        $idSession = Crypt::decrypt($laravelCookie, false);
+        //$idSession = $laravelCookie;
+        
+        $idSession = explode("|", $idSession)[1];
+
+        // Set the session id to the session handler
+        $session->setId($idSession);
+
+        return $session;
     }
 }
