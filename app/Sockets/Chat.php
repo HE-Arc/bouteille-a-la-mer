@@ -37,7 +37,7 @@ class Chat implements MessageComponentInterface {
         $idUser = $session->get(Auth::getName());
 
         if (!isset($idUser)) {
-            $idUser = session('id');
+            $idUser = $session->get('id');
         }
 
         $this->clientsConnexion[$conn->resourceId] = ["ref" => $conn, "lat" => 0, "long" => 0, "id" => $idUser];
@@ -135,9 +135,7 @@ class Chat implements MessageComponentInterface {
 
     public function onMessageSent($event, $from, $convID = NULL) {
         $isNewConv = ($convID != NULL);
-        var_dump("new message");
         $convID = $event->parent ?? $convID;
-        var_dump($event);
         
         if($convID != NULL) {
             $now = date('Y-m-d H:i:s');
@@ -172,12 +170,9 @@ class Chat implements MessageComponentInterface {
                 $conv = (object)$conv;
                 $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
                 $msg = json_encode((object)['type' => 'conversation', 'data' => $conv]);
-                dump($conv);
                 foreach ($clientInRange as $clientId => $clientData) {
                     $this->clientsConnexion[$clientId]['ref']->send($msg);
                 }
-
-                
             }
         }
     }
@@ -232,7 +227,6 @@ class Chat implements MessageComponentInterface {
 
         // Set the session id to the session handler
         $session->setId($idSession);
-        var_dump($session);
 
         return $session;
     }

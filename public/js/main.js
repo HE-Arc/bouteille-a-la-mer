@@ -47,10 +47,12 @@ let app = new Vue({
         }
     },
     mounted() {
+        document.body.style.overflow = "hidden";
         setTimeout(() => {
             let data = this._vnode.data.attrs.mdata;
             console.log(data);
             this.username = data.username;
+            this.id = data.id;
         });
 
         this.$nextTick(function () {
@@ -243,6 +245,7 @@ function onMessage(type, data) {
             //data.messages = [];
             app.conversations.push(data);
 
+            console.log(data.author, app.id);
             //If this is a new conversation conversation and we are the author, display it
             if(data.author == app.id) {
                 app.toggleMessagePage(data.id);

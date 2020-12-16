@@ -12,7 +12,7 @@ $data = [
 	mapboxgl.accessToken = "{{ env('MAPBOX_KEY') }}";
 </script>
 
-<div id="app" :mdata="{{ json_encode($data) }}">
+<div id="app" :mdata="{{ json_encode($data) }}" class="main-app">
 	<div id="status" class="center-align main-page z-depth-3">
 		<p v-if="connected" class="flow-text">
 			Connected as : <b>@{{username}}</b>
@@ -113,30 +113,32 @@ $data = [
 					</ul>
 				</div>
 		</nav>
+		<div class="page-content">
 
-		<ul class="collection">
-			<li class="collection-item" v-for="message in currentConversation.messages" :key="message.id">
-				<span class="sender"><b>@{{message.username ?? 'Anonymous'}}</b></span>
-				<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
-				<div v-if='message.content != ""'>
-					<p class="truncate">
-						@{{message.content}}
-					</p>
-				</div>
-				<div v-if='message.image != ""'>
-					<img :src="message.image" style="width: 100%; height: 100%;"/>
-				</div>
-			</li>
-		</ul>
+			<ul class="collection">
+				<li class="collection-item" v-for="message in currentConversation.messages" :key="message.id">
+					<span class="sender"><b>@{{message.username ?? 'Anonymous'}}</b></span>
+					<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
+					<div v-if='message.content != ""'>
+						<p class="truncate">
+							@{{message.content}}
+						</p>
+					</div>
+					<div v-if='message.image != ""'>
+						<img :src="message.image" style="width: 100%; height: 100%;"/>
+					</div>
+				</li>
+			</ul>
 
-		<div class="row valign-wrapper">
-			<div class="input-field col s10">
-				<textarea ref="textareamessage" id="textareamessage" class="materialize-textarea" v-on:keydown.13.prevent="sendMessage"></textarea>
-				<label for="textareamessage">Write a message</label>
+			<div class="row valign-wrapper">
+				<div class="input-field col s10">
+					<textarea ref="textareamessage" id="textareamessage" class="materialize-textarea" v-on:keydown.13.prevent="sendMessage"></textarea>
+					<label for="textareamessage">Write a message</label>
+				</div>
+				<a class="btn-flat btn-large waves-effect waves-light" @click="sendMessage">
+					<i class="material-icons col s2">send</i>
+				</a>
 			</div>
-			<a class="btn-flat btn-large waves-effect waves-light" @click="sendMessage">
-				<i class="material-icons col s2">send</i>
-			</a>
 		</div>
 	</div>
 </div>
