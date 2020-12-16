@@ -117,9 +117,14 @@ $data = [
 			<li class="collection-item" v-for="message in currentConversation.messages" :key="message.id">
 				<span class="sender"><b>@{{message.username ?? 'Anonymous'}}</b></span>
 				<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
-				<p class="truncate">
-					@{{message.content}}
-				</p>
+				<div v-if='message.content != ""'>
+					<p class="truncate">
+						@{{message.content}}
+					</p>
+				</div>
+				<div v-if='message.image != ""'>
+					<img :src="message.image" style="width: 100%; height: 100%;"/>
+				</div>
 			</li>
 		</ul>
 
