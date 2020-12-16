@@ -39,7 +39,7 @@ class Chat implements MessageComponentInterface {
         $idUser = $session->get(Auth::getName());
 
         if (!isset($idUser)) {
-            $idUser = -1;
+            $idUser = session('id');
         }
 
         $this->clientsConnexion[$conn->resourceId] = ["ref" => $conn, "lat" => 0, "long" => 0, "id" => $idUser];

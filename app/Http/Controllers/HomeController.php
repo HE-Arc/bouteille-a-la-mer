@@ -8,10 +8,9 @@ class HomeController extends Controller
     {
         public function index(Request $request)
         {
-            return view('pages.main'); //TODO
-            if ($request->session()->has('loginID')) {
-                return view('pages.main');
-            }
-            return redirect('/login');
+            if(session('id', false) !== false)
+                session(['id' => -rand(1)]);
+
+            return view('pages.main'); 
         }
     }
