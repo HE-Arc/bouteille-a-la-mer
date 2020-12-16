@@ -101,7 +101,20 @@ class Chat implements MessageComponentInterface {
     }
 
     public function onConversation($event, $from) {
+        if(!isset($event->conversation) || !isset($event->message))
+            return;
+
+        $message = $event->message;
+        
+        $message->image = isset($message->image) ? $message->image : NULL;
+        if (!isset($message->message))
+            return;
+
         $data = $event->conversation;
+        if (!isset($data->lat) || !isset($data->long) || !isset($data->lifetime))
+            return;
+
+        
         $radius = 30000;
         $lifetime = "+30 minutes";
         if(is_string($data->lifetime) && preg_match('/^\d{2}:\d{2}$/', $data->lifetime)) {
@@ -110,6 +123,8 @@ class Chat implements MessageComponentInterface {
         }
         
         $timeOfDeath = date('Y-m-d H:i:s', strtotime($lifetime));
+
+        
         $lat = $data->lat;
         $long = $data->long;
 
@@ -122,6 +137,8 @@ class Chat implements MessageComponentInterface {
                     'long' => $long,
                     'author' => $from["id"]]);
 
+                $message->parent = $conv['id'];
+
             $clientInRange = array_filter($this->clientsConnexion, function($client) use ($conv, $lat, $long) {
                 return $this->distance($lat, $long, $client['lat'], $client['long']) <= $conv['radius'];
             });
@@ -131,7 +148,7 @@ class Chat implements MessageComponentInterface {
                 $this->clientsConnexion[$clientId]['ref']->send($dataJson);
             }
 
-            $this->onMessageSent($event->message, $from, $conv['id']);
+            $this->onMessageSent($message, $from, $conv['id']);
         }
     }
 
@@ -148,11 +165,6 @@ class Chat implements MessageComponentInterface {
             
             Message::insert($msg);
 
-
-            
-            /*foreach ($this->clients as $client) {
-                $client->send($msg);
-            }*/
             $parentConv = Conversation::find($convID);
             $clientInRange = array_filter($this->clientsConnexion, function($client) use ($parentConv) {
                 return $this->distance($parentConv['lat'], $parentConv['long'], $client['lat'], $client['long']) <= $parentConv['radius'];
@@ -163,7 +175,7 @@ class Chat implements MessageComponentInterface {
             $msg = json_encode((object)['type' => 'message', 'data' => $msg]);
             foreach ($clientInRange as $clientId => $clientData) {
                 $dataJson = $msg;
-                $this->clientsConnexion[$clientId]['ref']->send($dataJson);
+                //$this->clientsConnexion[$clientId]['ref']->send($dataJson);
             }
         }
     }
@@ -183,7 +195,9 @@ class Chat implements MessageComponentInterface {
         foreach($conversations as &$conv) {
             $conv = (object)$conv;
             // TODO TODO remove password etc...
-            $conv->{'messages'} = Message::where(['parent' => $conv->id])->join('users', 'users.id', 'author')->get()->toArray();
+            $conv->{'messages'} = Message::select()->where(['parent' => $conv->id])->join('users', 'users.id', 'author')->get()->toArray();
+            var_dump($conv->messages);
+        
         }
 
         $msg = json_encode((object)['type' => 'conversations', 'data' => $conversations]);
