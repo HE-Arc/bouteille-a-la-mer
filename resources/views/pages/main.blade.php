@@ -50,7 +50,7 @@ $data = [
 					<div v-for="conversation in conversations" :key="conversation.id">
 						<div class="col s10">
 							<li>
-								<a class="waves-effect truncate" href="#!" @click="toggleMessagePage(conversation.id)">@{{conversation.messages[0].content}}</a>
+								<a class="waves-effect truncate" href="#!" @click="toggleMessagePage(conversation.id)">@{{ conversation.messages[0].content }}</a>
 							</li>
 						</div>
 						<div class="col s2 valign-wrapper">

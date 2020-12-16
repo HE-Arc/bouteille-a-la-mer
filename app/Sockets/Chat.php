@@ -153,7 +153,9 @@ class Chat implements MessageComponentInterface {
     }
 
     public function onMessageSent($event, $from, $convID = NULL) {
-        $convID == $event->parent ?? $convID;
+        var_dump("new message");
+        $convID = $event->parent ?? $convID;
+        var_dump($event);
         
         if($convID != NULL) {
             $now = date('Y-m-d H:i:s');
@@ -169,7 +171,6 @@ class Chat implements MessageComponentInterface {
             $clientInRange = array_filter($this->clientsConnexion, function($client) use ($parentConv) {
                 return $this->distance($parentConv['lat'], $parentConv['long'], $client['lat'], $client['long']) <= $parentConv['radius'];
             });
-
 
             // Convert to string
             $msg = json_encode((object)['type' => 'message', 'data' => $msg]);
@@ -194,11 +195,13 @@ class Chat implements MessageComponentInterface {
 
         foreach($conversations as &$conv) {
             $conv = (object)$conv;
+            var_dump($conv);
+            //var_dump()
             // TODO TODO remove password etc...
-            $conv->{'messages'} = Message::select()->where(['parent' => $conv->id])->join('users', 'users.id', 'author')->get()->toArray();
+            $conv->{'messages'} = Message::where(['parent' => $conv->id])->leftJoin('users', 'users.id', 'author')->get()->toArray();
             var_dump($conv->messages);
-        
         }
+        
 
         $msg = json_encode((object)['type' => 'conversations', 'data' => $conversations]);
         $sender->send($msg);

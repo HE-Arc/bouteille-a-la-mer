@@ -24,7 +24,10 @@ class SocketMessage
     }
 
     send(type, data) {
+        console.log("a??");
         if(this.ws.readyState == this.ws.OPEN)
             this.ws.send(JSON.stringify({'type': type, 'data': data}));
+        else
+            alert("Erreur de connexions aux websockets");
     }
 }

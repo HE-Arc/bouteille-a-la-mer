@@ -101,7 +101,8 @@ let app = new Vue({
             {
                 //Remove text in text area
                 this.$refs.textareamessage.value = "";
-                sm.send('message', {'content': message, 'parent': this.currentConversation.id});
+
+                sm.send('message', {'message': text, 'parent': this.currentConversation.id, 'image': null});
 
             }
         }
