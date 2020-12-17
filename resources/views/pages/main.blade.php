@@ -127,7 +127,7 @@ $data = [
 						<span class="sender"><b>@{{message.username ?? 'Anon#' + (-message.author)}}</b></span>
 					</div>
 					<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
-					<i v-if='message.author != id' class="material-icons" style="color: green">thumb_up</i> <!--TOOD-->
+					<i v-if='message.author != id' class="material-icons" style="color: green">thumb_up</i>
 					<b>0</b>
 					<div v-if='message.content != ""'>
 						<p class="truncate">
@@ -142,14 +142,13 @@ $data = [
 
 
 			<form action="#">
-				<div class="file-field input-field">
-					<div class="btn-flat btn-large waves-effect waves-light">
-						<label for="uploadImage">Upload an image</label>
-						<input ref="uploadImage" type="file">
+				<div class="file-field input-field"><!-- TODO -->
+					<input ref="uploadImage" id="uploadImage" type="file">
+					<div id="uploadImageBtn" class="btn-flat btn-large waves-effect waves-light">
 						<i class="material-icons">image</i>
 					</div>
 					<div class="file-path-wrapper">
-						<input ref="uploadImageName" class="file-path validate truncate" type="text" readonly>
+						<input ref="uploadImageName" class="file-path validate truncate" type="text" placeholder="Upload your image here" readonly>
 					</div>
 				</div>
 			</form>
