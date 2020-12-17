@@ -121,3 +121,11 @@ html, body, #app{
 #btnSubmit {
     width: 100%;
 }
+
+#burger {
+    position: absolute;
+    z-index: 1000;
+
+    right: 10px;
+    top: 10px;
+}

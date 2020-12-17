@@ -13,8 +13,9 @@ $data = [
 </script>
 
 <div id="app" :mdata="{{ json_encode($data) }}" class="main-app">
-	<div id="status" class="center-align main-page z-depth-3">
-		<p v-if="connected" class="flow-text">
+	
+	<div id="status" class="valign-wrapper z-depth-3">
+		<p v-if="username" class="flow-text">
 			Connected as : <b>@{{username}}</b>
 		</p>
 		<p v-else class="flow-text">
@@ -22,7 +23,7 @@ $data = [
 		</p>
 	</div>
 
-	<div id="map" class="main-page"></div>
+	<div id="map" class="main-page" onclick="M.Sidenav.getInstance(app.$refs.sidenav).close()"></div>
 	
 	<div class="container main-page">
 		<a id="drop-btn" ref="drop_btn" class="btn-floating btn-large waves-effect waves-light"  @click="toggleDropPage">
@@ -60,7 +61,9 @@ $data = [
 					</div>
 				</div>
 			</div>
-		</ul>
+		</ul>	
+		<a id="burger" href="#" data-target="slide-out" class="sidenav-trigger hide-on-small-only"><i class="material-icons large">menu</i></a>
+
 	</div>
 	<div id="drop-page" ref="drop_page" class="hide-drop-page z-depth-3">
 		<nav id="drop-bottle-title" class="z-depth-4">
@@ -87,7 +90,7 @@ $data = [
 						</div>
 						<div class="input-field col s12">
 							<i class="material-icons prefix">mode_edit</i>
-							<textarea id="first-message-input" class="materialize-textarea" name="message"></textarea>
+							<textarea id="first-message-input" class="materialize-textarea" name="message" ref="firstmessage"></textarea>
 							<label for="first-message-input">First message</label>
 						</div>
 						<div class="input-field col s12 center-align">
@@ -119,6 +122,7 @@ $data = [
 				<li class="collection-item" v-if="updateMessage" v-for="message in currentConversation.messages" :key="'m' + message.id">
 					<span class="sender"><b>@{{message.username ?? 'Anon#' + -(message.author)}}</b></span>
 					<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
+					<i class="material-icons" style="color: green">thumb_up</i> <!--TOOD-->
 					<div v-if='message.content != ""'>
 						<p class="truncate">
 							@{{message.content}}
