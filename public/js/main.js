@@ -42,15 +42,18 @@ let app = new Vue({
             email: "nico@gmail.com",
             conversations: conversations,
             updating: 0,
+            updateMessage: true,
             map: null,
             currentConversation: {messages : []}
         }
     },
     mounted() {
+        document.body.style.overflow = "hidden";
         setTimeout(() => {
             let data = this._vnode.data.attrs.mdata;
             console.log(data);
             this.username = data.username;
+            this.id = data.id;
         });
 
         this.$nextTick(function () {
@@ -94,17 +97,26 @@ let app = new Vue({
         sendMessage() {
             //Get text
             let text = this.$refs.textareamessage.value;
+            
+            //Get the image
+            let image = this.$refs.uploadImage.files[0];
+            let image64 = image != undefined ? null : "data:image/png;base64," + window.btoa(image);
 
-            //If the message is not empty
-            if(text != "")
+            console.log(text);
+
+            //If the message is not empty or the image not null
+            if(text != "" || image != null)
             {
                 //Remove text in text area
                 this.$refs.textareamessage.value = "";
 
-                sm.send('message', {'message': text, 'parent': this.currentConversation.id, 'image': null});
+                //Remove image in text area
+                this.$refs.uploadImageName.value = ""; 
+
+                sm.send('message', {'message': text, 'parent': this.currentConversation.id, 'image': image64});
 
             }
-        }
+        },
     },
     watch: {
         conversations: {
@@ -228,6 +240,9 @@ function postConversation() {
 
     sm.send('conversation', body);
 
+    //Hide the create conversation window
+    app.toggleDropPage();
+
     return false;
 }
 
@@ -237,22 +252,50 @@ function onMessage(type, data) {
 
     switch (type) {
         case 'conversation':
-           app.conversations.push(data);
+            app.conversations.push(data);
+
+            console.log(data.author, app.id);
+            //If this is a new conversation conversation and we are the author, display it
+            if(data.author == app.id) {
+                app.toggleMessagePage(data.id);
+            }
+
         case 'message':
-            console.log(app.conversations);
+            //console.log(app.conversations);
             
             for (let [i, c] of app.conversations.entries()) {
-                console.log(c, i);
                 if (c.id === data.parent) {
-                    c.messages.push(data);
-                    //app.conversation.splice(i, 1, JSON.parse(JSON.stringify(c)));
-                    Vue.set(app.conversations, i, c);
+                    Vue.set(app.conversations[i].messages, c.messages.length, data);
+                    break;
                 }
             }
             break;
 
         case 'conversations':
-            app.conversations = data;
+            //app.conversations = data;
+
+            //Update existing data
+            for (let [oldI, oldConv] of app.conversations.entries()) {
+                let found = false;
+                for(let newI = data.length-1; newI >= 0; --newI) {
+                    let newConv = data[newI];
+                    if(newConv.id === oldConv.id) {
+                        found = true;
+                        oldConv.messages = newConv.messages;
+                        data.splice(newI, 1);
+                    }
+
+                // Remove old data if its not sent by server
+                if(!found)
+                    app.conversations.splice(oldI, 1);
+                }
+            }
+
+            // Create data that didn't exist before
+            data.forEach(newConv => {
+                Vue.set(app.conversations, app.conversations.length, newConv);
+            });
+
             break;
         default:
             
