@@ -62,7 +62,7 @@ $data = [
 				</div>
 			</div>
 		</ul>	
-		<a id="burger" href="#" data-target="slide-out" class="sidenav-trigger hide-on-small-only"><i class="material-icons">menu</i></a>
+		<a id="burger" href="#" data-target="slide-out" class="sidenav-trigger hide-on-small-only"><i class="material-icons large">menu</i></a>
 
 	</div>
 	<div id="drop-page" ref="drop_page" class="hide-drop-page z-depth-3">
@@ -122,6 +122,7 @@ $data = [
 				<li class="collection-item" v-if="updateMessage" v-for="message in currentConversation.messages" :key="message.id">
 					<span class="sender"><b>@{{message.username ?? 'Anon#' + -(message.author)}}</b></span>
 					<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
+					<i class="material-icons" style="color: green">thumb_up</i> <!--TOOD-->
 					<div v-if='message.content != ""'>
 						<p class="truncate">
 							@{{message.content}}
