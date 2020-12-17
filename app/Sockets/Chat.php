@@ -172,11 +172,12 @@ class Chat implements MessageComponentInterface {
             'parent' => $convID,
             'author' => $from["id"]];
             
-            
+            $parentConv = Conversation::find($convID);
+            if ($parentConv == NULL)
+                return;
             
             Message::insert($msg);
 
-            $parentConv = Conversation::find($convID);
             $clientInRange = array_filter($this->clientsConnexion, function($client) use ($parentConv) {
                 return $this->distance($parentConv['lat'], $parentConv['long'], $client['lat'], $client['long']) <= $parentConv['radius'];
             });
