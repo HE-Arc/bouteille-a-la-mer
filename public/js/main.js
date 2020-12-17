@@ -95,8 +95,11 @@ let app = new Vue({
                 //Set the new current conversation
                 this.currentConversation = this.conversations.find(conv => conv.id == conversationId);
 
-                //Clear the text
-                this.$refs.textareamessage.value = "";
+                //Remove text in text area
+                this.clearTextInput(this.$refs.textareamessage);
+                
+                //Remove image in text area
+                this.clearTextInput(this.$refs.uploadImageName);
             }
             
             this.$refs.message_page.classList.toggle("hide-message-page");
@@ -115,15 +118,21 @@ let app = new Vue({
                 if(text != "" || image != null)
                 {
                     //Remove text in text area
-                    this.$refs.textareamessage.value = "";
+                    this.clearTextInput(this.$refs.textareamessage);
                     
                     //Remove image in text area
-                    this.$refs.uploadImageName.value = ""; 
+                    this.clearTextInput(this.$refs.uploadImageName);
                     
                     sm.send('message', {'message': text, 'parent': this.currentConversation.id, 'image': image64});
                     
                 }
             });
+        },
+        clearTextInput(element) {
+            element.value = "";
+            element.classList.remove("active");
+            element.style.height = null;
+            M.updateTextFields();
         },
     },
     watch: {
@@ -246,6 +255,9 @@ function postConversation() {
     }
     
     sm.send('conversation', body);
+
+    //Remove texts
+    app.clearTextInput(app.$refs.firstmessage);
     
     //Hide the create conversation window
     app.toggleDropPage();

@@ -89,7 +89,7 @@ $data = [
 						</div>
 						<div class="input-field col s12">
 							<i class="material-icons prefix">mode_edit</i>
-							<textarea id="first-message-input" class="materialize-textarea" name="message"></textarea>
+							<textarea id="first-message-input" class="materialize-textarea" name="message" ref="firstmessage"></textarea>
 							<label for="first-message-input">First message</label>
 						</div>
 						<div class="input-field col s12 center-align">
