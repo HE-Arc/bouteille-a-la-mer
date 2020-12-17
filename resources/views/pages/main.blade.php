@@ -123,6 +123,7 @@ $data = [
 					<span class="sender"><b>@{{message.username ?? 'Anon#' + -(message.author)}}</b></span>
 					<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
 					<i class="material-icons" style="color: green">thumb_up</i> <!--TOOD-->
+					<b>0</b>
 					<div v-if='message.content != ""'>
 						<p class="truncate">
 							@{{message.content}}
