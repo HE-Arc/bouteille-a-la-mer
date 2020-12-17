@@ -72,6 +72,9 @@ class Chat implements MessageComponentInterface {
      */
     public function onMessage(ConnectionInterface $from, $event) {
         $event = json_decode($event);
+        dump("New message");
+        dump($event->type);
+
 
         $con = $this->clientsConnexion[$from->resourceId];
 
@@ -179,7 +182,6 @@ class Chat implements MessageComponentInterface {
     public function onMessageSent($event, $from, $convID = NULL) {
         $isNewConv = ($convID != NULL);
         $convID = $event->parent ?? $convID; //if $event->parent doesn't exit, take the $convID (it means it's the first message of a conversation)
-        
         if($convID != NULL) {
             $imageURL = NULL;
 
