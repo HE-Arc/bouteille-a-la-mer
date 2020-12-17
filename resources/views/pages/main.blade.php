@@ -37,7 +37,6 @@ $data = [
 						<img src="{{ URL::asset('/img/nico.png') }}" style="width: 100%; height: 100%;">
 					</div>
 					<a><img class="circle" src="{{ URL::asset('/img/logo.png') }}"></a>
-					<a><span class="white-text name">@{{username}}</span></a>
 					<a><span class="white-text email">@{{ username }}</span></a>
 				</div>
 			</li>
