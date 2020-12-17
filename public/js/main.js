@@ -63,6 +63,9 @@ let app = new Vue({
             onReady();
             window.scrollTo(0, 0);
         });
+        setTimeout(() => {
+            window.scrollTo(0, 0);
+        }, 200);
         
         setInterval(() => {
             this.updating++;
