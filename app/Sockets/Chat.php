@@ -190,6 +190,7 @@ class Chat implements MessageComponentInterface {
 
             if (!$isNewConv) {
                 // Convert to string
+                $msg = Message::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author', 'parent')->where(['parent' => $convID])->leftJoin('users', 'users.id', '=', 'author')->get()->last();
                 $msg = json_encode((object)['type' => 'message', 'data' => $msg]);
                 foreach ($clientInRange as $clientId => $clientData) {
                     $dataJson = $msg;
@@ -204,7 +205,7 @@ class Chat implements MessageComponentInterface {
 
                 $conv = Conversation::all()->last();
                 $conv = (object)$conv;
-                $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username', 'messages.id as id')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
+                $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
                 $msg = json_encode((object)['type' => 'conversation', 'data' => $conv]);
                 foreach ($clientInRange as $clientId => $clientData) {
                     $this->clientsConnexion[$clientId]['ref']->send($msg);
@@ -227,7 +228,7 @@ class Chat implements MessageComponentInterface {
 
         foreach($conversations as &$conv) {
             $conv = (object)$conv;
-            $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username', 'messages.id as id')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
+            $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
         }
 
         $msg = json_encode((object)['type' => 'conversations', 'data' => $conversations]);
