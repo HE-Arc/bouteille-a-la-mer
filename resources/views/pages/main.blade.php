@@ -30,6 +30,10 @@ $data = [
 			<img id="drop-img" src="{{ URL::asset('/img/drop_bottle.png') }}">
 		</a>
 
+		<a id="center-btn" class="waves-effect waves-light"  @click="centerOnMe()">
+			<i class="material-icons">adjust</i>
+		</a>
+
 		<ul id="slide-out" class="sidenav" ref="sidenav">
 			<li>
 				<div class="user-view">

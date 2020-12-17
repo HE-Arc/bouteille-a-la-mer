@@ -83,3 +83,14 @@
 .collection-item:last-child {
     border-bottom: 5px solid $third-color !important;
 }
+
+#center-btn{
+    position: absolute;
+    z-index: 10;
+    bottom: 30px;
+    left: 20px;
+
+    color: $secondary-color;
+
+    background-color: rgba(0, 0, 0, 0.0);
+}

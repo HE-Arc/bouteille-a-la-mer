@@ -162,6 +162,10 @@ let app = new Vue({
 
             }, updateTime);
         },
+        centerOnMe() {
+            //Center the map to our current location
+            app.map.setCenter([currentLocation[0], currentLocation[1]]);
+        },
     },
     computed: {
         getMyBottles() {
@@ -227,7 +231,16 @@ function onReady(){
     //Listen to change in location
     navigator.geolocation.watchPosition(function (position) {
         let myLocation = [position.coords.longitude, position.coords.latitude]
-        currentLocation = myLocation;
+
+        //If first time, center !
+        if(currentLocation.length == 0 ){
+            currentLocation = myLocation;
+            app.centerOnMe();
+        }
+        else
+        {
+            currentLocation = myLocation;
+        }
         
         // create a HTML element for each feature
         var el = document.createElement('div');
@@ -247,24 +260,13 @@ function onReady(){
             app.myPositionMarker.setLngLat(myLocation);
         }
         
-        
-        //Center the map to our current location
-        app.map.setCenter([position.coords.longitude, position.coords.latitude])
-        
         sm.send('newpos', {'long': myLocation[0], 'lat': myLocation[1]});
         
     });
     
     
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-            //Set center location
-            app.map.setCenter([position.coords.longitude, position.coords.latitude])
-        });
-    }
-    else {
+    if (!navigator.geolocation)
         alert("Geolocation is not supported by this browser.");
-    }
     
     
     //At load time :
