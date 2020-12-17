@@ -49,7 +49,7 @@ $data = [
 			</li>
 			<div class="container">
 				<div class="row">
-					<div v-for="conversation in conversations" :key="conversation.id">
+					<div v-for="conversation in conversations" :key="'c'+conversation.id">
 						<div class="col s10">
 							<li>
 								<a class="waves-effect truncate" href="#!" @click="toggleMessagePage(conversation.id)">@{{ conversation.messages[0].content }}</a>
@@ -119,7 +119,7 @@ $data = [
 		<div class="page-content">
 
 			<ul class="collection">
-				<li class="collection-item" v-if="updateMessage" v-for="message in currentConversation.messages" :key="message.id">
+				<li class="collection-item" v-if="updateMessage" v-for="message in currentConversation.messages" :key="'m' + message.id">
 					<span class="sender"><b>@{{message.username ?? 'Anon#' + -(message.author)}}</b></span>
 					<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
 					<i class="material-icons" style="color: green">thumb_up</i> <!--TOOD-->

@@ -43,7 +43,9 @@ let app = new Vue({
             updating: 0,
             updateMessage: true,
             map: null,
-            currentConversation: {messages : []}
+            currentConversation: {messages : []},
+            bottleMarkers: [],
+            myPositionMarker: null
         }
     },
     mounted() {
@@ -139,6 +141,10 @@ let app = new Vue({
             //When the conversations is updated
             handler: function (newConversations) {
                 console.log("conversation Changed");
+                for (let m of this.bottleMarkers) {
+                    m.remove();
+                }
+                this.bottleMarkers = [];
                 
                 //Foreach conversations
                 newConversations.forEach((conversation) => {
@@ -152,9 +158,9 @@ let app = new Vue({
                     el.onclick = () => {this.toggleMessagePage(conversation.id)};
                     
                     //Add the bottle to the map
-                    new mapboxgl.Marker(el)
+                    this.bottleMarkers.push(new mapboxgl.Marker(el)
                     .setLngLat(location)
-                    .addTo(this.map);
+                    .addTo(this.map));
                 });
             }, deep: true
         }
@@ -193,10 +199,15 @@ function onReady(){
         .setText('Your position ;)');
         
         // make a marker for each feature and add to the map
-        new mapboxgl.Marker(el)
-        .setLngLat(myLocation)
-        .setPopup(popup)
-        .addTo(app.map);
+        if (app.myPositionMarker == null) {
+            app.myPositionMarker = new mapboxgl.Marker(el)
+            .setLngLat(myLocation)
+            .setPopup(popup)
+            .addTo(app.map);
+        } else {
+            app.myPositionMarker.setLngLat(myLocation);
+        }
+        
         
         //Center the map to our current location
         app.map.setCenter([position.coords.longitude, position.coords.latitude])
