@@ -141,12 +141,23 @@ class Chat implements MessageComponentInterface {
         
         if($convID != NULL) {
 
+            if ($event->image !== null) {
+                if (!getimagesize($event->image))
+                    $event->image = null;
+            }
+
+            if ($event->message == null && $event->image == null) {
+                return;
+            }
+            
             $now = date('Y-m-d H:i:s');
             $msg = ['content' => $event->message, 
             'image' => $event->image, 
             'posted' => $now, 
-            'parent' => $convID, 
+            'parent' => $convID,
             'author' => $from["id"]];
+            
+            
             
             Message::insert($msg);
 
