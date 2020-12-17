@@ -102,7 +102,7 @@ class Chat implements MessageComponentInterface {
         if (!isset($data->lat) || !isset($data->long) || !isset($data->lifetime))
             return;
 
-        if (isEmpty($event->message)) {
+        if (empty($event->message->message)) {
             dump("message empty");
             return;
         }
