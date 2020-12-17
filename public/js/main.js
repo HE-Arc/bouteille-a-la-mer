@@ -94,17 +94,26 @@ let app = new Vue({
         sendMessage() {
             //Get text
             let text = this.$refs.textareamessage.value;
+            
+            //Get the image
+            let image = this.$refs.uploadImage.files[0];
+            let image64 = image != undefined ? null : "data:image/png;base64," + window.btoa(image);
 
-            //If the message is not empty
-            if(text != "")
+            console.log(text);
+
+            //If the message is not empty or the image not null
+            if(text != "" || image != null)
             {
                 //Remove text in text area
                 this.$refs.textareamessage.value = "";
 
-                sm.send('message', {'message': text, 'parent': this.currentConversation.id, 'image': null});
+                //Remove image in text area
+                this.$refs.uploadImageName.value = ""; 
+
+                sm.send('message', {'message': text, 'parent': this.currentConversation.id, 'image': image64});
 
             }
-        }
+        },
     },
     watch: {
         conversations: {
