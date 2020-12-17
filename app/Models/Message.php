@@ -13,9 +13,10 @@ class Message extends Model
     protected static function booted()
     {
         static::deleted(function ($message) {
+            echo 'message delete\n';
             if($message->image !== NULL)
             {
-                $path = public_path('uploads/').$message->image;
+                $path = public_path().$message->image;
                 dump('deleting ' . $path);
                 if (File::exists($path))
                     File::delete($path);

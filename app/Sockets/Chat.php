@@ -22,11 +22,10 @@ class Chat implements MessageComponentInterface {
     protected $clientsConnexion = [];
 
     public function __construct() {
-        dump("yo");
         $this->clients = new \SplObjectStorage;
 
         // Delete old conversations
-        dump(Conversation::whereDate('time_of_death', '<', new DateTime())->delete());
+        Conversation::whereDate('time_of_death', '<', new DateTime())->delete();
 
         // Create jobs for existing conversations
         $convs = Conversation::all();

@@ -23,7 +23,7 @@ class CreateMessageTable extends Migration
             $table->unsignedBigInteger("parent");
             $table->integer("author")->nullable();
 
-            $table->foreign('parent')->references('id')->on('conversations')->onDelete('cascade');
+            //$table->foreign('parent')->references('id')->on('conversations')->onDelete('cascade');
         });
     }
 
