@@ -82,7 +82,7 @@ $data = [
 					<div class="col s12">
 						<div class="input-field col s12">
 							<i class="material-icons prefix">access_time</i>
-							<input id="life-time-input" type="text" class="timepicker" ref="timepicker" name="lifetime">
+							<input id="life-time-input" type="text" class="timepicker" ref="timepicker" name="lifetime" value="00:30">
 							<label for="life-time-input">Life time</label>
 						</div>
 						<div class="input-field col s12">
@@ -102,22 +102,22 @@ $data = [
 	</div>
 	<div id="message-page" ref="message_page" class="white hide-message-page">
 		<nav id="message-title">
-				<div class="nav-wrapper">
-					<a href="#" class="center">Chat !</a>
-					<ul id="nav-mobile" class="left waves-effect waves-light">
-						<li>
-							<a ref="return_to_map_btn" @click="toggleMessagePage(-1)">
-								<i class="material-icons">arrow_back</i>
-							</a>
-						</li>
-					</ul>
-				</div>
+			<div class="nav-wrapper">
+				<a href="#" class="center">Chat !</a>
+				<ul id="nav-mobile" class="left waves-effect waves-light">
+					<li>
+						<a ref="return_to_map_btn" @click="toggleMessagePage(-1)">
+							<i class="material-icons">arrow_back</i>
+						</a>
+					</li>
+				</ul>
+			</div>
 		</nav>
 		<div class="page-content">
 
 			<ul class="collection">
 				<li class="collection-item" v-if="updateMessage" v-for="message in currentConversation.messages" :key="message.id">
-					<span class="sender"><b>@{{message.username ?? 'Anonymous'}}</b></span>
+					<span class="sender"><b>@{{message.username ?? 'Anon#' + -(message.author)}}</b></span>
 					<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
 					<div v-if='message.content != ""'>
 						<p class="truncate">
@@ -130,14 +130,28 @@ $data = [
 				</li>
 			</ul>
 
+
+			<form action="#">
+				<div class="file-field input-field">
+					<div class="btn-flat btn-large waves-effect waves-light">
+						<label for="uploadImage">Upload an image</label>
+						<input ref="uploadImage" type="file">
+						<i class="material-icons">image</i>
+					</div>
+					<div class="file-path-wrapper">
+						<input ref="uploadImageName" class="file-path validate truncate" type="text" readonly>
+					</div>
+				</div>
+			</form>
+
 			<div class="row valign-wrapper">
 				<div class="input-field col s10">
 					<textarea ref="textareamessage" id="textareamessage" class="materialize-textarea" v-on:keydown.13.prevent="sendMessage"></textarea>
 					<label for="textareamessage">Write a message</label>
 				</div>
-				<a class="btn-flat btn-large waves-effect waves-light" @click="sendMessage">
-					<i class="material-icons col s2">send</i>
-				</a>
+				<div class="btn-flat btn-large waves-effect waves-light col s2" @click="sendMessage">
+					<i class="material-icons">send</i>
+				</div>
 			</div>
 		</div>
 	</div>

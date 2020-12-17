@@ -16,7 +16,7 @@ class CreateMessageTable extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->text("content")->nullable();
-            $table->binary("image")->nullable();
+            $table->text("image")->nullable();
             $table->dateTime("posted");
             $table->unsignedBigInteger("parent");
             $table->integer("author")->nullable();

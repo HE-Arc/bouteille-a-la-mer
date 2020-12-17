@@ -11,7 +11,10 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
+use function PHPUnit\Framework\isEmpty;
 
 class Chat implements MessageComponentInterface {
     protected $clients;
@@ -19,6 +22,7 @@ class Chat implements MessageComponentInterface {
     protected $clientsConnexion = [];
 
     public function __construct() {
+        dump("yo");
         $this->clients = new \SplObjectStorage;
 
         // Delete old conversations
@@ -109,6 +113,11 @@ class Chat implements MessageComponentInterface {
         if (!isset($data->lat) || !isset($data->long) || !isset($data->lifetime))
             return;
 
+        if (empty($event->message->message)) {
+            dump("message empty");
+            return;
+        }
+
         
         $radius = 30000;
         $lifetime = "+30 minutes";
@@ -145,22 +154,50 @@ class Chat implements MessageComponentInterface {
         $convID = $event->parent ?? $convID;
         
         if($convID != NULL) {
+            $imageURL = NULL;
+
+            if ($event->image !== null) {
+                if (!getimagesize($event->image))
+                    $event->image = null;
+                else {
+                    
+                    $image = $event->image;  // your base64 encoded
+                    //$image = str_replace('data:image/png;base64,', '', $image);
+                    $image = preg_replace('/^data:image\/\w+;base64,/', '', $image);
+                    $image = str_replace(' ', '+', $image);
+                    $ext = explode('/', explode(':', substr($event->image, 0, strpos($event->image, ';')))[1])[1];
+                    $imageName = Str::random(10).'.'.$ext;
+                    dump(public_path('uploads'));
+                    dump("/uploads/".$imageName);
+                    File::put(public_path('uploads/').$imageName, base64_decode($image));
+                    $imageURL = "/uploads/".$imageName;
+                }
+            }
+
+            if ($event->message == null && $imageURL == NULL) {
+                return;
+            }
+
             $now = date('Y-m-d H:i:s');
             $msg = ['content' => $event->message, 
-            'image' => $event->image, 
+            'image' => $imageURL, 
             'posted' => $now, 
-            'parent' => $convID, 
+            'parent' => $convID,
             'author' => $from["id"]];
+            
+            $parentConv = Conversation::find($convID);
+            if ($parentConv == NULL)
+                return;
             
             Message::insert($msg);
 
-            $parentConv = Conversation::find($convID);
             $clientInRange = array_filter($this->clientsConnexion, function($client) use ($parentConv) {
                 return $this->distance($parentConv['lat'], $parentConv['long'], $client['lat'], $client['long']) <= $parentConv['radius'];
             });
 
             if (!$isNewConv) {
                 // Convert to string
+                $msg = Message::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author', 'parent')->where(['parent' => $convID])->leftJoin('users', 'users.id', '=', 'author')->get()->last();
                 $msg = json_encode((object)['type' => 'message', 'data' => $msg]);
                 foreach ($clientInRange as $clientId => $clientData) {
                     $dataJson = $msg;
@@ -169,7 +206,7 @@ class Chat implements MessageComponentInterface {
             } else {
                 $conv = Conversation::all()->last();
                 $conv = (object)$conv;
-                $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
+                $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
                 $msg = json_encode((object)['type' => 'conversation', 'data' => $conv]);
                 foreach ($clientInRange as $clientId => $clientData) {
                     $this->clientsConnexion[$clientId]['ref']->send($msg);
@@ -192,7 +229,7 @@ class Chat implements MessageComponentInterface {
 
         foreach($conversations as &$conv) {
             $conv = (object)$conv;
-            $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
+            $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
         }
 
         $msg = json_encode((object)['type' => 'conversations', 'data' => $conversations]);
