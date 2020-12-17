@@ -116,8 +116,8 @@ $data = [
 				</ul>
 			</div>
 		</nav>
-		<div class="page-content">
 
+		<div ref="conversation" class="page-content">
 			<ul class="collection">
 				<li class="collection-item" v-if="updateMessage" v-for="message in currentConversation.messages" :key="'m' + message.id">
 					<div v-if='message.author == id'>
@@ -163,6 +163,7 @@ $data = [
 				</div>
 			</div>
 		</div>
+
 	</div>
 </div>
 

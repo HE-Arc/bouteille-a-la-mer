@@ -105,6 +105,9 @@ let app = new Vue({
             
             this.$refs.message_page.classList.toggle("hide-message-page");
             this.$refs.message_page.classList.toggle("display-message-page");
+
+            //Scrool the message page to the end
+            this.scrollDownConversation(1000);       
         },
         sendMessage() {
             //Get text
@@ -142,6 +145,15 @@ let app = new Vue({
             element.classList.remove("active");
             element.style.height = null;
             M.updateTextFields();
+        },
+        scrollDownConversation(updateTime = 1) {
+            setTimeout(() => {                         
+                app.$refs.conversation.scrollTo({
+                    top: Number.MAX_SAFE_INTEGER,
+                    behavior: 'smooth'
+                });
+
+            }, updateTime);
         },
     },
     watch: {
@@ -290,51 +302,53 @@ function onMessage(type, data) {
 
     switch (type) {
         case 'conversation':
-        app.conversations.push(data);
-        
-        console.log(data.author, app.id);
-        //If this is a new conversation conversation and we are the author, display it
-        if(data.author == app.id) {
-            app.toggleMessagePage(data.id);
-        }
+            app.conversations.push(data);
+            
+            console.log(data.author, app.id);
+            //If this is a new conversation conversation and we are the author, display it
+            if(data.author == app.id) {
+                app.toggleMessagePage(data.id);
+            }
         
         case 'message':
-        //console.log(app.conversations);
-        
-        for (let [i, c] of app.conversations.entries()) {
-            if (c.id === data.parent) {
-                Vue.set(app.conversations[i].messages, c.messages.length, data);
-                break;
+
+            for (let [i, c] of app.conversations.entries()) {
+                if (c.id === data.parent) {
+                    Vue.set(app.conversations[i].messages, c.messages.length, data);
+                    break;
+                }
             }
-        }
-        break;
+  
+            //Scrool the message page to the end
+            app.scrollDownConversation(data.image == null ? 1 : 500);
+            break;
         
         case 'conversations':
-        //app.conversations = data;
-        
-        //Update existing data
-        for (let [oldI, oldConv] of app.conversations.entries()) {
-            let found = false;
-            for(let newI = data.length-1; newI >= 0; --newI) {
-                let newConv = data[newI];
-                if(newConv.id === oldConv.id) {
-                    found = true;
-                    oldConv.messages = newConv.messages;
-                    data.splice(newI, 1);
+            //app.conversations = data;
+            
+            //Update existing data
+            for (let [oldI, oldConv] of app.conversations.entries()) {
+                let found = false;
+                for(let newI = data.length-1; newI >= 0; --newI) {
+                    let newConv = data[newI];
+                    if(newConv.id === oldConv.id) {
+                        found = true;
+                        oldConv.messages = newConv.messages;
+                        data.splice(newI, 1);
+                    }
+                    
+                    // Remove old data if its not sent by server
+                    if(!found)
+                    app.conversations.splice(oldI, 1);
                 }
-                
-                // Remove old data if its not sent by server
-                if(!found)
-                app.conversations.splice(oldI, 1);
             }
-        }
-        
-        // Create data that didn't exist before
-        data.forEach(newConv => {
-            Vue.set(app.conversations, app.conversations.length, newConv);
-        });
-        
-        break;
+            
+            // Create data that didn't exist before
+            data.forEach(newConv => {
+                Vue.set(app.conversations, app.conversations.length, newConv);
+            });
+
+            break;
         default:
         
         break;
