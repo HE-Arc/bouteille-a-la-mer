@@ -82,7 +82,7 @@ $data = [
 					<div class="col s12">
 						<div class="input-field col s12">
 							<i class="material-icons prefix">access_time</i>
-							<input id="life-time-input" type="text" class="timepicker" ref="timepicker" name="lifetime">
+							<input id="life-time-input" type="text" class="timepicker" ref="timepicker" name="lifetime" value="00:30">
 							<label for="life-time-input">Life time</label>
 						</div>
 						<div class="input-field col s12">

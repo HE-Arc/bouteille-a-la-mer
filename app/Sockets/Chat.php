@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 
+use function PHPUnit\Framework\isEmpty;
 
 class Chat implements MessageComponentInterface {
     protected $clients;
@@ -100,6 +101,11 @@ class Chat implements MessageComponentInterface {
         $data = $event->conversation;
         if (!isset($data->lat) || !isset($data->long) || !isset($data->lifetime))
             return;
+
+        if (isEmpty($event->message)) {
+            dump("message empty");
+            return;
+        }
 
         
         $radius = 30000;

@@ -221,6 +221,9 @@ function postConversation() {
         "lifetime": document.getElementById('life-time-input').value,
         "message": document.getElementById('first-message-input').value
     };
+    if (data.message == "") {
+        return;
+    }
     
     let body = {
         conversation: {
