@@ -18,8 +18,10 @@ class CreateMessageTable extends Migration
             $table->text("content")->nullable();
             $table->binary("image")->nullable();
             $table->dateTime("posted");
-            $table->integer("parent");
+            $table->unsignedBigInteger("parent");
             $table->integer("author")->nullable();
+
+            $table->foreign('parent')->references('id')->on('conversations')->onDelete('cascade');
         });
     }
 

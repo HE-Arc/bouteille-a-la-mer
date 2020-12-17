@@ -239,7 +239,8 @@ function postConversation() {
 
 
 function onMessage(type, data) {
-    console.log("onMessage", {type, data});
+    if(type != 'conversations')
+        console.log("onMessage", {type, data});
 
     switch (type) {
         case 'conversation':

@@ -4,6 +4,8 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use App\Models\Message;
 use App\Models\Conversation;
+use App\Jobs\DeleteConversation;
+use DateTime;
 use Illuminate\Session\SessionManager;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Crypt;
@@ -18,6 +20,15 @@ class Chat implements MessageComponentInterface {
 
     public function __construct() {
         $this->clients = new \SplObjectStorage;
+
+        // Delete old conversations
+        dump(Conversation::whereDate('time_of_death', '<', new DateTime())->delete());
+
+        // Create jobs for existing conversations
+        $convs = Conversation::all();
+        foreach($convs as $conv) {
+            DeleteConversation::dispatch($conv)->delay(new DateTime($conv['time_of_death']));
+        }
     }
 
 
@@ -106,8 +117,7 @@ class Chat implements MessageComponentInterface {
             $lifetime = '+ ' . $time[0] . " hours " . $time[1] . " minutes";
         }
         
-        $timeOfDeath = date('Y-m-d H:i:s', strtotime($lifetime));
-
+        $timeOfDeath = new DateTime(date('Y-m-d H:i:s', strtotime($lifetime)));
         
         $lat = $data->lat;
         $long = $data->long;
@@ -121,13 +131,10 @@ class Chat implements MessageComponentInterface {
                     'long' => $long,
                     'author' => $from["id"]]);
 
+                // Job to delete conversation when it needs to
+                DeleteConversation::dispatch($conv)->delay($timeOfDeath);
+
                 $message->parent = $conv['id'];
-
-            $clientInRange = array_filter($this->clientsConnexion, function($client) use ($conv, $lat, $long) {
-                return $this->distance($lat, $long, $client['lat'], $client['long']) <= $conv['radius'];
-            });
-
-            
 
             $this->onMessageSent($message, $from, $conv['id']);
         }
@@ -158,14 +165,8 @@ class Chat implements MessageComponentInterface {
                 foreach ($clientInRange as $clientId => $clientData) {
                     $dataJson = $msg;
                     $this->clientsConnexion[$clientId]['ref']->send($dataJson);
-                    var_dump("send message");
                 }
             } else {
-                /*$dataJson = json_encode((object)['type' => 'conversation', 'data' => (object)$data]);
-                foreach ($clientInRange as $clientId => $clientData) {
-                    $this->clientsConnexion[$clientId]['ref']->send($dataJson);
-                }*/
-
                 $conv = Conversation::all()->last();
                 $conv = (object)$conv;
                 $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
