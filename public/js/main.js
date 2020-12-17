@@ -80,6 +80,7 @@ let app = new Vue({
         },
         timeToStr(time) {
             time = new Date(time);
+            time.setHours(time.getHours() - 1);
             
             //Format
             return time.toLocaleTimeString('ch-FR', { hour: '2-digit', minute: '2-digit' });
