@@ -166,9 +166,12 @@ class Chat implements MessageComponentInterface {
                     $image = preg_replace('/^data:image\/\w+;base64,/', '', $image);
                     $image = str_replace(' ', '+', $image);
                     $ext = explode('/', explode(':', substr($event->image, 0, strpos($event->image, ';')))[1])[1];
-                    $imageName = Str::random(10).'.'.$ext;
-                    dump(public_path('uploads'));
-                    dump("/uploads/".$imageName);
+                    
+                    do {
+                        $imageName = Str::random(10).'.'.$ext;
+                    } while(File::exists(public_path('uploads/').$imageName));
+
+
                     File::put(public_path('uploads/').$imageName, base64_decode($image));
                     $imageURL = "/uploads/".$imageName;
                 }
