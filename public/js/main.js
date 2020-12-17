@@ -243,7 +243,6 @@ function onMessage(type, data) {
 
     switch (type) {
         case 'conversation':
-            //data.messages = [];
             app.conversations.push(data);
 
             console.log(data.author, app.id);
@@ -256,22 +255,38 @@ function onMessage(type, data) {
             //console.log(app.conversations);
             
             for (let [i, c] of app.conversations.entries()) {
-                //console.log(c, i);
                 if (c.id === data.parent) {
-                    //c.messages.push(data);
-                    //app.conversation.splice(i, 1, JSON.parse(JSON.stringify(c)));
                     Vue.set(app.conversations[i].messages, c.messages.length, data);
-                    Vue.set(app.conversations, i, c);
-                    app.updateMessage = false;
-                    setTimeout(() => {
-                        app.updateMessage = true;
-                    }, 0);
+                    break;
                 }
             }
             break;
 
         case 'conversations':
-            app.conversations = data;
+            //app.conversations = data;
+
+            //Update existing data
+            for (let [oldI, oldConv] of app.conversations.entries()) {
+                let found = false;
+                for(let newI = data.length-1; newI >= 0; --newI) {
+                    let newConv = data[newI];
+                    if(newConv.id === oldConv.id) {
+                        found = true;
+                        oldConv.messages = newConv.messages;
+                        data.splice(newI, 1);
+                    }
+
+                // Remove old data if its not sent by server
+                if(!found)
+                    app.conversations.splice(oldI, 1);
+                }
+            }
+
+            // Create data that didn't exist before
+            data.forEach(newConv => {
+                Vue.set(app.conversations, app.conversations.length, newConv);
+            });
+
             break;
         default:
             
