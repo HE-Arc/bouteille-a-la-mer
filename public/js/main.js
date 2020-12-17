@@ -112,7 +112,7 @@ let app = new Vue({
             
             //Get the image
             let image = this.$refs.uploadImage.files[0];
-            console.log(image);
+            
             //let image64 = image == undefined ? null : "data:image/png;base64," + window.btoa(image);
             encode(this.$refs.uploadImage.files, (image64) => {                
                 //If the message is not empty or the image not null
@@ -123,7 +123,10 @@ let app = new Vue({
                     
                     //Remove image in text area
                     this.clearTextInput(this.$refs.uploadImageName);
-                    
+
+                    //Rest file input
+                    this.$refs.uploadImage.value = null;
+
                     sm.send('message', {'message': text, 'parent': this.currentConversation.id, 'image': image64});
                     
                 }
