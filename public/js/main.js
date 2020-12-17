@@ -129,6 +129,11 @@ let app = new Vue({
                 }
             });
         },
+        likeMessage(messageId) {
+            if (Number.isInteger(messageId)) {
+                sm.send('likeMessage', {'messageID': messageId});
+            }
+        },
         clearTextInput(element) {
             element.value = "";
             element.classList.remove("active");

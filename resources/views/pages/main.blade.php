@@ -127,7 +127,7 @@ $data = [
 						<span class="sender"><b>@{{message.username ?? 'Anon#' + (-message.author)}}</b></span>
 					</div>
 					<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
-					<i v-if='message.author != id' class="material-icons" style="color: green">thumb_up</i>
+					<i v-if='message.author != id' class="material-icons" style="color: green" @click="likeMessage(message.id)">thumb_up</i> <!--TOOD-->
 					<b>0</b>
 					<div v-if='message.content != ""'>
 						<p class="truncate">
