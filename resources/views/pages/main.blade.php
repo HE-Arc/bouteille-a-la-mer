@@ -109,6 +109,7 @@ $data = [
 		<nav id="message-title">
 			<div class="nav-wrapper">
 				<a href="#" class="center">Chat !</a>
+				<b class="right" style="margin-right: 10px;">@{{ getTimeLeftStr(currentConversation.time_of_death) }}</b>
 				<ul id="nav-mobile" class="left waves-effect waves-light">
 					<li>
 						<a ref="return_to_map_btn" @click="toggleMessagePage(-1)">
