@@ -156,6 +156,19 @@ let app = new Vue({
             }, updateTime);
         },
     },
+    computed: {
+        getMyBottles() {
+            let myBottles = [];
+
+            this.conversations.forEach((conv) => {
+                //Add to the return array if the first message is your
+                if(conv.messages[0].author == this.id)
+                    myBottles.push(conv);
+            });
+
+            return myBottles;
+        }
+    },
     watch: {
         conversations: {
             //When the conversations is updated

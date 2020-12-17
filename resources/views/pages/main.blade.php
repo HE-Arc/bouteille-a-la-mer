@@ -44,12 +44,12 @@ $data = [
 			<li>
 				<a href="#!">
 					<i class="material-icons">chat</i>
-					My conversations
+					My bottles
 				</a>
 			</li>
 			<div class="container">
 				<div class="row">
-					<div v-for="conversation in conversations" :key="'c'+conversation.id">
+					<div v-for="conversation in getMyBottles" :key="'c'+conversation.id">
 						<div class="col s10">
 							<li>
 								<a class="waves-effect truncate" href="#!" @click="toggleMessagePage(conversation.id)">
