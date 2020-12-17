@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
 
 class Chat implements MessageComponentInterface {
@@ -138,6 +140,7 @@ class Chat implements MessageComponentInterface {
         $convID = $event->parent ?? $convID;
         
         if($convID != NULL) {
+
             $now = date('Y-m-d H:i:s');
             $msg = ['content' => $event->message, 
             'image' => $event->image, 
