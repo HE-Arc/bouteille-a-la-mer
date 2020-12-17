@@ -36,7 +36,11 @@ class Chat implements MessageComponentInterface {
         }
     }
 
-
+    /**
+     * override function of MessageComponnentInterface
+     * When a new client connect to the server
+     * Get the session from the cookies and get the db id of the client
+     */
     public function onOpen(ConnectionInterface $conn) {
         // Store the new connection to send messages to later
         $this->clients->attach($conn);
@@ -60,8 +64,17 @@ class Chat implements MessageComponentInterface {
 
     }
 
+    /**
+     * override function of MessageComponnentInterface
+     * When you received a websocket from the client
+     * $from the client
+     * $event the data received from the client
+     */
     public function onMessage(ConnectionInterface $from, $event) {
         $event = json_decode($event);
+        dump("New message");
+        dump($event->type);
+
 
         $con = $this->clientsConnexion[$from->resourceId];
 
@@ -87,6 +100,7 @@ class Chat implements MessageComponentInterface {
         }
     }
 
+    //override function of MessageComponnentInterface
     public function onClose(ConnectionInterface $conn) {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
@@ -94,7 +108,7 @@ class Chat implements MessageComponentInterface {
 
         echo "Connection {$conn->resourceId} has disconnected\n";
     }
-
+    //override function of MessageComponnentInterface
     public function onError(ConnectionInterface $conn, \Exception $e) {
         echo "An error has occurred: {$e->getMessage()}\n";
         echo $e;
@@ -102,6 +116,12 @@ class Chat implements MessageComponentInterface {
         $conn->close();
     }
 
+    /**
+     * When you receive a new conversation from a client
+     * $event: the data received, contains the conversation and the message
+     * $from: the client who sent it
+     * Save it to the database and send the new conversation with the message to all the client in range
+     */
     public function onConversation($event, $from) {
         if(!isset($event->conversation) || !isset($event->message))
             return;
@@ -135,7 +155,7 @@ class Chat implements MessageComponentInterface {
         $long = $data->long;
 
         if ((is_numeric($lat) && $lat >= -90 && $lat <= 90
-            && is_numeric($long)&& $long>= -180&& $long<= 180)) {
+            && is_numeric($long)&& $long>= -180&& $long<= 180)) { // verification of the position
                 $conv = Conversation::create([
                     'radius' => $radius,
                     'time_of_death' => $timeOfDeath,
@@ -148,14 +168,20 @@ class Chat implements MessageComponentInterface {
 
                 $message->parent = $conv['id'];
 
-            $this->onMessageSent($message, $from, $conv['id']);
+            $this->onMessageSent($message, $from, $conv['id']); //create the message and send it to everyone
         }
     }
 
+    /**
+     * When a new message is posted
+     * Save it to the database and send it to all reachable clients
+     * $event the data received
+     * $from the client who sent it
+     * $convID the id of the parent conversation, if null, there
+     */
     public function onMessageSent($event, $from, $convID = NULL) {
         $isNewConv = ($convID != NULL);
-        $convID = $event->parent ?? $convID;
-        
+        $convID = $event->parent ?? $convID; //if $event->parent doesn't exit, take the $convID (it means it's the first message of a conversation)
         if($convID != NULL) {
             $imageURL = NULL;
 
@@ -163,10 +189,8 @@ class Chat implements MessageComponentInterface {
                 if (!getimagesize($event->image))
                     $event->image = NULL;
                 else {
-                    
-                    $image = $event->image;  // your base64 encoded
-                    //$image = str_replace('data:image/png;base64,', '', $image);
-                    $image = preg_replace('/^data:image\/\w+;base64,/', '', $image);
+                    $image = $event->image;
+                    $image = preg_replace('/^data:image\/\w+;base64,/', '', $image); // Remove the data at the beginning
                     $image = str_replace(' ', '+', $image);
                     $ext = explode('/', explode(':', substr($event->image, 0, strpos($event->image, ';')))[1])[1];
                     
@@ -184,6 +208,10 @@ class Chat implements MessageComponentInterface {
                 return;
             }
 
+            $parentConv = Conversation::find($convID);
+            if ($parentConv == NULL) //If it can't find the parent conv
+                return;
+
             $now = date('Y-m-d H:i:s');
             $msg = ['content' => $event->message, 
             'image' => $imageURL, 
@@ -191,45 +219,33 @@ class Chat implements MessageComponentInterface {
             'parent' => $convID,
             'author' => $from["id"]];
             
-            $parentConv = Conversation::find($convID);
-            if ($parentConv == NULL)
-                return;
+
             
             Message::insert($msg);
 
-            /*$clientInRange = array_filter($this->clientsConnexion, function($client) use ($parentConv) {
-                return $this->distance($parentConv['lat'], $parentConv['long'], $client['lat'], $client['long']) <= $parentConv['radius'];
-            });*/
 
+            // If it's not a new conversation, send only the message
             if (!$isNewConv) {
                 // Convert to string
-                //$msg = Message::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author', 'parent')->where(['parent' => $convID])->leftJoin('users', 'users.id', '=', 'author')->get()->last();
                 $msg = $this->getMessageFromConvID($convID)->last();
                 $msg = json_encode((object)['type' => 'message', 'data' => $msg]);
-                /*foreach ($clientInRange as $clientId => $clientData) {
-                    $dataJson = $msg;
-                    $this->clientsConnexion[$clientId]['ref']->send($dataJson);
-                }*/
                 $this->sendToClientInRange($msg, $parentConv['lat'], $parentConv['long'], $parentConv['radius']);
-            } else {
+            } else { //Else, send the conversation with the message
                 $conv = Conversation::all()->last();
                 $conv = (object)$conv;
                 $conv->{'messages'} = $this->getMessageFromConvID($conv->id)->toArray();
-                //$conv->{'messages'} = Message::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
                 $msg = json_encode((object)['type' => 'conversation', 'data' => $conv]);
-                /*foreach ($clientInRange as $clientId => $clientData) {
-                    $this->clientsConnexion[$clientId]['ref']->send($msg);
-                }*/
                 $this->sendToClientInRange($msg, $parentConv['lat'], $parentConv['long'], $parentConv['radius']);
             }
         }
     }
 
+    /**
+     * send automatically all conversations when a client update his position
+     */
     public function sendReachableConversations($event, $sender) {
         $lat = $event->lat;
         $long = $event->long;
-
-        //session(['lat' => $lat, 'long' => $long]);
 
         $conversations = Conversation::all()->toArray();
 
@@ -246,6 +262,10 @@ class Chat implements MessageComponentInterface {
         $sender->send($msg);
     }
 
+    /**
+     * When there is a new like
+     * Save it to the database and send it to all reachable clients
+     */
     public function onLike($event, $from) {
         $messageID = $event->messageID;
         $userID = $from["id"];
@@ -267,6 +287,9 @@ class Chat implements MessageComponentInterface {
         $this->sendToClientInRange($data, $conv['lat'], $conv['long'], $conv['radius']);
     }
 
+    /**
+     * calculate the distance between 2 latlong position
+     */
     private function distance($lat1, $lon1, $lat2, $lon2) {
         if (($lat1 == $lat2) && ($lon1 == $lon2)) {
             return 0;
@@ -279,6 +302,9 @@ class Chat implements MessageComponentInterface {
         }
     }
 
+    /**
+     * get the session from the cookies
+     */
     private function getSession($conn) {
         // Create a new session handler for this client
         $session = (new SessionManager(App::getInstance()))->driver();
@@ -290,7 +316,6 @@ class Chat implements MessageComponentInterface {
         $laravelCookie = urldecode($cookies[Config::get('session.cookie')]);
         // get the user session id from it
         $idSession = Crypt::decrypt($laravelCookie, false);
-        //$idSession = $laravelCookie;
         
         $idSession = explode("|", $idSession)[1];
 
@@ -300,6 +325,9 @@ class Chat implements MessageComponentInterface {
         return $session;
     }
 
+    /**
+     * Get all the clients whitin a certain range
+     */
     function getClientInRange($lat, $long, $radius) {
         $clientInRange = array_filter($this->clientsConnexion, function($client) use ($lat, $long, $radius) {
             return $this->distance($lat, $long, $client['lat'], $client['long']) <= $radius;
@@ -313,6 +341,9 @@ class Chat implements MessageComponentInterface {
             $this->clientsConnexion[$clientId]['ref']->send($data);
         }
     }
+    /**
+     * Get all the message with username and nblike from the convID
+     */
     function getMessageFromConvID($convID) {
         return Message
             ::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author', 'parent',

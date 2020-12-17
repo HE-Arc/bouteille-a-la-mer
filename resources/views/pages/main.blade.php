@@ -172,10 +172,10 @@ $data = [
 					<textarea ref="textareamessage" id="textareamessage" class="materialize-textarea" v-on:keydown.13.prevent="sendMessage"></textarea>
 					<label for="textareamessage">Write a message</label>
 				</div>
-				<div id="uploadImageBtn" class="btn-flat btn-large waves-effect waves-light col s1" @click="triggerUpload">
+				<div id="uploadImageBtn" class="btn-flat btn-large waves-effect waves-light col s2" @click="triggerUpload">
 					<i class="material-icons">image</i>
 				</div>
-				<div class="btn-flat btn-large waves-effect waves-light col s1" @click="sendMessage">
+				<div class="btn-flat btn-large waves-effect waves-light col s2" @click="sendMessage">
 					<i class="material-icons">send</i>
 				</div>
 			</div>
