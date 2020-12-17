@@ -145,7 +145,7 @@ $data = [
 
 			<form action="#">
 				<div class="file-field input-field"><!-- TODO -->
-					<input ref="uploadImage" id="uploadImage" type="file">
+					<input ref="uploadImage" id="uploadImage" type="file" accept="image/png, image/jpeg">
 					<div id="uploadImageBtn" class="btn-flat btn-large waves-effect waves-light">
 						<i class="material-icons">image</i>
 					</div>
