@@ -13,8 +13,9 @@ $data = [
 </script>
 
 <div id="app" :mdata="{{ json_encode($data) }}" class="main-app">
-	<div id="status" class="center-align main-page z-depth-3">
-		<p v-if="connected" class="flow-text">
+	
+	<div id="status" class="valign-wrapper z-depth-3">
+		<p v-if="username" class="flow-text">
 			Connected as : <b>@{{username}}</b>
 		</p>
 		<p v-else class="flow-text">

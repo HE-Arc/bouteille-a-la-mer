@@ -37,7 +37,6 @@ let app = new Vue({
     el: "#app",
     data() {
         return {
-            connected: true,
             username: "",
             email: "nico@gmail.com",
             conversations: conversations,
