@@ -83,6 +83,10 @@ let app = new Vue({
         toggleDropPage() {
             this.$refs.drop_page.classList.toggle("hide-drop-page");
             this.$refs.drop_page.classList.toggle("display-drop-page");
+            if (this.$refs.drop_page.classList.contains("display-drop-page")) {
+                document.getElementById('life-time-input').value = "00:30";
+                document.getElementById('first-message-input').value = "";
+            }
         },
         toggleMessagePage(conversationId) {
             //If conversastionID is set, change current conversation
