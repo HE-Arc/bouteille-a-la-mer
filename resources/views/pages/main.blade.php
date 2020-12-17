@@ -135,11 +135,35 @@ $data = [
 					<textarea ref="textareamessage" id="textareamessage" class="materialize-textarea" v-on:keydown.13.prevent="sendMessage"></textarea>
 					<label for="textareamessage">Write a message</label>
 				</div>
-				<a class="btn-flat btn-large waves-effect waves-light" @click="sendMessage">
-					<i class="material-icons col s2">send</i>
-				</a>
+				<div v-if='message.image != ""'>
+					<img :src="message.image" style="width: 100%; height: 100%;"/>
+				</div>
+			</li>
+		</ul>
+
+		<form action="#">
+			<div class="file-field input-field">
+				<div class="btn-flat btn-large waves-effect waves-light">
+					<label for="uploadImage">Upload an image</label>
+					<input ref="uploadImage" type="file">
+					<i class="material-icons">image</i>
+				</div>
+				<div class="file-path-wrapper">
+					<input ref="uploadImageName" class="file-path validate truncate" type="text" readonly>
+				</div>
+			</div>
+		</form>
+
+		<div class="row valign-wrapper">
+			<div class="input-field col s10">
+				<textarea ref="textareamessage" id="textareamessage" class="materialize-textarea" v-on:keydown.13.prevent="sendMessage"></textarea>
+				<label for="textareamessage">Write a message</label>
+			</div>
+			<div class="btn-flat btn-large waves-effect waves-light col s2" @click="sendMessage">
+				<i class="material-icons">send</i>
 			</div>
 		</div>
+
 	</div>
 </div>
 
