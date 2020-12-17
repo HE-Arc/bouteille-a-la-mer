@@ -19,6 +19,7 @@ class Chat implements MessageComponentInterface {
     protected $clientsConnexion = [];
 
     public function __construct() {
+        dump("yo");
         $this->clients = new \SplObjectStorage;
     }
 
@@ -140,19 +141,33 @@ class Chat implements MessageComponentInterface {
         $convID = $event->parent ?? $convID;
         
         if($convID != NULL) {
+            $imageURL = NULL;
 
             if ($event->image !== null) {
                 if (!getimagesize($event->image))
                     $event->image = null;
+                else {
+                    
+                    $image = $event->image;  // your base64 encoded
+                    //$image = str_replace('data:image/png;base64,', '', $image);
+                    $image = preg_replace('/^data:image\/\w+;base64,/', '', $image);
+                    $image = str_replace(' ', '+', $image);
+                    $ext = explode('/', explode(':', substr($event->image, 0, strpos($event->image, ';')))[1])[1];
+                    $imageName = Str::random(10).'.'.$ext;
+                    dump(public_path('uploads'));
+                    dump("/uploads/".$imageName);
+                    File::put(public_path('uploads/').$imageName, base64_decode($image));
+                    $imageURL = "/uploads/".$imageName;
+                }
             }
 
-            if ($event->message == null && $event->image == null) {
+            if ($event->message == null && $imageURL == NULL) {
                 return;
             }
-            
+
             $now = date('Y-m-d H:i:s');
             $msg = ['content' => $event->message, 
-            'image' => $event->image, 
+            'image' => $imageURL, 
             'posted' => $now, 
             'parent' => $convID,
             'author' => $from["id"]];
