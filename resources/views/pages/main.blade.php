@@ -55,12 +55,12 @@ $data = [
 			<li>
 				<a>
 					<i class="material-icons">chat</i>
-					My conversations
+					My bottles
 				</a>
 			</li>
 			<div class="container">
 				<div class="row">
-					<div v-for="conversation in conversations" :key="'c'+conversation.id">
+					<div v-for="conversation in getMyBottles" :key="'c'+conversation.id">
 						<div class="col s10">
 							<li>
 								<a class="waves-effect truncate" @click="toggleMessagePage(conversation.id)">
@@ -119,7 +119,8 @@ $data = [
 	<div id="message-page" ref="message_page" class="white hide-message-page">
 		<nav id="message-title">
 			<div class="nav-wrapper">
-				<a class="center">Chat !</a>
+				<a href="#" class="center">Chat !</a>
+				<b class="right" style="margin-right: 10px;">@{{ getTimeLeftStr(currentConversation.time_of_death) }}</b>
 				<ul id="nav-mobile" class="left waves-effect waves-light">
 					<li>
 						<a ref="return_to_map_btn" @click="toggleMessagePage(-1)">
@@ -129,8 +130,8 @@ $data = [
 				</ul>
 			</div>
 		</nav>
-		<div class="page-content">
 
+		<div ref="conversation" class="page-content">
 			<ul class="collection">
 				<li class="collection-item" v-if="updateMessage" v-for="message in currentConversation.messages" :key="'m' + message.id">
 					<span class="sender" :class="{mymessage : message.author == id}"><b>@{{message.username ?? 'Anon#' + (-message.author)}}</b></span>
@@ -156,7 +157,7 @@ $data = [
 			<form action="#">
 				<div class="file-field input-field"><!-- TODO -->
 					<div class="file-path-wrapper" style="display: none">
-						<input ref="uploadImage" id="uploadImage" type="file">
+						<input ref="uploadImage" id="uploadImage" type="file"  accept="image/png, image/jpeg">
 						<input ref="uploadImageName" id="uploadImageID" class="file-path validate truncate" type="text" placeholder="Upload your image here" readonly>
 					</div>
 				</div>
@@ -175,6 +176,7 @@ $data = [
 				</div>
 			</div>
 		</div>
+
 	</div>
 </div>
 
