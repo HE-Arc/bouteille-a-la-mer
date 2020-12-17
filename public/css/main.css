@@ -137,3 +137,8 @@ html, body, #app{
     display: inline-block;
     margin-right: 20px;
 }
+
+.time-of-death {
+    height: 48px;
+    line-height: 48px;
+}

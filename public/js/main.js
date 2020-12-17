@@ -135,6 +135,9 @@ let app = new Vue({
                 }
             });
         },
+        triggerUpload() {
+            this.$refs.uploadImage.click();
+        },
         likeMessage(messageId) {
             if (Number.isInteger(messageId)) {
                 sm.send('likeMessage', {'messageID': messageId});
@@ -151,7 +154,6 @@ let app = new Vue({
         conversations: {
             //When the conversations is updated
             handler: function (newConversations) {
-                console.log("conversation Changed");
                 for (let m of this.bottleMarkers) {
                     m.remove();
                 }
@@ -295,14 +297,12 @@ function onMessage(type, data) {
         case 'conversation':
         app.conversations.push(data);
         
-        console.log(data.author, app.id);
         //If this is a new conversation conversation and we are the author, display it
         if(data.author == app.id) {
             app.toggleMessagePage(data.id);
         }
         
         case 'message':
-        //console.log(app.conversations);
         
         for (let [i, c] of app.conversations.entries()) {
             if (c.id === data.parent) {
@@ -313,12 +313,10 @@ function onMessage(type, data) {
         break;
         
         case 'conversations':
-            console.log(JSON.stringify(app.conservations))
         //app.conversations = data;
         
         //Update existing data
         for (let [oldI, oldConv] of app.conversations.entries()) {
-            console.log(oldI, oldConv);
             let found = false;
             for(let newI = data.length-1; newI >= 0; --newI) {
                 let newConv = data[newI];
@@ -331,7 +329,6 @@ function onMessage(type, data) {
             // Remove old data if its not sent by server
             if(!found) {
                 app.conversations.splice(oldI, 1);
-                console.log("not found", oldI);
             }
         }
         
@@ -347,7 +344,6 @@ function onMessage(type, data) {
                     for (let [j, m] of c.messages.entries()) {
                         if (m.id === data.messageID) {
                             Vue.set(app.conversations[i].messages[j], 'nbLike', data.nbLike);
-                            console.log(app.conversations[i].messages[j]);
                             break;
                         }
                     }
@@ -367,7 +363,6 @@ function encode(selectedfile, callback) {
     if (selectedfile.length > 0) {
         var imageFile = selectedfile[0];
         var fileReader = new FileReader();
-        console.log("yo");
         fileReader.onload = function(fileLoadedEvent) {
             var srcData = fileLoadedEvent.target.result;
 

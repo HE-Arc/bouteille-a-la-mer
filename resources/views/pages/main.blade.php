@@ -36,13 +36,13 @@ $data = [
 					<div class="background">
 						<img src="{{ URL::asset('/img/nico.png') }}" style="width: 100%; height: 100%;">
 					</div>
-					<a href="#user"><img class="circle" src="{{ URL::asset('/img/logo.png') }}"></a>
-					<a href="#name"><span class="white-text name">@{{username}}</span></a>
-					<a href="#email"><span class="white-text email">@{{email}}</span></a>
+					<a><img class="circle" src="{{ URL::asset('/img/logo.png') }}"></a>
+					<a><span class="white-text name">@{{username}}</span></a>
+					<a><span class="white-text email">@{{ username }}</span></a>
 				</div>
 			</li>
 			<li>
-				<a href="#!">
+				<a>
 					<i class="material-icons">chat</i>
 					My conversations
 				</a>
@@ -52,25 +52,25 @@ $data = [
 					<div v-for="conversation in conversations" :key="'c'+conversation.id">
 						<div class="col s10">
 							<li>
-								<a class="waves-effect truncate" href="#!" @click="toggleMessagePage(conversation.id)">
+								<a class="waves-effect truncate" @click="toggleMessagePage(conversation.id)">
 									@{{ conversation.messages[0].content }}
 								</a>
 							</li>
 						</div>
 						<div class="col s2 valign-wrapper">
-							<p class="flow-text">@{{getTimeLeftStr(conversation.time_of_death)}}</p>
+							<p class="time-of-death">@{{getTimeLeftStr(conversation.time_of_death)}}</p>
 						</div>
 					</div>
 				</div>
 			</div>
 		</ul>	
-		<a id="burger" href="#" data-target="slide-out" class="sidenav-trigger hide-on-small-only"><i class="material-icons large">menu</i></a>
+		<a id="burger" data-target="slide-out" class="sidenav-trigger hide-on-small-only"><i class="material-icons large">menu</i></a>
 
 	</div>
 	<div id="drop-page" ref="drop_page" class="hide-drop-page z-depth-3">
 		<nav id="drop-bottle-title" class="z-depth-4">
 			<div class="nav-wrapper">
-				<a href="#" class="center">Drop a bottle !</a>
+				<a class="center">Drop a bottle !</a>
 				<ul id="nav-mobile" class="left ">
 					<li>
 						<a ref="return_to_map_btn" @click="toggleDropPage">
@@ -108,7 +108,7 @@ $data = [
 	<div id="message-page" ref="message_page" class="white hide-message-page">
 		<nav id="message-title">
 			<div class="nav-wrapper">
-				<a href="#" class="center">Chat !</a>
+				<a class="center">Chat !</a>
 				<ul id="nav-mobile" class="left waves-effect waves-light">
 					<li>
 						<a ref="return_to_map_btn" @click="toggleMessagePage(-1)">
@@ -144,12 +144,9 @@ $data = [
 
 			<form action="#">
 				<div class="file-field input-field"><!-- TODO -->
-					<input ref="uploadImage" id="uploadImage" type="file">
-					<div id="uploadImageBtn" class="btn-flat btn-large waves-effect waves-light">
-						<i class="material-icons">image</i>
-					</div>
-					<div class="file-path-wrapper">
-						<input ref="uploadImageName" class="file-path validate truncate" type="text" placeholder="Upload your image here" readonly>
+					<div class="file-path-wrapper" style="display: none">
+						<input ref="uploadImage" id="uploadImage" type="file">
+						<input ref="uploadImageName" id="uploadImageID" class="file-path validate truncate" type="text" placeholder="Upload your image here" readonly>
 					</div>
 				</div>
 			</form>
@@ -159,7 +156,10 @@ $data = [
 					<textarea ref="textareamessage" id="textareamessage" class="materialize-textarea" v-on:keydown.13.prevent="sendMessage"></textarea>
 					<label for="textareamessage">Write a message</label>
 				</div>
-				<div class="btn-flat btn-large waves-effect waves-light col s2" @click="sendMessage">
+				<div id="uploadImageBtn" class="btn-flat btn-large waves-effect waves-light col s1" @click="triggerUpload">
+					<i class="material-icons">image</i>
+				</div>
+				<div class="btn-flat btn-large waves-effect waves-light col s1" @click="sendMessage">
 					<i class="material-icons">send</i>
 				</div>
 			</div>
