@@ -324,31 +324,49 @@ function onMessage(type, data) {
             break;
         
         case 'conversations':
-            //app.conversations = data;
-            
-            //Update existing data
-            for (let [oldI, oldConv] of app.conversations.entries()) {
-                let found = false;
-                for(let newI = data.length-1; newI >= 0; --newI) {
-                    let newConv = data[newI];
-                    if(newConv.id === oldConv.id) {
-                        found = true;
-                        oldConv.messages = newConv.messages;
-                        data.splice(newI, 1);
-                    }
-                    
-                    // Remove old data if its not sent by server
-                    if(!found)
-                    app.conversations.splice(oldI, 1);
+            console.log(JSON.stringify(app.conservations))
+        //app.conversations = data;
+        
+        //Update existing data
+        for (let [oldI, oldConv] of app.conversations.entries()) {
+            console.log(oldI, oldConv);
+            let found = false;
+            for(let newI = data.length-1; newI >= 0; --newI) {
+                let newConv = data[newI];
+                if(newConv.id === oldConv.id) {
+                    found = true;
+                    oldConv.messages = newConv.messages;
+                    data.splice(newI, 1);
                 }
             }
-            
-            // Create data that didn't exist before
-            data.forEach(newConv => {
-                Vue.set(app.conversations, app.conversations.length, newConv);
-            });
-
-            break;
+            // Remove old data if its not sent by server
+            if(!found) {
+                app.conversations.splice(oldI, 1);
+                console.log("not found", oldI);
+            }
+        }
+        
+        // Create data that didn't exist before
+        data.forEach(newConv => {
+            Vue.set(app.conversations, app.conversations.length, newConv);
+        });
+        
+        break;
+        case 'like':
+            for (let [i, c] of app.conversations.entries()) {
+                if (c.id === data.convID) {
+                    for (let [j, m] of c.messages.entries()) {
+                        if (m.id === data.messageID) {
+                            Vue.set(app.conversations[i].messages[j], 'nbLike', data.nbLike);
+                            console.log(app.conversations[i].messages[j]);
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            /*console.log(app.conversations[data.convID]);
+            app.conversations[data.convID].messages[data.messageID].nbLike = data.nbLike;*/
         default:
         
         break;

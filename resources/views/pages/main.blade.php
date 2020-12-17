@@ -52,7 +52,9 @@ $data = [
 					<div v-for="conversation in conversations" :key="'c'+conversation.id">
 						<div class="col s10">
 							<li>
-								<a class="waves-effect truncate" href="#!" @click="toggleMessagePage(conversation.id)">@{{ conversation.messages[0].content }}</a>
+								<a class="waves-effect truncate" href="#!" @click="toggleMessagePage(conversation.id)">
+									@{{ conversation.messages[0].content }}
+								</a>
 							</li>
 						</div>
 						<div class="col s2 valign-wrapper">
@@ -120,15 +122,14 @@ $data = [
 		<div ref="conversation" class="page-content">
 			<ul class="collection">
 				<li class="collection-item" v-if="updateMessage" v-for="message in currentConversation.messages" :key="'m' + message.id">
-					<div v-if='message.author == id'>
-						<span class="sender mymessage"><b>@{{message.username ?? 'Anon#' + (-message.author)}}</b></span>
-					</div>
-					<div v-else>
-						<span class="sender"><b>@{{message.username ?? 'Anon#' + (-message.author)}}</b></span>
-					</div>
-					<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
-					<i v-if='message.author != id' class="material-icons" style="color: green" @click="likeMessage(message.id)">thumb_up</i> <!--TOOD-->
-					<b>0</b>
+					<span class="sender" :class="{mymessage : message.author == id}"><b>@{{message.username ?? 'Anon#' + (-message.author)}}</b></span>
+					<a class="secondary-content">
+						<div class="like-button" @click="likeMessage(message.id)">
+							<i class="material-icons" style="color: green">thumb_up</i>
+							<b>@{{ message.nbLike }}</b>
+						</div>
+						@{{timeToStr(message.posted)}}
+					</a>
 					<div v-if='message.content != ""'>
 						<p class="truncate">
 							@{{message.content}}
