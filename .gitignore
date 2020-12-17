@@ -2,7 +2,7 @@
 /public/materialize/css/materialize.css
 
 ## user upload ##
-/public/uploads/*
+/public/uploads/
 
 # Created by https://www.toptal.com/developers/gitignore/api/windows,laravel,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,laravel,macos

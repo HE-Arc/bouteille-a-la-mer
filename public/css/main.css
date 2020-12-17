@@ -5,13 +5,14 @@
 html, body, #app{
     height: 100%;
     width: 100%;
+    max-height: 100%;
 
     margin: 0px;
     padding: 0px;
 }
 
+
 #app{
-    overflow: hidden;
     height: 100%;
 }
 
@@ -23,23 +24,6 @@ html, body, #app{
     top: 0px;
     
     position: absolute;
-}
-
-#status{
-    z-index: 10;
-    position: absolute;
-
-    padding: 0px;
-
-    width: 80%;
-
-    height: 30px;
-
-    left: 50%;
-    top: 3%;
-    transform: translate(-50%, -50%);
-
-    border-radius: 10px;
 }
 
 #drop-btn{
@@ -93,6 +77,10 @@ html, body, #app{
     left: 5%;
     border-radius: 25px;
 }
+.page-content {
+    height: 70vh;
+    overflow-y: scroll;
+}
 
 .hide-message-page{
     top: 100%;
@@ -132,4 +120,20 @@ html, body, #app{
 
 #btnSubmit {
     width: 100%;
+}
+
+#burger {
+    position: absolute;
+    z-index: 200;
+
+    left: 10px;
+}
+
+.like-button {
+    cursor: pointer;
+}
+
+.sender {
+    display: inline-block;
+    margin-right: 20px;
 }
