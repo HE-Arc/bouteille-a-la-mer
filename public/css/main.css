@@ -128,3 +128,12 @@ html, body, #app{
 
     left: 10px;
 }
+
+.like-button {
+    cursor: pointer;
+}
+
+.sender {
+    display: inline-block;
+    margin-right: 20px;
+}

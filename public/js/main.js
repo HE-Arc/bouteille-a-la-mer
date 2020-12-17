@@ -112,7 +112,6 @@ let app = new Vue({
             
             //Get the image
             let image = this.$refs.uploadImage.files[0];
-            console.log(image);
             //let image64 = image == undefined ? null : "data:image/png;base64," + window.btoa(image);
             encode(this.$refs.uploadImage.files, (image64) => {                
                 //If the message is not empty or the image not null
@@ -306,10 +305,12 @@ function onMessage(type, data) {
         break;
         
         case 'conversations':
+            console.log(JSON.stringify(app.conservations))
         //app.conversations = data;
         
         //Update existing data
         for (let [oldI, oldConv] of app.conversations.entries()) {
+            console.log(oldI, oldConv);
             let found = false;
             for(let newI = data.length-1; newI >= 0; --newI) {
                 let newConv = data[newI];
@@ -318,10 +319,11 @@ function onMessage(type, data) {
                     oldConv.messages = newConv.messages;
                     data.splice(newI, 1);
                 }
-                
-                // Remove old data if its not sent by server
-                if(!found)
+            }
+            // Remove old data if its not sent by server
+            if(!found) {
                 app.conversations.splice(oldI, 1);
+                console.log("not found", oldI);
             }
         }
         
@@ -331,6 +333,21 @@ function onMessage(type, data) {
         });
         
         break;
+        case 'like':
+            for (let [i, c] of app.conversations.entries()) {
+                if (c.id === data.convID) {
+                    for (let [j, m] of c.messages.entries()) {
+                        if (m.id === data.messageID) {
+                            Vue.set(app.conversations[i].messages[j], 'nbLike', data.nbLike);
+                            console.log(app.conversations[i].messages[j]);
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            /*console.log(app.conversations[data.convID]);
+            app.conversations[data.convID].messages[data.messageID].nbLike = data.nbLike;*/
         default:
         
         break;

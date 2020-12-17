@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -193,7 +194,15 @@ class Chat implements MessageComponentInterface {
 
             if (!$isNewConv) {
                 // Convert to string
-                $msg = Message::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author', 'parent')->where(['parent' => $convID])->leftJoin('users', 'users.id', '=', 'author')->get()->last();
+                //$msg = Message::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author', 'parent')->where(['parent' => $convID])->leftJoin('users', 'users.id', '=', 'author')->get()->last();
+                $msg = Message
+                    ::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author', 'parent',
+                    DB::raw('count(likes_relation.id) as nbLike'))
+                    ->where(['parent' => $convID])
+                    ->leftJoin('users', 'users.id', '=', 'author')
+                    ->leftJoin('likes_relation', 'likes_relation.message', '=', 'messages.id')
+                    ->groupBy('messages.id')
+                    ->get()->last();
                 $msg = json_encode((object)['type' => 'message', 'data' => $msg]);
                 foreach ($clientInRange as $clientId => $clientData) {
                     $dataJson = $msg;
@@ -208,7 +217,15 @@ class Chat implements MessageComponentInterface {
 
                 $conv = Conversation::all()->last();
                 $conv = (object)$conv;
-                $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
+                $conv->{'messages'} = Message
+                    ::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author', 'parent',
+                    DB::raw('count(likes_relation.id) as nbLike'))
+                    ->where(['parent' => $conv->id])
+                    ->leftJoin('users', 'users.id', '=', 'author')
+                    ->leftJoin('likes_relation', 'likes_relation.message', '=', 'messages.id')
+                    ->groupBy('messages.id')
+                    ->get()->toArray();
+                //$conv->{'messages'} = Message::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
                 $msg = json_encode((object)['type' => 'conversation', 'data' => $conv]);
                 foreach ($clientInRange as $clientId => $clientData) {
                     $this->clientsConnexion[$clientId]['ref']->send($msg);
@@ -231,7 +248,14 @@ class Chat implements MessageComponentInterface {
 
         foreach($conversations as &$conv) {
             $conv = (object)$conv;
-            $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
+            $conv->{'messages'} = Message
+                ::select('content', 'image', 'posted', 'username', 'messages.id as id', 'author',
+                DB::raw('count(likes_relation.id) as nbLike'))
+                ->where(['parent' => $conv->id])
+                ->leftJoin('users', 'users.id', '=', 'author')
+                ->leftJoin('likes_relation', 'likes_relation.message', '=', 'messages.id')
+                ->groupBy('messages.id')
+                ->get()->toArray();
         }
 
         $msg = json_encode((object)['type' => 'conversations', 'data' => $conversations]);
@@ -251,14 +275,12 @@ class Chat implements MessageComponentInterface {
         } else {
             Like::create(["user" => $userID, "message" => $messageID]);
         }
-        $conv = Message::find($messageID)->join('conversations', 'conversations.id', '=', 'parent')->first();
-        dump($conv);
+        $conv = Message::select('conversations.*', 'parent', 'messages.id as messageID')->where(["messages.id" => $messageID])->join('conversations', 'conversations.id', '=', 'parent')->first();
 
         $nbLike = Like::where(['message' => $messageID])->count();
         //$clientInRange = $this->getClientInRange($conv['lat'], $conv['long']);
-        $data = json_encode((object)['type' => 'newLike', 'data' => ['messageID' => $messageID, 'convID' => $conv['id'], 'nbLike' => $nbLike]]);
+        $data = json_encode((object)['type' => 'like', 'data' => ['messageID' => $messageID, 'convID' => $conv['id'], 'nbLike' => $nbLike]]);
         $this->sendToClientInRange($data, $conv['lat'], $conv['long'], $conv['radius']);
-
     }
 
     private function distance($lat1, $lon1, $lat2, $lon2) {
