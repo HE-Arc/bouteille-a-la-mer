@@ -124,8 +124,7 @@ html, body, #app{
 
 #burger {
     position: absolute;
-    z-index: 1000;
+    z-index: 200;
 
-    right: 10px;
-    top: 10px;
+    left: 10px;
 }

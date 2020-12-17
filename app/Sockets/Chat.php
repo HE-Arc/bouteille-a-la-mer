@@ -6,6 +6,7 @@ use App\Models\Message;
 use App\Models\Conversation;
 use App\Jobs\DeleteConversation;
 use DateTime;
+use App\Models\Like;
 use Illuminate\Session\SessionManager;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Crypt;
@@ -77,7 +78,9 @@ class Chat implements MessageComponentInterface {
                 $this->clientsConnexion[$from->resourceId]['lat'] = $event->data->lat;
                 $this->clientsConnexion[$from->resourceId]['long'] = $event->data->long;
                 $this->sendReachableConversations($event->data, $from);
-
+                break;
+            case 'likeMessage':
+                $this->onLike($event->data, $con);
             default:
             break;
         }
@@ -155,9 +158,9 @@ class Chat implements MessageComponentInterface {
         if($convID != NULL) {
             $imageURL = NULL;
 
-            if ($event->image !== null) {
+            if ($event->image !== NULL) {
                 if (!getimagesize($event->image))
-                    $event->image = null;
+                    $event->image = NULL;
                 else {
                     
                     $image = $event->image;  // your base64 encoded
@@ -176,7 +179,7 @@ class Chat implements MessageComponentInterface {
                 }
             }
 
-            if ($event->message == null && $imageURL == NULL) {
+            if ($event->message == NULL && $imageURL == NULL) {
                 return;
             }
 
@@ -238,6 +241,29 @@ class Chat implements MessageComponentInterface {
         $sender->send($msg);
     }
 
+    public function onLike($event, $from) {
+        $messageID = $event->messageID;
+        $userID = $from["id"];
+
+        dump($messageID);
+        dump($userID);
+
+        $likeExist = Like::where(['user' => $userID, 'message' => $messageID])->first();
+        if ($likeExist != NULL) {
+            $likeExist->delete();
+        } else {
+            Like::create(["user" => $userID, "message" => $messageID]);
+        }
+        $conv = Message::find($messageID)->join('conversations', 'conversations.id', '=', 'parent')->first();
+        dump($conv);
+
+        $nbLike = Like::where(['message' => $messageID])->count();
+        //$clientInRange = $this->getClientInRange($conv['lat'], $conv['long']);
+        $data = json_encode((object)['type' => 'newLike', 'data' => ['messageID' => $messageID, 'convID' => $conv['id'], 'nbLike' => $nbLike]]);
+        $this->sendToClientInRange($data, $conv['lat'], $conv['long'], $conv['radius']);
+
+    }
+
     private function distance($lat1, $lon1, $lat2, $lon2) {
         if (($lat1 == $lat2) && ($lon1 == $lon2)) {
             return 0;
@@ -269,5 +295,19 @@ class Chat implements MessageComponentInterface {
         $session->setId($idSession);
 
         return $session;
+    }
+
+    function getClientInRange($lat, $long, $radius) {
+        $clientInRange = array_filter($this->clientsConnexion, function($client) use ($lat, $long, $radius) {
+            return $this->distance($lat, $long, $client['lat'], $client['long']) <= $radius;
+        });
+        return $clientInRange;
+    }
+
+    function sendToClientInRange($data, $lat, $long, $radius) {
+        $clientInRange = $this->getClientInRange($lat, $long, $radius);
+        foreach ($clientInRange as $clientId => $clientData) {
+            $this->clientsConnexion[$clientId]['ref']->send($data);
+        }
     }
 }

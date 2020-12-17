@@ -37,14 +37,15 @@ let app = new Vue({
     el: "#app",
     data() {
         return {
-            connected: true,
             username: "",
             email: "nico@gmail.com",
             conversations: conversations,
             updating: 0,
             updateMessage: true,
             map: null,
-            currentConversation: {messages : []}
+            currentConversation: {messages : []},
+            bottleMarkers: [],
+            myPositionMarker: null
         }
     },
     mounted() {
@@ -95,8 +96,11 @@ let app = new Vue({
                 //Set the new current conversation
                 this.currentConversation = this.conversations.find(conv => conv.id == conversationId);
 
-                //Clear the text
-                this.$refs.textareamessage.value = "";
+                //Remove text in text area
+                this.clearTextInput(this.$refs.textareamessage);
+                
+                //Remove image in text area
+                this.clearTextInput(this.$refs.uploadImageName);
             }
             
             this.$refs.message_page.classList.toggle("hide-message-page");
@@ -115,15 +119,26 @@ let app = new Vue({
                 if(text != "" || image != null)
                 {
                     //Remove text in text area
-                    this.$refs.textareamessage.value = "";
+                    this.clearTextInput(this.$refs.textareamessage);
                     
                     //Remove image in text area
-                    this.$refs.uploadImageName.value = ""; 
+                    this.clearTextInput(this.$refs.uploadImageName);
                     
                     sm.send('message', {'message': text, 'parent': this.currentConversation.id, 'image': image64});
                     
                 }
             });
+        },
+        likeMessage(messageId) {
+            if (Number.isInteger(messageId)) {
+                sm.send('likeMessage', {'messageID': messageId});
+            }
+        },
+        clearTextInput(element) {
+            element.value = "";
+            element.classList.remove("active");
+            element.style.height = null;
+            M.updateTextFields();
         },
     },
     watch: {
@@ -131,6 +146,10 @@ let app = new Vue({
             //When the conversations is updated
             handler: function (newConversations) {
                 console.log("conversation Changed");
+                for (let m of this.bottleMarkers) {
+                    m.remove();
+                }
+                this.bottleMarkers = [];
                 
                 //Foreach conversations
                 newConversations.forEach((conversation) => {
@@ -144,9 +163,9 @@ let app = new Vue({
                     el.onclick = () => {this.toggleMessagePage(conversation.id)};
                     
                     //Add the bottle to the map
-                    new mapboxgl.Marker(el)
+                    this.bottleMarkers.push(new mapboxgl.Marker(el)
                     .setLngLat(location)
-                    .addTo(this.map);
+                    .addTo(this.map));
                 });
             }, deep: true
         }
@@ -185,10 +204,15 @@ function onReady(){
         .setText('Your position ;)');
         
         // make a marker for each feature and add to the map
-        new mapboxgl.Marker(el)
-        .setLngLat(myLocation)
-        .setPopup(popup)
-        .addTo(app.map);
+        if (app.myPositionMarker == null) {
+            app.myPositionMarker = new mapboxgl.Marker(el)
+            .setLngLat(myLocation)
+            .setPopup(popup)
+            .addTo(app.map);
+        } else {
+            app.myPositionMarker.setLngLat(myLocation);
+        }
+        
         
         //Center the map to our current location
         app.map.setCenter([position.coords.longitude, position.coords.latitude])
@@ -246,6 +270,9 @@ function postConversation() {
     }
     
     sm.send('conversation', body);
+
+    //Remove texts
+    app.clearTextInput(app.$refs.firstmessage);
     
     //Hide the create conversation window
     app.toggleDropPage();

@@ -13,8 +13,9 @@ $data = [
 </script>
 
 <div id="app" :mdata="{{ json_encode($data) }}" class="main-app">
-	<div id="status" class="center-align main-page z-depth-3">
-		<p v-if="connected" class="flow-text">
+	
+	<div id="status" class="valign-wrapper z-depth-3">
+		<p v-if="username" class="flow-text">
 			Connected as : <b>@{{username}}</b>
 		</p>
 		<p v-else class="flow-text">
@@ -48,7 +49,7 @@ $data = [
 			</li>
 			<div class="container">
 				<div class="row">
-					<div v-for="conversation in conversations" :key="conversation.id">
+					<div v-for="conversation in conversations" :key="'c'+conversation.id">
 						<div class="col s10">
 							<li>
 								<a class="waves-effect truncate" href="#!" @click="toggleMessagePage(conversation.id)">@{{ conversation.messages[0].content }}</a>
@@ -61,7 +62,7 @@ $data = [
 				</div>
 			</div>
 		</ul>	
-		<a id="burger" href="#" data-target="slide-out" class="sidenav-trigger hide-on-small-only"><i class="material-icons">menu</i></a>
+		<a id="burger" href="#" data-target="slide-out" class="sidenav-trigger hide-on-small-only"><i class="material-icons large">menu</i></a>
 
 	</div>
 	<div id="drop-page" ref="drop_page" class="hide-drop-page z-depth-3">
@@ -89,7 +90,7 @@ $data = [
 						</div>
 						<div class="input-field col s12">
 							<i class="material-icons prefix">mode_edit</i>
-							<textarea id="first-message-input" class="materialize-textarea" name="message"></textarea>
+							<textarea id="first-message-input" class="materialize-textarea" name="message" ref="firstmessage"></textarea>
 							<label for="first-message-input">First message</label>
 						</div>
 						<div class="input-field col s12 center-align">
@@ -118,9 +119,16 @@ $data = [
 		<div class="page-content">
 
 			<ul class="collection">
-				<li class="collection-item" v-if="updateMessage" v-for="message in currentConversation.messages" :key="message.id">
-					<span class="sender"><b>@{{message.username ?? 'Anon#' + -(message.author)}}</b></span>
+				<li class="collection-item" v-if="updateMessage" v-for="message in currentConversation.messages" :key="'m' + message.id">
+					<div v-if='message.author == id'>
+						<span class="sender mymessage"><b>@{{message.username ?? 'Anon#' + (-message.author)}}</b></span>
+					</div>
+					<div v-else>
+						<span class="sender"><b>@{{message.username ?? 'Anon#' + (-message.author)}}</b></span>
+					</div>
 					<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
+					<i v-if='message.author != id' class="material-icons" style="color: green" @click="likeMessage(message.id)">thumb_up</i> <!--TOOD-->
+					<b>0</b>
 					<div v-if='message.content != ""'>
 						<p class="truncate">
 							@{{message.content}}
@@ -134,14 +142,13 @@ $data = [
 
 
 			<form action="#">
-				<div class="file-field input-field">
-					<div class="btn-flat btn-large waves-effect waves-light">
-						<label for="uploadImage">Upload an image</label>
-						<input ref="uploadImage" type="file">
+				<div class="file-field input-field"><!-- TODO -->
+					<input ref="uploadImage" id="uploadImage" type="file">
+					<div id="uploadImageBtn" class="btn-flat btn-large waves-effect waves-light">
 						<i class="material-icons">image</i>
 					</div>
 					<div class="file-path-wrapper">
-						<input ref="uploadImageName" class="file-path validate truncate" type="text" readonly>
+						<input ref="uploadImageName" class="file-path validate truncate" type="text" placeholder="Upload your image here" readonly>
 					</div>
 				</div>
 			</form>
