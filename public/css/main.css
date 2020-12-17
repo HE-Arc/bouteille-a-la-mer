@@ -79,7 +79,7 @@ html, body, #app{
 }
 .page-content {
     height: 70vh;
-    overflow: scroll;
+    overflow-y: scroll;
 }
 
 .hide-message-page{
