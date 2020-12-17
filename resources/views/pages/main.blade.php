@@ -120,9 +120,14 @@ $data = [
 
 			<ul class="collection">
 				<li class="collection-item" v-if="updateMessage" v-for="message in currentConversation.messages" :key="'m' + message.id">
-					<span class="sender"><b>@{{message.username ?? 'Anon#' + -(message.author)}}</b></span>
+					<div v-if='message.author == id'>
+						<span class="sender mymessage"><b>@{{message.username ?? 'Anon#' + (-message.author)}}</b></span>
+					</div>
+					<div v-else>
+						<span class="sender"><b>@{{message.username ?? 'Anon#' + (-message.author)}}</b></span>
+					</div>
 					<a href="#!" class="secondary-content"><p>@{{timeToStr(message.posted)}}</p></i></a>
-					<i class="material-icons" style="color: green">thumb_up</i> <!--TOOD-->
+					<i v-if='message.author != id' class="material-icons" style="color: green">thumb_up</i> <!--TOOD-->
 					<b>0</b>
 					<div v-if='message.content != ""'>
 						<p class="truncate">
