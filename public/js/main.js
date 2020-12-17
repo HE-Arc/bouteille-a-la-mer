@@ -1,7 +1,13 @@
 "use strict";
 
 let currentLocation = [];
-let sm = new SocketMessage(onMessage);
+let sm = new SocketMessage(onMessage, () => {
+    wsReady = true;
+    onReady();
+});
+
+let vueReady = false;
+let wsReady = false;
 
 //List of object representing a conversation
 let conversations = [
@@ -60,6 +66,7 @@ let app = new Vue({
         this.$nextTick(function () {
             // Code that will run only after the
             // entire view has been rendered
+            vueReady = true;
             onReady();
             window.scrollTo(0, 0);
         });
@@ -208,22 +215,25 @@ let app = new Vue({
             }, deep: true
         }
     }
-})
+});
 
 
 
 
 function onReady(){    
     
+    if(!(vueReady && wsReady))
+        return;
+
     //Init the map
     app.map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/lamousseaulini/ckia2cpii1njr1aoign6vi31p', //Style cheet
         zoom: 12 // starting zoom
-    })
+    });
     
     //Set the side nav draggable
-    let elem = app.$refs.sidenav
+    let elem = app.$refs.sidenav;
     let instance = M.Sidenav.init(elem);
     instance.isDragged = true;
     
