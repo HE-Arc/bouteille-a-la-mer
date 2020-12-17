@@ -341,6 +341,15 @@ function onMessage(type, data) {
   
             //Scrool the message page to the end
             app.scrollDownConversation(data.image == null ? 1 : 500);
+
+            //Test if the message come from one of our conv
+            if(app.getMyBottles.filter( (bottle) => { return bottle.id == data.parent;}).length != 0 && data.author != app.id){
+                console.log("here");
+                toToast = '<a @click="toggleMessagePage(' + data.parent + ')">' + 
+                (data.message == "" ? "Click to open the image" : data.message) +'</a>';
+                console.log(toToast);
+                M.toast({html: toToast}); 
+            }
             break;
         
         case 'conversations':
