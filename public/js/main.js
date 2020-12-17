@@ -255,14 +255,9 @@ function postConversation() {
 
 
 function onMessage(type, data) {
-<<<<<<< HEAD
     if(type != 'conversations')
         console.log("onMessage", {type, data});
 
-=======
-    console.log("onMessage", {type, data});
-    
->>>>>>> gui
     switch (type) {
         case 'conversation':
         app.conversations.push(data);
