@@ -204,7 +204,7 @@ class Chat implements MessageComponentInterface {
 
                 $conv = Conversation::all()->last();
                 $conv = (object)$conv;
-                $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
+                $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username', 'messages.id as id')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
                 $msg = json_encode((object)['type' => 'conversation', 'data' => $conv]);
                 foreach ($clientInRange as $clientId => $clientData) {
                     $this->clientsConnexion[$clientId]['ref']->send($msg);
@@ -227,7 +227,7 @@ class Chat implements MessageComponentInterface {
 
         foreach($conversations as &$conv) {
             $conv = (object)$conv;
-            $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
+            $conv->{'messages'} = Message::select('content', 'image', 'posted', 'username', 'messages.id as id')->where(['parent' => $conv->id])->leftJoin('users', 'users.id', '=', 'author')->get()->toArray();
         }
 
         $msg = json_encode((object)['type' => 'conversations', 'data' => $conversations]);
