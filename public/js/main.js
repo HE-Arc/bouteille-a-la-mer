@@ -60,6 +60,7 @@ let app = new Vue({
             // Code that will run only after the
             // entire view has been rendered
             onReady();
+            window.scrollTo(0, 0);
         });
         
         setInterval(() => {
