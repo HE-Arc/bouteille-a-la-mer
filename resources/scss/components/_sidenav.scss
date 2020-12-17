@@ -94,8 +94,10 @@
 
   .user-view {
     position: relative;
-    padding: ($sidenav-padding * 2) ($sidenav-padding * 2) 0;
+    /*padding: ($sidenav-padding * 2) ($sidenav-padding * 2) 0;*/
+    padding: 104px 32px;
     margin-bottom: $sidenav-padding / 2;
+    height: 200px;
 
     & > a {
       &:hover { background-color: transparent; }
@@ -111,6 +113,7 @@
       bottom: 0;
       left: 0;
       z-index: -1;
+      height: 200px;
     }
 
     .circle, .name, .email {

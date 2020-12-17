@@ -4,10 +4,10 @@
 <div id="app">
     <div class="container row">
         <center>
-            <div>
+            <a href="/">
                 <img class="logo" src="{{ URL::asset('img/logo.png') }}" alt="logo" width="100px" action="trySignup" method="post">
                 <h6>Bouteille à la mere</h6>
-            </div>
+            </a>
         </center>
         <h6>Sign up</h6>
         <p>Hi there! Nice to see you again.</p>

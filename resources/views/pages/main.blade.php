@@ -34,11 +34,23 @@ $data = [
 			<li>
 				<div class="user-view">
 					<div class="background">
-						<img src="{{ URL::asset('/img/nico.png') }}" style="width: 100%; height: 100%;">
+						<img src="{{ URL::asset('/img/default.png') }}" style="width: 100%;">
 					</div>
 					<a><img class="circle" src="{{ URL::asset('/img/logo.png') }}"></a>
 					<a><span class="white-text email">@{{ username }}</span></a>
 				</div>
+			</li>
+			<li>
+				<a href="/login" v-if="username != null">
+					<i class="material-icons">login</i>
+					Login
+				</a>
+			</li>
+			<li v-if="username == null">
+				<a href="/logout">
+					<i class="material-icons">logout</i>
+					Logout
+				</a>
 			</li>
 			<li>
 				<a>
