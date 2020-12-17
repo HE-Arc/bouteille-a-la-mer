@@ -345,8 +345,8 @@ function onMessage(type, data) {
             //Test if the message come from one of our conv
             if(app.getMyBottles.filter( (bottle) => { return bottle.id == data.parent;}).length != 0 && data.author != app.id){
                 console.log("here");
-                toToast = '<a @click="toggleMessagePage(' + data.parent + ')">' + 
-                (data.message == "" ? "Click to open the image" : data.message) +'</a>';
+                let toToast = '<a onclick="app.toggleMessagePage(' + data.parent + ')">' + 
+                (data.content == "" ? "Click to open the image" : data.content) +'</div>';
                 console.log(toToast);
                 M.toast({html: toToast}); 
             }
