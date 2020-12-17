@@ -15,7 +15,7 @@ class CreateLikesRelationTable extends Migration
     {
         Schema::create('likes_relation', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger("user");
+            $table->bigInteger("user");
             $table->unsignedBigInteger("message");
         });
     }

@@ -9,7 +9,7 @@ class HomeController extends Controller
         public function index(Request $request)
         {
             if(session('id', false) == false) {
-                session(['id' => -rand(1, 999999999)]);
+                session(['id' => -rand(1, 99999)]);
             }
 
             return view('pages.main'); 
