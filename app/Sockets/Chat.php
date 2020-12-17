@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
 
 class Chat implements MessageComponentInterface {
@@ -17,6 +19,7 @@ class Chat implements MessageComponentInterface {
     protected $clientsConnexion = [];
 
     public function __construct() {
+        dump("yo");
         $this->clients = new \SplObjectStorage;
     }
 
@@ -138,16 +141,43 @@ class Chat implements MessageComponentInterface {
         $convID = $event->parent ?? $convID;
         
         if($convID != NULL) {
+            $imageURL = NULL;
+
+            if ($event->image !== null) {
+                if (!getimagesize($event->image))
+                    $event->image = null;
+                else {
+                    
+                    $image = $event->image;  // your base64 encoded
+                    //$image = str_replace('data:image/png;base64,', '', $image);
+                    $image = preg_replace('/^data:image\/\w+;base64,/', '', $image);
+                    $image = str_replace(' ', '+', $image);
+                    $ext = explode('/', explode(':', substr($event->image, 0, strpos($event->image, ';')))[1])[1];
+                    $imageName = Str::random(10).'.'.$ext;
+                    dump(public_path('uploads'));
+                    dump("/uploads/".$imageName);
+                    File::put(public_path('uploads/').$imageName, base64_decode($image));
+                    $imageURL = "/uploads/".$imageName;
+                }
+            }
+
+            if ($event->message == null && $imageURL == NULL) {
+                return;
+            }
+
             $now = date('Y-m-d H:i:s');
             $msg = ['content' => $event->message, 
-            'image' => $event->image, 
+            'image' => $imageURL, 
             'posted' => $now, 
-            'parent' => $convID, 
+            'parent' => $convID,
             'author' => $from["id"]];
+            
+            $parentConv = Conversation::find($convID);
+            if ($parentConv == NULL)
+                return;
             
             Message::insert($msg);
 
-            $parentConv = Conversation::find($convID);
             $clientInRange = array_filter($this->clientsConnexion, function($client) use ($parentConv) {
                 return $this->distance($parentConv['lat'], $parentConv['long'], $client['lat'], $client['long']) <= $parentConv['radius'];
             });
