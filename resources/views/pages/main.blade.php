@@ -22,7 +22,7 @@ $data = [
 		</p>
 	</div>
 
-	<div id="map" class="main-page"></div>
+	<div id="map" class="main-page" onclick="M.Sidenav.getInstance(app.$refs.sidenav).close()"></div>
 	
 	<div class="container main-page">
 		<a id="drop-btn" ref="drop_btn" class="btn-floating btn-large waves-effect waves-light"  @click="toggleDropPage">
@@ -60,7 +60,9 @@ $data = [
 					</div>
 				</div>
 			</div>
-		</ul>
+		</ul>	
+		<a id="burger" href="#" data-target="slide-out" class="sidenav-trigger hide-on-small-only"><i class="material-icons">menu</i></a>
+
 	</div>
 	<div id="drop-page" ref="drop_page" class="hide-drop-page z-depth-3">
 		<nav id="drop-bottle-title" class="z-depth-4">
