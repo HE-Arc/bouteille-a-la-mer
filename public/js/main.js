@@ -86,6 +86,9 @@ let app = new Vue({
             {
                 //Set the new current conversation
                 this.currentConversation = this.conversations.find(conv => conv.id == conversationId);
+
+                //Clear the text
+                this.$refs.textareamessage.value = "";
             }
 
             this.$refs.message_page.classList.toggle("hide-message-page");
