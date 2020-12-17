@@ -116,7 +116,7 @@ $data = [
 			</div>
 		</div>
 	</div>
-	<div id="message-page" ref="message_page" class="white hide-message-page">
+	<div id="message-page" ref="message_page" class="white hide-message-page" v-if="currentConversation != null">
 		<nav id="message-title">
 			<div class="nav-wrapper">
 				<a href="#" class="center">Chat !</a>

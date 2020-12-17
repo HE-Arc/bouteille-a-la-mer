@@ -4,34 +4,7 @@ let currentLocation = [];
 let sm = new SocketMessage(onMessage);
 
 //List of object representing a conversation
-let conversations = [
-    {
-        id: 0,
-        time_of_death: new Date("11.25.2020"),
-        long: 47.05896542008401,
-        lat: 6.905909718143659,
-        messages: [
-            {
-                id: 0,
-                author: "Mathias",
-                content: "yo ?",
-                posted: new Date("11.25.2020:10:02"),
-            },
-            {
-                id: 1,
-                author: "Nico",
-                content: "Je suis maaauuvvvaiiiisssssssssssssssssssssssssssssss",
-                posted: new Date("11.25.2020:10:04"),
-            },
-            {
-                id: 2,
-                author: "Valentin",
-                content: "69",
-                posted: new Date("11.25.2020:10:10"),
-            }
-        ]
-    },
-];
+let conversations = [];
 
 let app = new Vue({
     el: "#app",
@@ -43,7 +16,7 @@ let app = new Vue({
             updating: 0,
             updateMessage: true,
             map: null,
-            currentConversation: {messages : []},
+            currentConversation: null,
             bottleMarkers: [],
             myPositionMarker: null
         }
@@ -74,13 +47,17 @@ let app = new Vue({
     methods: {
         getTimeLeftStr(timeOfDeath) {
             this.updating
-            let timeLeft = new Date(timeOfDeath) - new Date();
-            
-            return this.timeToStr(timeLeft);
+            let timeLeft = new Date(new Date(timeOfDeath).getTime() - new Date().getTime());
+
+            try {
+                timeLeft = timeLeft.setHours(timeLeft.getHours()-1);
+                return this.timeToStr(timeLeft);
+            } catch (Exception) {
+                return "00:00";
+            }
         },
         timeToStr(time) {
             time = new Date(time);
-            time.setHours(time.getHours() - 1);
             
             //Format
             return time.toLocaleTimeString('ch-FR', { hour: '2-digit', minute: '2-digit' });
@@ -106,9 +83,12 @@ let app = new Vue({
                 //Remove image in text area
                 this.clearTextInput(this.$refs.uploadImageName);
             }
+            setTimeout(() => {
+                this.$refs.message_page.classList.toggle("hide-message-page");
+                this.$refs.message_page.classList.toggle("display-message-page");
+            }, 1);
             
-            this.$refs.message_page.classList.toggle("hide-message-page");
-            this.$refs.message_page.classList.toggle("display-message-page");
+            
 
             //Scrool the message page to the end
             this.scrollDownConversation(1000);       
@@ -148,10 +128,12 @@ let app = new Vue({
             }
         },
         clearTextInput(element) {
-            element.value = "";
-            element.classList.remove("active");
-            element.style.height = null;
-            M.updateTextFields();
+            if (element != undefined) {
+                element.value = "";
+                element.classList.remove("active");
+                element.style.height = null;
+                M.updateTextFields();
+            }
         },
         scrollDownConversation(updateTime = 1) {
             setTimeout(() => {                         
