@@ -143,11 +143,15 @@ let app = new Vue({
             }
         },
         scrollDownConversation(updateTime = 1) {
-            setTimeout(() => {                         
-                app.$refs.conversation.scrollTo({
-                    top: Number.MAX_SAFE_INTEGER,
-                    behavior: 'smooth'
-                });
+            setTimeout(() => {    
+                try {                     
+                    app.$refs.conversation.scrollTo({
+                        top: Number.MAX_SAFE_INTEGER,
+                        behavior: 'smooth'
+                    });
+                } catch(Exception) {
+                    
+                }
 
             }, updateTime);
         },
