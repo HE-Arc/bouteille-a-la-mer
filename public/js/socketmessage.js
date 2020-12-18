@@ -25,12 +25,18 @@ class SocketMessage
             alert("Error connecting to the web socket " + url);
             location.reload();
         });
+
+        this.ws.addEventListener('close', event => {
+            console.log("web socket closed: ", event);
+        });
     }
 
     send(type, data) {
         if(this.ws.readyState == this.ws.OPEN)
             this.ws.send(JSON.stringify({'type': type, 'data': data}));
-        else
+        else {
             console.log("Web socket is not ready");
+            console.log(this.ws.readyState);
+        }
     }
 }
