@@ -50,13 +50,13 @@ $data = [
 					<a><span class="white-text email">@{{ username }}</span></a>
 				</div>
 			</li>
-			<li>
-				<a href="/login" v-if="username != null">
+			<li v-if="!username">
+				<a href="/login">
 					<i class="material-icons">login</i>
 					Login
 				</a>
 			</li>
-			<li v-if="username == null">
+			<li v-if="username">
 				<a href="/logout">
 					<i class="material-icons">logout</i>
 					Logout
