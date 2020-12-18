@@ -368,11 +368,14 @@ function onMessage(type, data) {
                 app.conversations.splice(oldI, 1);
             }
         }
-        
-        // Create data that didn't exist before
-        data.forEach(newConv => {
-            Vue.set(app.conversations, app.conversations.length, newConv);
-        });
+        try {
+            // Create data that didn't exist before
+            data.forEach(newConv => {
+                Vue.set(app.conversations, app.conversations.length, newConv);
+            });
+        } catch(Exception) {
+            
+        }
         
         break;
         case 'like':
