@@ -22,6 +22,11 @@ php composer install
 php artisan migrate
 ```
 
+Génération du css à partir du scss
+```
+./script/generate_scss.sh
+```
+
 Lancement du serveur websocket
 ```
 php artisan websocket:init
@@ -33,7 +38,7 @@ Lancement du manager de suppression automatique après un certain temps
 php artisan queue:listen
 ```
 
-Lancer le serveur
+Lancement de serveur
 ```
 php artisan serve
 ```
