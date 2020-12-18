@@ -218,8 +218,7 @@ function onReady(){
     let elem = app.$refs.sidenav;
     let instance = M.Sidenav.init(elem);
     instance.isDragged = true;
-    
-    
+
     //Listen to change in location
     navigator.geolocation.watchPosition(function (position) {
         let myLocation = [position.coords.longitude, position.coords.latitude]
@@ -254,6 +253,8 @@ function onReady(){
         
         sm.send('newpos', {'long': myLocation[0], 'lat': myLocation[1]});
         
+    }, (error) =>{
+        console.log(error);
     });
     
     
