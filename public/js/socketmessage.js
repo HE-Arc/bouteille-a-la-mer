@@ -2,20 +2,35 @@
 
 class SocketMessage
 {
-    constructor(onMessage) {
+    constructor(onMessage, onReady) {
         let ws = 'ws';
-        if(window.location.protocol == 'https:')
+        let path = ':8080';
+        if(window.location.protocol == 'https:') {
             ws += 's'
+            path = '/wss';
+        }
 
-        let url = ws + '://' + window.location.hostname;
+        let url = ws + '://' + window.location.hostname + path;
         this.ws = new WebSocket(url);
-        console.log("connecting...");
+
+        //Call when connection is made
+        this.ws.addEventListener("open", onReady);
+
+        console.log("connecting to web socket " + url + "...");
         this.ws.addEventListener('message', event => {
-            onMessage(JSON.parse(event.data));
+            let msg = JSON.parse(event.data);
+            onMessage(msg.type, msg.data);
+        });
+        this.ws.addEventListener('error', event => {
+            alert("Error connecting to the web socket " + url);
+            location.reload();
         });
     }
 
     send(type, data) {
-        this.ws.send(JSON.stringify({'type': type, 'data': data}));
+        if(this.ws.readyState == this.ws.OPEN)
+            this.ws.send(JSON.stringify({'type': type, 'data': data}));
+        else
+            console.log("Web socket is not ready");
     }
 }

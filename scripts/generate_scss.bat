@@ -1,0 +1,1 @@
+sass --no-source-map %~dp0../resources/scss/materialize.scss %~dp0../public/materialize/css/materialize.css

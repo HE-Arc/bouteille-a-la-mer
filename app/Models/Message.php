@@ -2,19 +2,33 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use App\Models\Like;
 
 class Message extends Model
 {
-    public function getMyConversations($myid) {
-        $conv = DB::table('conversations')
-            ->where('author', '=', $myid)
-            ->join('messages', 'conversations.id', '=', 'messages.id')
-            ->get();
-
-    }
     public $timestamps = false;
     protected $table = "messages";
+
+    protected static function booted()
+    {
+        static::deleted(function ($message) {
+            echo 'message delete\n';
+
+            $likes = Like::where(['message' => $message->id])->get();
+            foreach($likes as $like) {
+                $like->delete();
+            }
+
+            if($message->image !== NULL)
+            {
+                $path = public_path().$message->image;
+                dump('deleting ' . $path);
+                if (File::exists($path))
+                    File::delete($path);
+
+            };
+        });
+    }
 }

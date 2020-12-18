@@ -13,10 +13,10 @@ class CreateLikesRelationTable extends Migration
      */
     public function up()
     {
-        Schema::create('likesRelation', function (Blueprint $table) {
+        Schema::create('likes_relation', function (Blueprint $table) {
             $table->id();
-            $table->integer("user");
-            $table->integer("message");
+            $table->bigInteger("user");
+            $table->unsignedBigInteger("message");
         });
     }
 
@@ -27,6 +27,6 @@ class CreateLikesRelationTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('likesRelation');
+        Schema::dropIfExists('likes_relation');
     }
 }
