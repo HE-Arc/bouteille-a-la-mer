@@ -36,8 +36,8 @@ $data = [
 			<img id="drop-img" src="{{ URL::asset('/img/drop_bottle.png') }}">
 		</a>
 
-		<a id="center-btn" class="waves-effect waves-light"  @click="centerOnMe()">
-			<i class="material-icons">adjust</i>
+		<a id="center-btn" class="waves-effect waves-light" @click="centerOnMe()">
+			<i class="material-icons large">adjust</i>
 		</a>
 
 		<ul id="slide-out" class="sidenav" ref="sidenav">
@@ -47,7 +47,7 @@ $data = [
 						<img src="{{ URL::asset('/img/default.png') }}" style="width: 100%;">
 					</div>
 					<a><img class="circle" src="{{ URL::asset('/img/logo.png') }}"></a>
-					<a><span class="white-text email">@{{ username }}</span></a>
+					<a><span class="black-text email">@{{ username }}</span></a>
 				</div>
 			</li>
 			<li v-if="!username">
