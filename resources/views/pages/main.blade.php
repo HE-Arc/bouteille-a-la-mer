@@ -167,7 +167,7 @@ $data = [
 			<form action="#">
 				<div class="file-field input-field"><!-- TODO -->
 					<div class="file-path-wrapper" style="display: none">
-						<input ref="uploadImage" id="uploadImage" type="file"  accept="image/png, image/jpeg">
+						<input ref="uploadImage" id="uploadImage" type="file" accept="image/png, image/jpeg, image/gif">
 						<input ref="uploadImageName" id="uploadImageID" class="file-path validate truncate" type="text" placeholder="Upload your image here" readonly>
 					</div>
 				</div>
