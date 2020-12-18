@@ -378,12 +378,13 @@ function onMessage(type, data) {
             console.log(typeof data)
             console.log(data.values);
             if (typeof data === 'object' && data !== null) {
-                console.log(data.length);
+                let ar = Object.values(data);
+                console.log(ar.length);
 
-                console.log(data.values.length);
-                console.log(data.values)
-                for (let i = 0; i < data.values.length; i++) {
-                    Vue.set(app.conversations, app.conversations.length, data.values[i]);
+                console.log(ar.length);
+                
+                for (let i = 0; i < ar.length; i++) {
+                    Vue.set(app.conversations, app.conversations.length, ar[i]);
                 }
             } else {
                 data.forEach(newConv => {
