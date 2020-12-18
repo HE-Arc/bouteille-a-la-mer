@@ -1,7 +1,13 @@
 "use strict";
 
 let currentLocation = [];
-let sm = new SocketMessage(onMessage);
+let sm = new SocketMessage(onMessage, () => {
+    wsReady = true;
+    onReady();
+});
+
+let vueReady = false;
+let wsReady = false;
 
 //List of object representing a conversation
 let conversations = [];
@@ -32,6 +38,7 @@ let app = new Vue({
         this.$nextTick(function () {
             // Code that will run only after the
             // entire view has been rendered
+            vueReady = true;
             onReady();
             window.scrollTo(0, 0);
         });
@@ -144,6 +151,10 @@ let app = new Vue({
 
             }, updateTime);
         },
+        centerOnMe() {
+            //Center the map to our current location
+            app.map.setCenter([currentLocation[0], currentLocation[1]]);
+        },
     },
     computed: {
         getMyBottles() {
@@ -186,22 +197,25 @@ let app = new Vue({
             }, deep: true
         }
     }
-})
+});
 
 
 
 
 function onReady(){    
     
+    if(!(vueReady && wsReady))
+        return;
+
     //Init the map
     app.map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/lamousseaulini/ckia2cpii1njr1aoign6vi31p', //Style cheet
         zoom: 12 // starting zoom
-    })
+    });
     
     //Set the side nav draggable
-    let elem = app.$refs.sidenav
+    let elem = app.$refs.sidenav;
     let instance = M.Sidenav.init(elem);
     instance.isDragged = true;
     
@@ -209,7 +223,16 @@ function onReady(){
     //Listen to change in location
     navigator.geolocation.watchPosition(function (position) {
         let myLocation = [position.coords.longitude, position.coords.latitude]
-        currentLocation = myLocation;
+
+        //If first time, center !
+        if(currentLocation.length == 0 ){
+            currentLocation = myLocation;
+            app.centerOnMe();
+        }
+        else
+        {
+            currentLocation = myLocation;
+        }
         
         // create a HTML element for each feature
         var el = document.createElement('div');
@@ -229,24 +252,13 @@ function onReady(){
             app.myPositionMarker.setLngLat(myLocation);
         }
         
-        
-        //Center the map to our current location
-        app.map.setCenter([position.coords.longitude, position.coords.latitude])
-        
         sm.send('newpos', {'long': myLocation[0], 'lat': myLocation[1]});
         
     });
     
     
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-            //Set center location
-            app.map.setCenter([position.coords.longitude, position.coords.latitude])
-        });
-    }
-    else {
+    if (!navigator.geolocation)
         alert("Geolocation is not supported by this browser.");
-    }
     
     
     //At load time :
@@ -321,6 +333,15 @@ function onMessage(type, data) {
   
             //Scrool the message page to the end
             app.scrollDownConversation(data.image == null ? 1 : 500);
+
+            //Test if the message come from one of our conv
+            if(app.getMyBottles.filter( (bottle) => { return bottle.id == data.parent;}).length != 0 && data.author != app.id){
+                console.log("here");
+                let toToast = '<a onclick="app.toggleMessagePage(' + data.parent + ')">' + 
+                (data.content == "" ? "Click to open the image" : data.content) +'</div>';
+                console.log(toToast);
+                M.toast({html: toToast}); 
+            }
             break;
         
         case 'conversations':
