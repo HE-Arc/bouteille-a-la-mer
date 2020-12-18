@@ -315,8 +315,8 @@ function postConversation() {
 
 
 function onMessage(type, data) {
-    if(type != 'conversations')
-        console.log("onMessage", {type, data});
+    //if(type != 'conversations')
+    console.log("onMessage", {type, data});
 
     switch (type) {
         case 'conversation':
@@ -374,7 +374,8 @@ function onMessage(type, data) {
                 Vue.set(app.conversations, app.conversations.length, newConv);
             });
         } catch(Exception) {
-            
+            console.log(Exception);
+            console.log(data);
         }
         
         break;
