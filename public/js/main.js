@@ -376,7 +376,10 @@ function onMessage(type, data) {
             console.log(JSON.stringify(data))
             console.log(typeof data === 'object')
             console.log(typeof data)
+            console.log(data.values);
             if (typeof data === 'object' && data !== null) {
+                console.log(data.length);
+
                 console.log(data.values.length);
                 console.log(data.values)
                 for (let i = 0; i < data.values.length; i++) {
