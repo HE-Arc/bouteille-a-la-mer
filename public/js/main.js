@@ -351,6 +351,9 @@ function onMessage(type, data) {
         
         case 'conversations':
         //app.conversations = data;
+        if (typeof data === 'object' && data !== null) {
+            data = Object.values(data);
+        }
         
         //Update existing data
         for (let [oldI, oldConv] of app.conversations.entries()) {
@@ -376,12 +379,9 @@ function onMessage(type, data) {
             console.log(JSON.stringify(data))
             console.log(typeof data === 'object')
             console.log(typeof data)
-            console.log(data.values);
             if (typeof data === 'object' && data !== null) {
                 let ar = Object.values(data);
-                console.log(ar.length);
-
-                console.log(ar.length);
+                console.log(data);
                 
                 for (let i = 0; i < ar.length; i++) {
                     Vue.set(app.conversations, app.conversations.length, ar[i]);
