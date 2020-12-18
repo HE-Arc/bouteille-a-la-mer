@@ -374,9 +374,9 @@ function onMessage(type, data) {
                 Vue.set(app.conversations, app.conversations.length, newConv);
             });*/
             console.log(JSON.stringify(data))
-            console.log(typeof yourVariable === 'object')
-            console.log(typeof yourVariable)
-            if (typeof yourVariable === 'object' && yourVariable !== null) {
+            console.log(typeof data === 'object')
+            console.log(typeof data)
+            if (typeof data === 'object' && data !== null) {
                 console.log(data.values.length);
                 console.log(data.values)
                 for (let i = 0; i < data.values.length; i++) {
