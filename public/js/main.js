@@ -373,12 +373,19 @@ function onMessage(type, data) {
             /*data.forEach(newConv => {
                 Vue.set(app.conversations, app.conversations.length, newConv);
             });*/
+            console.log(JSON.stringify(data))
+            console.log(typeof yourVariable === 'object')
+            console.log(typeof yourVariable)
             if (typeof yourVariable === 'object' && yourVariable !== null) {
                 console.log(data.values.length);
                 console.log(data.values)
                 for (let i = 0; i < data.values.length; i++) {
                     Vue.set(app.conversations, app.conversations.length, data.values[i]);
                 }
+            } else {
+                data.forEach(newConv => {
+                    Vue.set(app.conversations, app.conversations.length, newConv);
+                });
             }
             
         } catch(Exception) {
