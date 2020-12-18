@@ -11,6 +11,12 @@ $data = [
 	//Set the map box
 	mapboxgl.accessToken = "{{ env('MAPBOX_KEY') }}";
 </script>
+<style>
+	body {
+		/* i was obligé :'( */
+		overflow: hidden;
+	}
+</style>
 
 <div id="app" :mdata="{{ json_encode($data) }}" class="main-app">
 	

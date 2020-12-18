@@ -22,7 +22,6 @@ let app = new Vue({
         }
     },
     mounted() {
-        document.body.style.overflow = "hidden";
         setTimeout(() => {
             let data = this._vnode.data.attrs.mdata;
             console.log(data);
@@ -50,6 +49,7 @@ let app = new Vue({
             let timeLeft = new Date(new Date(timeOfDeath).getTime() - new Date().getTime());
 
             try {
+
                 timeLeft = timeLeft.setHours(timeLeft.getHours()-1);
                 return this.timeToStr(timeLeft);
             } catch (Exception) {
