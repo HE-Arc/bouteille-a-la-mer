@@ -370,9 +370,12 @@ function onMessage(type, data) {
         }
         try {
             // Create data that didn't exist before
-            data.forEach(newConv => {
+            /*data.forEach(newConv => {
                 Vue.set(app.conversations, app.conversations.length, newConv);
-            });
+            });*/
+            for (let i = 0; i < data.length; i++) {
+                Vue.set(app.conversations, app.conversations.length, data[i]);
+            }
         } catch(Exception) {
             console.log(Exception);
             console.log(data);
